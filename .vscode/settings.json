@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "interrupts.h": "c",
+        "time.h": "c",
+        "snakeapp.h": "c",
+        "globallib.h": "c",
+        "compare": "c",
+        "stdint.h": "c",
+        "sounddriver.h": "c",
+        "videodriver.h": "c",
+        "clocktime.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
+}
