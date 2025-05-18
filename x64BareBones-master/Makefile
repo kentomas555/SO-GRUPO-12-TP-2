@@ -1,5 +1,5 @@
 
-all:  bootloader kernel userland image
+all:  bootloader kernel userland bin image
 
 bootloader:
 	cd Bootloader; make all
@@ -12,6 +12,10 @@ userland:
 
 image: kernel bootloader userland
 	cd Image; make all
+
+bin:
+	cd Userland; objcopy -O binary 0000-sampleCodeModule.elf 0000-sampleCodeModule.bin
+	cd Kernel; objcopy -O binary kernel.elf kernel.bin
 
 clean:
 	cd Bootloader; make clean
