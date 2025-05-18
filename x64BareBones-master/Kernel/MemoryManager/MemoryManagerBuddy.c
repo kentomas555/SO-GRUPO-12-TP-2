@@ -18,3 +18,7 @@ void *allocMemory(MemoryManagerADT const restrict memoryManager, const size_t me
 
 	return (void *) allocation;
 }
+
+void *freeMemory(MemoryManagerADT const restrict memoryManager, const size_t memoryToFree){
+	return 0;
+}
