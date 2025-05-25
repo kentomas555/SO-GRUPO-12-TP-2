@@ -3,10 +3,10 @@
 
 #include <stdlib.h>
 
-typedef struct MemoryManagerCDT *MemoryManagerADT;
+typedef struct MemoryManagerCDT * MemoryManagerADT;
 
-MemoryManagerADT createMemoryManager(void *const restrict memoryForMemoryManager, void *const restrict managedMemory);
+MemoryManagerADT createMemoryManager(void * startMM);
 
-void *allocMemory(MemoryManagerADT const restrict memoryManager, const size_t memoryToAllocate);
+void * allocMemory(MemoryManagerADT mm, size_t memoryToAllocate);
 
 #endif

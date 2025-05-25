@@ -1,46 +1,50 @@
 #include "MemoryManager.h"
-#define FREE 0
-#define USED 1
 
-typedef struct memoryNode {
-	uint8_t isUsed;
-	size_t memorySize;
-	struct memoryNode * next;
-	struct memoryNode * previous;
-} memoryNode;
+#define BLOCK_SIZE 0x1000 
+#define BLOCK_QTY 0x1000 
 
 typedef struct MemoryManagerCDT {
 	size_t totalSize;
 	size_t freeMemory;
 	size_t usedMemory;
-	memoryNode * firstMemoryAddress;
+	size_t currentBlock;
+	void * freeArray[BLOCK_QTY];
 } MemoryManagerCDT;
 
-MemoryManagerADT createMemoryManager(void *const restrict memoryForMemoryManager, void *const restrict managedMemory, uint64_t memorySize) {
-	MemoryManagerADT memoryManager = (MemoryManagerADT) memoryForMemoryManager;
+MemoryManagerADT createMemoryManager(void * startMM) {
+	MemoryManagerCDT * mm = (MemoryManagerCDT *) startMM;
+	for (int i = 0; i < BLOCK_QTY; i++){
+		mm->freeArray[i] = (void *) (startMM + BLOCK_SIZE * i); 
+	}
+	size_t memorySize = BLOCK_QTY * BLOCK_SIZE;
+	mm->totalSize = memorySize;
+	mm->freeMemory = memorySize;
+	mm->usedMemory = 0;
+	mm->currentBlock = 0;
 
-	firstMemoryBlock = (memoryNode *) managedMemory;
-	firstMemoryBlock->isUsed = FREE;
-	firstMemoryBlock->memorySize = 0;
-	firstMemoryBlock->next = NULL;
-	firstMemoryBlock->previous = NULL;
-
-	memoryManager->firstMemoryAddress = firstMemoryBlock;
-	memoryManager->totalSize = memorySize;
-	memoryManager->freeMemory = memorySize;
-	memoryManager->usedMemory = 0;
-	return memoryManager;
+	//return (MemoryManagerADT) mm;
+	return mm;
 }
 
-void *allocMemory(MemoryManagerADT const restrict memoryManager, const size_t memoryToAllocate) {
-	memoryNode * allocation = memoryManager->firstMemoryAddress;
+void * allocMemory(MemoryManagerADT mm, size_t memoryToAllocate) {
+	if(mm == NULL || memoryToAllocate > BLOCK_SIZE || mm->currentBlock >= BLOCK_QTY) {
+		return NULL;
+	}
+	mm->freeMemory -= BLOCK_SIZE;
+	mm->usedMemory += BLOCK_SIZE;
 
-	memoryManager->freeMemory -= memoryToAllocate;
-	memoryManager->usedMemory += memoryToAllocate;
-
-	return (void *) allocation;
+	return mm->freeArray[mm->currentBlock++];
 }
 
-void *freeMemory(MemoryManagerADT const restrict memoryManager, const size_t memoryToFree){
-	return 0;
+void freeMemory(MemoryManagerADT mm, void * freeAddress){
+	if(mm == NULL){
+		return;
+	}
+
+	if(mm->currentBlock > 0) {
+		mm->freeArray[mm->--currentBlock] = freeAddress;
+		mm->usedMemory -= BLOCK_SIZE;
+		mm->freeMemory += BLOCK_SIZE;
+	}
 }
+
