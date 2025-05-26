@@ -295,6 +295,17 @@ void wait(int ticks){
     return;
 }
 
+//void * allocMemory(MemoryManagerADT mm, size_t memoryToAllocate) 
+
+void allocMemoryUser(uint32_t size){
+    printf("entre a allocMemoryUser");
+    printf(syscall(14, size));
+}
+
+void freeMemoryUser(){
+    syscall(15);
+}
+
 //EXCEPTION TRIGGERS:
 
 void zeroDivisionTrigger(){

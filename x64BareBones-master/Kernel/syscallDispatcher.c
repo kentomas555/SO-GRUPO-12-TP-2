@@ -7,6 +7,8 @@
 #include <clockTime.h>
 #include <interrupts.h>
 #include <irqDispatcher.h>
+#include <MemoryManager.h>
+#include <kernel.h>
 
 uint64_t syscallDispatcher(uint64_t id, ...)
 {
@@ -96,7 +98,16 @@ uint64_t syscallDispatcher(uint64_t id, ...)
             getTime(aux);
             break;
         }
-        
+        case 14: //allocMemory
+        {
+            uint32_t size = va_arg(args, uint32_t);
+            ret = (uint64_t) allocMemory(getKernelMem(), size);
+            break;
+        }
+        case 15: //freeMemory
+        {
+            
+        }
         
     }
 

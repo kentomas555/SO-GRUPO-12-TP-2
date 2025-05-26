@@ -9,4 +9,6 @@ MemoryManagerADT createMemoryManager(void * startMM);
 
 void * allocMemory(MemoryManagerADT mm, size_t memoryToAllocate);
 
+void freeMemory(MemoryManagerADT mm, void * freeAddress);
+
 #endif

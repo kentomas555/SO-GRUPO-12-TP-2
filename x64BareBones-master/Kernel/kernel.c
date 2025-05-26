@@ -1,10 +1,5 @@
-#include <stdint.h>
-#include <lib.h>
-#include <moduleLoader.h>
-#include <idtLoader.h>
-#include <videoDriver.h>
-#include <soundDriver.h>
-#include <clockTime.h>
+#include <kernel.h>
+
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -17,6 +12,9 @@ static const uint64_t PageSize = 0x1000;
 
 static void * const sampleCodeModuleAddress = (void*)0x400000;
 static void * const sampleDataModuleAddress = (void*)0x500000;
+static void * const heapStartAddress = (void*)0x600000;
+
+static MemoryManagerADT kernelMM;
 
 typedef int (*EntryPoint)();
 
@@ -47,13 +45,18 @@ void * initializeKernelBinary()
 	return getStackBase();
 }
 
+MemoryManagerADT getKernelMem() {
+	return kernelMM;
+}
+
 int main()
 {	
-	
+
 	setTickFreq(100);
 	load_idt();	
 	sound(800, 10);
-	//startKernel();
+
+	kernelMM = createMemoryManager(heapStartAddress);
 
 	((EntryPoint)sampleCodeModuleAddress)();
 

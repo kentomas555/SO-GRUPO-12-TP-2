@@ -1,8 +1,9 @@
 #include "syscall.h"
 #include "test_util.h"
-#include <stdio.h>
+#include "globalLib.h"
 #include <stdlib.h>
 #include <string.h>
+
 
 #define MAX_BLOCKS 128
 
@@ -28,10 +29,12 @@ uint64_t test_mm(uint64_t argc, char *argv[]) {
     rq = 0;
     total = 0;
 
+
+    //void * allocMemory(MemoryManagerADT mm, size_t memoryToAllocate) 
     // Request as many blocks as we can
     while (rq < MAX_BLOCKS && total < max_memory) {
       mm_rqs[rq].size = GetUniform(max_memory - total - 1) + 1;
-      mm_rqs[rq].address = malloc(mm_rqs[rq].size);
+      mm_rqs[rq].address = allocMemoryUser(mm_rqs[rq].size);
 
       if (mm_rqs[rq].address) {
         total += mm_rqs[rq].size;

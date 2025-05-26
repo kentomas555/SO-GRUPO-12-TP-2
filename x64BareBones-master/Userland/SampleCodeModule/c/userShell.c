@@ -31,6 +31,11 @@ static void help(){
     printf("HELP - Imprime todos los comandos disponibles");
     NewLine();
     NewLine();
+    printf("Comandos para TP2 SO 1C2025:");
+    NewLine();
+    printf("TESTALLOC - Test para alocar memoria con MM");
+    NewLine();
+    NewLine();
     printf("Para ver el valor de los registros, presione TAB");
     NewLine();
     NewLine();
@@ -88,6 +93,8 @@ static void bufferInterpreter(){
         zeroDivisionTrigger();
     } else if (strCompare(shellBuffer, "INVOPCODE")){
         invalidOpcodeTrigger();
+    } else if (strCompare(shellBuffer, "TESTALLOC")){
+        allocMemoryUser(10);
     } else {
         printf("Comando no reconocido. Use HELP para mas informacion");
         NewLine();
