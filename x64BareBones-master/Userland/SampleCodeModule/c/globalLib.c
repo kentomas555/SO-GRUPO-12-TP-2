@@ -299,7 +299,10 @@ void wait(int ticks){
 
 void allocMemoryUser(uint32_t size){
     printf("entre a allocMemoryUser");
+    NewLine();
     printf(syscall(14, size));
+    printf("entre a allocMemoryUser");
+    NewLine();
 }
 
 void freeMemoryUser(){

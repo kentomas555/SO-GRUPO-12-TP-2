@@ -42,7 +42,8 @@ void freeMemory(MemoryManagerADT mm, void * freeAddress){
 	}
 
 	if(mm->currentBlock > 0) {
-		mm->freeArray[mm->--currentBlock] = freeAddress;
+		mm->currentBlock--;
+		mm->freeArray[mm->currentBlock] = freeAddress;
 		mm->usedMemory -= BLOCK_SIZE;
 		mm->freeMemory += BLOCK_SIZE;
 	}

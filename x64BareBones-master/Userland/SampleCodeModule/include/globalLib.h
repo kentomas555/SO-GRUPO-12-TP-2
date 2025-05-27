@@ -43,6 +43,9 @@ void printCurrentTime();
 void sound(uint64_t frecuencia , uint64_t duración );
 void wait(int ticks);
 
+//TP2-SO//
+void allocMemoryUser(uint32_t size);
+
 //EXCEPTION TRIGGERS:
 void zeroDivisionTrigger();
 void invalidOpcodeTrigger();

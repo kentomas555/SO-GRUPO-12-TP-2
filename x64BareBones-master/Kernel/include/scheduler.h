@@ -1,0 +1,29 @@
+#ifndef SCHEDULER_H
+#define SCHEDULER_H
+
+#define QUANTUM 5 
+
+#define MAX_PROCESSES 8
+
+#define DEFAULT_PRIO 3
+
+typedef int Pid;
+typedef enum {LOWEST_PRIORITY = 1, LOW_PRIORITY, AVERAGE_PRIORITY, HIGH_PRIORITY, HIGHEST_PRIORITY} Priority;
+typedef enum {READY = 0, RUNNING, BLOCKED, KILLED} ProcessStatus;
+
+void startScheduler();
+uint64_t createProcess(char * processName); 
+int getCurrentPID();
+int getCurrentPPID();
+int blockProcess(Pid pid);
+int unblockProcess(Pid pid);
+
+int increaseProcessPriority(Pid pid);
+int decreaseProcessPriority(Pid pid);
+
+void * switchContext(Pid pid);
+
+uint64_t killProcess(Pid pid); 
+void waitChilds();
+
+void printProcesses();

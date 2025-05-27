@@ -317,3 +317,92 @@ make clean
 make all
 gdb
 gdb
+ls
+cd root
+ls
+ls
+cd Toolchian
+cd Toolchain
+ls
+make clean
+cd ..
+make clean
+ls
+cd Toolchain
+make all
+cd ..
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+exit
+cd root
+s
+ls
+cd Toolchain
+make clean
+make all
+cd ..
+make clean
+make all
+exit
+cd root
+ls
+cd Toolchain
+make clean
+cd ..
+make clean
+s
+ls
+cd Toolchain
+ls
+make all
+cd ..
+make all
+make all
+make all
+make clean
+make all
+make clean
+make all
+exit
+ls
+cd root
+ls
+exit
+cd root
+ls+
+ls
+cd Toolchain
+make clean
+make all
+cd ..
+make clean
+make all
+exit
