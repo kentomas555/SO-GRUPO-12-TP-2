@@ -8,7 +8,7 @@ typedef struct {
     void * currentRSP;
 } processControlBlock;
 
-processControlBlock processControlBlockTable[MAX_PROCESSES];
+processControlBlock * processControlBlockTable[MAX_PROCESSES];
 
 int currentProcess = 0;
 
@@ -59,7 +59,7 @@ int getCurrentPID(){
 
 int blockProcess(Pid pid){
   processControlBlock * pcb = processControlBlockTable[pid];
-  if(pcb->status == BLOCKED || pcb->status == FINISHED || pcb->status == KILLED, pcb->status == NULL){
+  if(pcb->status == BLOCKED || pcb->status == KILLED || pcb->status == NULL){
     return -1;
   }
   pcb->status = BLOCKED;
@@ -100,7 +100,13 @@ void * switchContext(Pid pid){
 }
 
 uint64_t killProcess(Pid pid){
-
+  processControlBlock * pcb = processControlBlockTable[pid];
+  if(pcb == NULL){
+    return -1;
+  }
+  pcb->status = KILLED;
+  freeMemory(pcb);
+  processControlBlockTable[pid] = NULL;
 }
 
 void waitChilds(){

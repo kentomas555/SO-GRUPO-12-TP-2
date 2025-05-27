@@ -1,6 +1,10 @@
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
+#include <stdio.h>
+#include <stdint.h>
+
+
 #define QUANTUM 5 
 
 #define MAX_PROCESSES 8
