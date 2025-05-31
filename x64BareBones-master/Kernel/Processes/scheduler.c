@@ -1,0 +1,99 @@
+#include "../include/scheduler.h"
+#include "../include/process.h"
+#include "../include/MemoryManager.h"
+
+typedef struct SchedulerCDT{
+  processControlBlock * processes[MAX_PROCESSES];
+  //Linked List de procesos ready
+  uint16_t currentPID;
+  uint16_t currentPPID;
+  uint16_t nextPID;
+  uint16_t processQty;
+  uint16_t foregroundPID;
+} SchedulerCDT;
+
+SchedulerCDT * scheduler;
+
+void startScheduler() {
+  scheduler = allocMemory(sizeof(SchedulerCDT));
+  for (int i = 0; i < MAX_PROCESSES; i++){
+    scheduler->processes[i] = NULL;
+  }
+  scheduler->currentPID = 0;
+  scheduler->currentPPID = 0;
+  scheduler->nextPID = 0;
+  scheduler->processQty = 0;
+  scheduler->foregroundPID = 0;
+}
+
+int getCurrentPID(){
+   return scheduler->currentPID;
+}
+
+int getCurrentPPID(){
+   return scheduler->currentPPID;
+}
+
+int getProcessQty(){
+  return scheduler->processQty;
+}
+
+int blockProcess(Pid pid){
+  processControlBlock * pcb = scheduler->processes[pid];
+  if(pcb->status == BLOCKED || pcb->status == KILLED || pcb->status == NULL){
+    return -1;
+  }
+  pcb->status = BLOCKED;
+  return 1;
+}
+
+int unblockProcess(Pid pid){
+  processControlBlock * pcb = scheduler->processes[pid];
+  if(pcb->status != BLOCKED){
+    return -1;
+  }
+  pcb->status = READY;
+  return 1;
+}
+
+int increaseProcessPriority(Pid pid){
+  processControlBlock * pcb = scheduler->processes[pid];
+  if(pcb->priority == HIGHEST_PRIORITY){
+    return pcb->priority;
+  }
+  pcb->priority++;
+  pcb->quantum += QUANTUM;
+  return pcb->priority;
+}
+
+int decreaseProcessPriority(Pid pid){
+  processControlBlock * pcb = scheduler->processes[pid];
+  if(pcb->priority == LOWEST_PRIORITY){
+    return pcb->priority;
+  }
+  pcb->priority--;
+  pcb->quantum -= QUANTUM;
+  return pcb->priority;
+}
+
+void * switchContext(Pid pid){
+
+}
+
+uint64_t killProcess(Pid pid){
+  processControlBlock * pcb = scheduler->processes[pid];
+  if(pcb == NULL){
+    return -1;
+  }
+  pcb->status = KILLED;
+  freeMemory(pcb);
+  scheduler->processes[pid] = NULL;
+}
+
+void waitChilds(){
+
+}
+
+void printProcesses(){
+
+}

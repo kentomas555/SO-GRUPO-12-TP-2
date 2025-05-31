@@ -62,6 +62,9 @@ uint64_t syscallDispatcher(uint64_t id, ...) {
         case 13:
             handleDateSyscall(args);
             break;
+
+        //Memory
+
         case 14:
             ret = handleAllocMemorySyscall(args);
             break;
@@ -70,6 +73,12 @@ uint64_t syscallDispatcher(uint64_t id, ...) {
             break;
         case 16:
             // TODO: memoryInfo
+            break;
+
+        //Process
+
+        case 17:
+            // TODO:
             break;
     }
 

@@ -11,8 +11,10 @@ typedef struct MemoryManagerCDT {
 	void * freeArray[BLOCK_QTY];
 } MemoryManagerCDT;
 
+static MemoryManagerADT mm;
+
 MemoryManagerADT createMemoryManager(void * startMM) {
-	MemoryManagerCDT * mm = (MemoryManagerCDT *) startMM;
+	mm = (MemoryManagerCDT *) startMM;
 	for (int i = 0; i < BLOCK_QTY; i++){
 		mm->freeArray[i] = (void *) (startMM + BLOCK_SIZE * i); 
 	}
@@ -26,7 +28,7 @@ MemoryManagerADT createMemoryManager(void * startMM) {
 	return mm;
 }
 
-void * allocMemory(MemoryManagerADT mm, size_t memoryToAllocate) {
+void * allocMemory(size_t memoryToAllocate) {
 	if(mm == NULL || memoryToAllocate > BLOCK_SIZE || mm->currentBlock >= BLOCK_QTY) {
 		return NULL;
 	}
@@ -36,7 +38,7 @@ void * allocMemory(MemoryManagerADT mm, size_t memoryToAllocate) {
 	return mm->freeArray[mm->currentBlock++];
 }
 
-void freeMemory(MemoryManagerADT mm, void * freeAddress){
+void freeMemory(void * freeAddress){
 	if(mm == NULL){
 		return;
 	}

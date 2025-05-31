@@ -1,6 +1,8 @@
 {
   "files.associations": {
     "keybord.h": "c",
-    "time.h": "c"
+    "time.h": "c",
+    "scheduler.h": "c",
+    "stdint.h": "c"
   }
 }

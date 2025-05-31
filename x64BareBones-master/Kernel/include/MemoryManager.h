@@ -7,8 +7,8 @@ typedef struct MemoryManagerCDT * MemoryManagerADT;
 
 MemoryManagerADT createMemoryManager(void * startMM);
 
-void * allocMemory(MemoryManagerADT mm, size_t memoryToAllocate);
+void * allocMemory(size_t memoryToAllocate);
 
-void freeMemory(MemoryManagerADT mm, void * freeAddress);
+void freeMemory(void * freeAddress);
 
 #endif

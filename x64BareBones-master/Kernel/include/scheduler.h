@@ -16,9 +16,9 @@ typedef enum {LOWEST_PRIORITY = 1, LOW_PRIORITY, AVERAGE_PRIORITY, HIGH_PRIORITY
 typedef enum {READY = 0, RUNNING, BLOCKED, KILLED} ProcessStatus;
 
 void startScheduler();
-uint64_t createProcess(char * processName); 
 int getCurrentPID();
 int getCurrentPPID();
+int getProcessQty();
 int blockProcess(Pid pid);
 int unblockProcess(Pid pid);
 
