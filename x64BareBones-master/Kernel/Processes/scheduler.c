@@ -1,13 +1,14 @@
 #include "../include/scheduler.h"
 #include "../include/process.h"
 #include "../include/MemoryManager.h"
+#include "../include/LinkedList.h"
 
 typedef struct SchedulerCDT{
   processControlBlock * processes[MAX_PROCESSES];
-  //Linked List de procesos ready
+  LinkedListADT readyList;
   uint16_t currentPID;
   uint16_t currentPPID;
-  uint16_t nextPID;
+  //uint16_t nextPID;
   uint16_t processQty;
   uint16_t foregroundPID;
 } SchedulerCDT;
@@ -21,10 +22,12 @@ void startScheduler() {
   }
   scheduler->currentPID = 0;
   scheduler->currentPPID = 0;
-  scheduler->nextPID = 0;
+  //scheduler->nextPID = 0;
   scheduler->processQty = 0;
   scheduler->foregroundPID = 0;
 }
+
+
 
 int getCurrentPID(){
    return scheduler->currentPID;
