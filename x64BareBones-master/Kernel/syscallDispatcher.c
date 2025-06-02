@@ -34,59 +34,68 @@ uint64_t syscallDispatcher(uint64_t id, ...) {
     uint64_t ret = 0;
 
     switch (id) {
-        case 3:
+        case SYSCALL_READ:
             ret = handleReadSyscall();
             break;
-        case 4:
+        case SYSCALL_WRITE:
             handleWriteSyscall(args);
             break;
-        case 5:
+        case SYSCALL_INIT_DISPLAY:
             handleInitDisplaySyscall(args);
             break;
-        case 6:
+        case SYSCALL_DRAW_RECTANGLE:
             handleDrawRectangleSyscall(args);
             break;
-        case 7:
+        case SYSCALL_DRAW_CIRCLE:
             handleDrawCircleSyscall(args);
             break;
-        case 8:
+        case SYSCALL_SECONDS_ELAPSED:
             ret = seconds_elapsed();
             break;
-        case 9:
+        case SYSCALL_SOUND_ON:
             handleSoundOnSyscall(args);
             break;
-        case 10:
+        case SYSCALL_SOUND_OFF:
             soundOff();
             break;
-        case 11:
+        case SYSCALL_TICKS_ELAPSED:
             ret = ticks_elapsed();
             break;
-        case 12:
+        case SYSCALL_FREE_SPACE:
             // TODO: Free Space
             break;
-        case 13:
+        case SYSCALL_DATE:
             handleDateSyscall(args);
             break;
 
         //Memory
 
-        case 14:
+        case SYSCALL_ALLOC_MEMORY:
             ret = handleAllocMemorySyscall(args);
             break;
-        case 15:
+        case SYSCALL_FREE_MEMORY:
             // TODO: freeMemory
             break;
-        case 16:
+        case SYSCALL_MEMORY_INFO:
             // TODO: memoryInfo
             break;
 
         //Process
-
-        case 17:
+        
+        case SYSCALL_GET_PID:
             ret = handleCreateProcessSyscall(args);
             break;
-        case 18:
+        case SYSCALL_CREATE_PROCESS:
+            ret = handleCreateProcessSyscall(args);
+            break;
+        case SYSCALL_CREATE_DUMMY_PROCESS:
             ret = handleCreateDummyProcessSyscall(args);
+            break;
+        case SYSCALL_EXIT:
+            break;
+        case SYSCALL_BLOCK_PROCESS:
+            break;
+        case SYSCALL_UNBLOCK_PROCESS:
             break;
     }
 

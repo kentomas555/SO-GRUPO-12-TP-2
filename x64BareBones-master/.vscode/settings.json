@@ -3,6 +3,7 @@
     "keybord.h": "c",
     "time.h": "c",
     "scheduler.h": "c",
-    "stdint.h": "c"
+    "stdint.h": "c",
+    "memorymanager.h": "c"
   }
 }

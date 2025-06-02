@@ -16,6 +16,8 @@ typedef struct SchedulerCDT{
 
 SchedulerCDT * scheduler = NULL;
 
+Pid availablePidValue = 0;
+
 void startScheduler() {
   scheduler = allocMemory(sizeof(SchedulerCDT));
   for (int i = 0; i < MAX_PROCESSES; i++){
@@ -30,6 +32,8 @@ void startScheduler() {
 }
 
 void * schedule(void * currentRSP){
+  scheduler->currentPID = 
+  if()
   return;
 }
 
@@ -51,6 +55,13 @@ uint64_t onCreateProcess(char * processName, void * processProgram, char** args,
   if(myNewProcess == NULL){
     return -1;
   }
+  int currentPID = getCurrentPID();
+
+  myNewProcess->parentPID = currentPID;
+
+  myNewProcess->PID = availablePidValue;
+  availablePidValue++;
+
   scheduler->processes[myNewProcess->PID] = myNewProcess;
   scheduler->processQty++;
 
@@ -113,9 +124,10 @@ int decreaseProcessPriority(Pid pid){
 }
 
 void * switchContext(Pid pid){
-
+  return;
 }
 
+//TODO: fix proper free
 uint64_t killProcess(Pid pid){
   PCB * pcb = scheduler->processes[pid];
   if(pcb == NULL){

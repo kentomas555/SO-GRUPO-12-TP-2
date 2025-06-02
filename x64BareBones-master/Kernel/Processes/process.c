@@ -6,35 +6,36 @@
 
 PCB * createProcess(char * processName, void * processProgram, char** args, Priority priority, int16_t fds[]){
   if(getProcessQty() >= MAX_PROCESSES || processName == NULL || processProgram == NULL || priority > HIGHEST_PRIORITY || priority < LOWEST_PRIORITY || fds == NULL){
-    return -1;
+    return NULL;
   }
 
   PCB * newPCB;
 
-  newPCB->rsp = createStack();
+  newPCB->rbp = createStack();
+  if(newPCB->rbp == NULL) {
+    return NULL;
+  }
 
   //Copy name to PCB
   int nameLength = strlen(processName);
   newPCB->processName = allocMemory(nameLength + 1);
   if(newPCB->processName == NULL){
-    return -1;
+    return NULL;
   }
   memcpy(newPCB->processName, processName, nameLength);
   newPCB->processName[nameLength] = '\0';
   
   //TODO: fds
-  for (int i = 0; i < FDS; i++){
-    newPCB->fds[i] = i;
-  }
+  newPCB->fds[0] = 0;
+  newPCB->fds[1] = 1;
 
   //Arg configs
   newPCB->argc = countArguments(args);
   newPCB->argv = args;
-  //TODO: see way to give pid to process
-  
   
   newPCB->status = READY;
   newPCB->priority = DEFAULT_PRIO;
-  newPCB->rsp = createProcessStackframe(newPCB->argc, newPCB->argv, newPCB->rsp, processProgram); //TODO: proper call to createProcessStackFrame
+  newPCB->roundsLeft = 0;
+  newPCB->rsp = createProcessStackframe(newPCB->argc, newPCB->argv, newPCB->rbp, processProgram); //TODO: proper call to createProcessStackFrame
   return newPCB;
 }
