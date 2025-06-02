@@ -1,9 +1,14 @@
+#ifndef LINKEDLIST_H
+#define LINKEDLIST_H
+
 #include <stdint.h>
 
-typedef struct node {
+typedef struct Node {
     void * info;
-    node * next;
-    node * previous;
-} node;
+    Node * next;
+    Node * previous;
+} Node;
 
 typedef struct LinkedListCDT * LinkedListADT;
+
+#endif

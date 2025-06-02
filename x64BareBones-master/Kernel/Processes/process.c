@@ -16,7 +16,7 @@ PCB * createProcess(char * processName, void * processProgram, char** args, Prio
   //Copy name to PCB
   int nameLength = strlen(processName);
   newPCB->processName = allocMemory(nameLength + 1);
-  if(newPBC->processName == NULL){
+  if(newPCB->processName == NULL){
     return -1;
   }
   memcpy(newPCB->processName, processName, nameLength);
@@ -35,6 +35,6 @@ PCB * createProcess(char * processName, void * processProgram, char** args, Prio
   
   newPCB->status = READY;
   newPCB->priority = DEFAULT_PRIO;
-  newPCB->rsp = createProcessStackframe(newPBC->argc, newPCB->argv, newPCB->rsp, processProgram); //TODO: proper call to createProcessStackFrame
+  newPCB->rsp = createProcessStackframe(newPCB->argc, newPCB->argv, newPCB->rsp, processProgram); //TODO: proper call to createProcessStackFrame
   return newPCB;
 }

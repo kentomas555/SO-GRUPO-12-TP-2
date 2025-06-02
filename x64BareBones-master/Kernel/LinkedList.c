@@ -1,10 +1,10 @@
 #include "include/LinkedList.h"
-#incldue "include/MemoryManager.h"
+#include "include/MemoryManager.h"
 
 typedef struct LinkedListCDT {
-    node * current;
-    node * first;
-    node * last;
+    Node * current;
+    Node * first;
+    Node * last;
     int size;
 } LinkedListCDT;
 
@@ -17,7 +17,7 @@ LinkedListADT initializeLinkedList() {
     return list;
 }
 
-void queue(LinkedListADT list, node * node) {
+void queue(LinkedListADT list, Node * node) {
     if(list->size == 0) {
         list->first = node;
         list->last = node;
@@ -33,7 +33,7 @@ void queue(LinkedListADT list, node * node) {
     list->size++;
 }
 
-void push(LinkedListADT list, node * node){
+void push(LinkedListADT list, Node * node){
     if(list->size == 0) {
         list->first = node;
         list->last = node;
@@ -53,7 +53,7 @@ void * dequeue(LinkedListADT list) {
     if(list->size == 0) {
         return NULL;
     }
-    node * nodeToFree = list->first;
+    Node * nodeToFree = list->first;
     void * info = nodeToFree->info;
     list->first = nodeToFree->next;
     if(list->first == NULL) {
@@ -68,7 +68,7 @@ void * dequeue(LinkedListADT list) {
     
 }
 
-void remove(LinkedListADT list, node * node){
+void remove(LinkedListADT list, Node * node){
     if (list == NULL || node == NULL || list->size == 0){
         return;
     }
@@ -115,7 +115,7 @@ int listHasNext(LinkedListADT list){
 
 void * listNext(LinkedListADT list){
     if(list != NULL && listHasNext(list)){
-        node * aux = list->current;
+        Node * aux = list->current;
         list->current = aux->next;
         return aux;
     }

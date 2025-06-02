@@ -1,5 +1,8 @@
+#ifndef PROCESS_H
+#define PROCESS_H
+
 #include "scheduler.h"
-#define FDS 3
+#define FDS 2
 
 typedef struct PCB{
     Pid PID;
@@ -15,3 +18,5 @@ typedef struct PCB{
     int argc;
     char **argv;
 } PCB;
+
+#endif

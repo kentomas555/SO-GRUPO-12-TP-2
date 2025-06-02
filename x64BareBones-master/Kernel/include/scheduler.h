@@ -22,7 +22,7 @@ int getProcessQty();
 int blockProcess(Pid pid);
 int unblockProcess(Pid pid);
 
-void * scheduler(void * currentRSP);
+void * schedule(void * currentRSP);
 
 int increaseProcessPriority(Pid pid);
 int decreaseProcessPriority(Pid pid);
@@ -33,3 +33,5 @@ uint64_t killProcess(Pid pid);
 void waitChilds();
 
 void printProcesses();
+
+#endif

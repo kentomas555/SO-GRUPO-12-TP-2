@@ -3,6 +3,7 @@
 #include "../include/MemoryManager.h"
 #include "../include/LinkedList.h"
 
+
 typedef struct SchedulerCDT{
   PCB * processes[MAX_PROCESSES];
   LinkedListADT readyList;
@@ -13,7 +14,7 @@ typedef struct SchedulerCDT{
   uint16_t foregroundPID;
 } SchedulerCDT;
 
-SchedulerCDT * scheduler;
+SchedulerCDT * scheduler = NULL;
 
 void startScheduler() {
   scheduler = allocMemory(sizeof(SchedulerCDT));
@@ -53,19 +54,19 @@ uint64_t onCreateProcess(char * processName, void * processProgram, char** args,
   scheduler->processes[myNewProcess->PID] = myNewProcess;
   scheduler->processQty++;
 
-  node * Node = allocMemory(sizeof(node));
-  if(Node == NULL){
+  Node * node = allocMemory(sizeof(node));
+  if(node == NULL){
     return -1;
   }
-  Node->info = (void*)myNewProcess;
-  queue(scheduler->readyList, Node);
+  node->info = (void*)myNewProcess;
+  queue(scheduler->readyList, node);
   
   return 0;
 }
 
 void randomFunction(){
     printArray("Random function '_' \n");
-    while (TRUE)
+    while (1)
         ;
 }
 
@@ -99,7 +100,6 @@ int increaseProcessPriority(Pid pid){
     return pcb->priority;
   }
   pcb->priority++;
-  pcb->quantum += QUANTUM;
   return pcb->priority;
 }
 
@@ -109,7 +109,6 @@ int decreaseProcessPriority(Pid pid){
     return pcb->priority;
   }
   pcb->priority--;
-  pcb->quantum -= QUANTUM;
   return pcb->priority;
 }
 
