@@ -48,3 +48,19 @@ void * memcpy(void * destination, const void * source, uint64_t length)
 
 	return destination;
 }
+
+int countArguments(void **argc){
+	int toReturn = 0;
+	while(argc[toReturn] != NULL){
+		toReturn++;
+	}
+	return toReturn;
+}
+
+int strlen(char *arr){
+	int toReturn = 0;
+	while(arr[toReturn] != NULL){
+		toReturn++;
+	}
+	return toReturn;
+}

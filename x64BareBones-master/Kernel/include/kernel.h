@@ -6,6 +6,8 @@
 #include <soundDriver.h>
 #include <clockTime.h>
 #include <MemoryManager.h>
+#include <stack.h>
+#include <scheduler.h>
 
 MemoryManagerADT getKernelMem();
 

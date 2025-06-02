@@ -5,7 +5,7 @@
 
 #define STACK_SIZE 4096
 
-void* stackPtrs[];
+void* stackPtrs[MAX_PROCESSES];
 void* start;
 int current;
 

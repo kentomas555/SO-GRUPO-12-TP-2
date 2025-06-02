@@ -11,6 +11,9 @@
 #include <irqDispatcher.h>
 #include <memoryManager.h>
 #include <kernel.h>
+#include <process.h>
+#include <scheduler.h>
+#include <stack.h>
 
 // ========== PROTOTIPOS DE FUNCIONES ==========
 static uint64_t handleReadSyscall(void);
@@ -21,6 +24,8 @@ static void handleDrawCircleSyscall(va_list args);
 static void handleSoundOnSyscall(va_list args);
 static void handleDateSyscall(va_list args);
 static uint64_t handleAllocMemorySyscall(va_list args);
+static uint64_t handleCreateProcessSyscall(va_list args);
+static uint64_t handleCreateDummyProcessSyscall(va_list args);
 
 // ========== DISPATCHER PRINCIPAL ==========
 uint64_t syscallDispatcher(uint64_t id, ...) {
@@ -78,7 +83,10 @@ uint64_t syscallDispatcher(uint64_t id, ...) {
         //Process
 
         case 17:
-            // TODO:
+            ret = handleCreateProcessSyscall(args);
+            break;
+        case 18:
+            ret = handleCreateDummyProcessSyscall(args);
             break;
     }
 
@@ -150,4 +158,12 @@ static void handleDateSyscall(va_list args) {
 static uint64_t handleAllocMemorySyscall(va_list args) {
     uint32_t size = va_arg(args, uint32_t);
     return (uint64_t) allocMemory(getKernelMem(), size);
+}
+
+static uint64_t handleCreateProcessSyscall(va_list args){
+    return (uint64_t) 
+}
+
+static uint64_t handleCreateDummyProcessSyscall(va_list args){
+    return (uint64_t) 
 }

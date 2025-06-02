@@ -8,4 +8,6 @@ void * memcpy(void * destination, const void * source, uint64_t length);
 
 char *cpuVendor(char *result);
 
+int countArguments(void ** argc);
+int strlen(char *arr);
 #endif

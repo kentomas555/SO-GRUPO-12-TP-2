@@ -7,7 +7,7 @@
 
 #define QUANTUM 5 
 
-#define MAX_PROCESSES 8
+#define MAX_PROCESSES 128
 
 #define DEFAULT_PRIO 3
 
@@ -21,6 +21,8 @@ int getCurrentPPID();
 int getProcessQty();
 int blockProcess(Pid pid);
 int unblockProcess(Pid pid);
+
+void * scheduler(void * currentRSP);
 
 int increaseProcessPriority(Pid pid);
 int decreaseProcessPriority(Pid pid);

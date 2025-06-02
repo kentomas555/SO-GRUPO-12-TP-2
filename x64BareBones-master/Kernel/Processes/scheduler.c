@@ -4,7 +4,7 @@
 #include "../include/LinkedList.h"
 
 typedef struct SchedulerCDT{
-  processControlBlock * processes[MAX_PROCESSES];
+  PCB * processes[MAX_PROCESSES];
   LinkedListADT readyList;
   uint16_t currentPID;
   uint16_t currentPPID;
@@ -25,9 +25,12 @@ void startScheduler() {
   //scheduler->nextPID = 0;
   scheduler->processQty = 0;
   scheduler->foregroundPID = 0;
+  scheduler->readyList = initializeLinkedList();
 }
 
-
+void * schedule(void * currentRSP){
+  return;
+}
 
 int getCurrentPID(){
    return scheduler->currentPID;
@@ -41,8 +44,39 @@ int getProcessQty(){
   return scheduler->processQty;
 }
 
+//SYSCALL para crear proceso
+uint64_t onCreateProcess(char * processName, void * processProgram, char** args, Priority priority, int16_t fds[]){
+  PCB * myNewProcess = createProcess(processName, processProgram, args, priority, fds);
+  if(myNewProcess == NULL){
+    return -1;
+  }
+  scheduler->processes[myNewProcess->PID] = myNewProcess;
+  scheduler->processQty++;
+
+  node * Node = allocMemory(sizeof(node));
+  if(Node == NULL){
+    return -1;
+  }
+  Node->info = (void*)myNewProcess;
+  queue(scheduler->readyList, Node);
+  
+  return 0;
+}
+
+void randomFunction(){
+    printArray("Random function '_' \n");
+    while (TRUE)
+        ;
+}
+
+uint64_t createDummyProcess(){
+    int dummyFD[] = {0, 1};
+    return onCreateProcess("DUMMY Function", (void *)randomFunction, NULL, AVERAGE_PRIORITY, dummyFD);
+}
+
+
 int blockProcess(Pid pid){
-  processControlBlock * pcb = scheduler->processes[pid];
+  PCB * pcb = scheduler->processes[pid];
   if(pcb->status == BLOCKED || pcb->status == KILLED || pcb->status == NULL){
     return -1;
   }
@@ -51,7 +85,7 @@ int blockProcess(Pid pid){
 }
 
 int unblockProcess(Pid pid){
-  processControlBlock * pcb = scheduler->processes[pid];
+  PCB * pcb = scheduler->processes[pid];
   if(pcb->status != BLOCKED){
     return -1;
   }
@@ -60,7 +94,7 @@ int unblockProcess(Pid pid){
 }
 
 int increaseProcessPriority(Pid pid){
-  processControlBlock * pcb = scheduler->processes[pid];
+  PCB * pcb = scheduler->processes[pid];
   if(pcb->priority == HIGHEST_PRIORITY){
     return pcb->priority;
   }
@@ -70,7 +104,7 @@ int increaseProcessPriority(Pid pid){
 }
 
 int decreaseProcessPriority(Pid pid){
-  processControlBlock * pcb = scheduler->processes[pid];
+  PCB * pcb = scheduler->processes[pid];
   if(pcb->priority == LOWEST_PRIORITY){
     return pcb->priority;
   }
@@ -84,7 +118,7 @@ void * switchContext(Pid pid){
 }
 
 uint64_t killProcess(Pid pid){
-  processControlBlock * pcb = scheduler->processes[pid];
+  PCB * pcb = scheduler->processes[pid];
   if(pcb == NULL){
     return -1;
   }
@@ -94,9 +128,9 @@ uint64_t killProcess(Pid pid){
 }
 
 void waitChilds(){
-
+  return;
 }
 
 void printProcesses(){
-
+  return;
 }

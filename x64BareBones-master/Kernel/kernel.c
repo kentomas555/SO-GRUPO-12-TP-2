@@ -52,13 +52,17 @@ int main()
 {	
 
 	setTickFreq(100);
-	load_idt();	
-	sound(800, 10);
+	
+	//sound(800, 10);
 
 	kernelMM = createMemoryManager(heapStartAddress);
+	startStack();
+	startScheduler();
 
 	((EntryPoint)sampleCodeModuleAddress)();
-
+	//create process of smapleCodeModule
+	load_idt();	
+	//Call timer tick
 	while(1);
 	return 0;
 }
