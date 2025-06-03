@@ -32,14 +32,11 @@ void startScheduler() {
 }
 
 void * schedule(void * currentRSP){
-  //retornar siguiente proceso
   
   Node * currentRunning = scheduler->processes[scheduler->currentPID];
   
-  //ceder al siguiente proceso
   if(currentRunning != NULL && ((PCB*)currentRunning->info)->status == RUNNING){
 
-    //uso del priority del proceso
     if(((PCB*)currentRunning->info)->roundsLeft > 0){
       ((PCB*)currentRunning->info)->roundsLeft--;
       return currentRSP; // o currentRSP (ver, deberia ser lo mismo)
@@ -95,10 +92,14 @@ int getProcessQty(){
 
 //SYSCALL para crear proceso
 uint64_t onCreateProcess(char * processName, void * processProgram, char** args, Priority priority, int16_t fds[]){
+
   PCB * myNewProcess = createProcess(processName, processProgram, args, priority, fds);
+
   if(myNewProcess == NULL){
     return -1;
   }
+  
+
   int currentPID = getCurrentPID();
 
   myNewProcess->parentPID = currentPID;

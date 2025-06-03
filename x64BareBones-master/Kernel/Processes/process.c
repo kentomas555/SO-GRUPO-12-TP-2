@@ -5,11 +5,15 @@
 #include "../include/lib.h"
 
 PCB * createProcess(char * processName, void * processProgram, char** args, Priority priority, int16_t fds[]){
+  
   if(getProcessQty() >= MAX_PROCESSES || processName == NULL || processProgram == NULL || priority > HIGHEST_PRIORITY || priority < LOWEST_PRIORITY || fds == NULL){
     return NULL;
   }
 
   PCB * newPCB = allocMemory(sizeof(PCB));
+  if(newPCB == NULL){
+    return NULL;
+  }
 
   newPCB->rbp = createStack();
   if(newPCB->rbp == NULL) {
@@ -22,6 +26,7 @@ PCB * createProcess(char * processName, void * processProgram, char** args, Prio
   if(newPCB->processName == NULL){
     return NULL;
   }
+
   memcpy(newPCB->processName, processName, nameLength);
   newPCB->processName[nameLength] = '\0';
   
@@ -36,6 +41,8 @@ PCB * createProcess(char * processName, void * processProgram, char** args, Prio
   newPCB->status = READY;
   newPCB->priority = priority;
   newPCB->roundsLeft = 0;
+
   newPCB->rsp = createProcessStackframe(newPCB->argc, newPCB->argv, newPCB->rbp, processProgram); //TODO: proper call to createProcessStackFrame
+
   return newPCB;
 }

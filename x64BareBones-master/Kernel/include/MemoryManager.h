@@ -2,10 +2,11 @@
 #define MEMORY_MANAGER_H
 
 #include <stdlib.h>
+#include <stdint.h>
 
 typedef struct MemoryManagerCDT * MemoryManagerADT;
 
-MemoryManagerADT createMemoryManager(void * startMM);
+void createMemoryManager();
 
 void * allocMemory(size_t memoryToAllocate);
 

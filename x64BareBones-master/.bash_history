@@ -406,3 +406,5 @@ cd ..
 make clean
 make all
 exit
+ls
+exit

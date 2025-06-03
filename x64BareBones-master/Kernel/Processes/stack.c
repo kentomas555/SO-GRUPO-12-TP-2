@@ -5,28 +5,29 @@
 
 #define STACK_SIZE 4096
 
-void* stackPtrs[MAX_PROCESSES];
-void* start;
-int current;
+static void* stackPtrs[MAX_PROCESSES];
+static void* start;
+static int current = 0;
 
-void startStack(void* ptr){
+void startStack(void* ptr) {
     start = ptr;
+
+    for (int i = 0; i < MAX_PROCESSES; i++) {
+        stackPtrs[i] = (void*)((uint8_t*)start + STACK_SIZE * (MAX_PROCESSES - i));
+    }
     current = 0;
-    void* aux; 
-    for(int i = 0; i < MAX_PROCESSES; i++){
-        aux = start + STACK_SIZE*(i+1);
-        stackPtrs[i] = aux;
-    }
 }
 
-void* createStack(){
-    if (current < MAX_PROCESSES){
+void* createStack() {
+    if (current < MAX_PROCESSES) {
         return stackPtrs[current++];
-    } else {
-        return NULL;
     }
+    return NULL;
 }
 
-void freeStack(void * ptr){
-    stackPtrs[--current] = ptr;
+void freeStack(void* ptr) {
+    if (current > 0) {
+        current--;
+        stackPtrs[current] = ptr;
+    }
 }

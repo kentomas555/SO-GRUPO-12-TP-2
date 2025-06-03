@@ -301,9 +301,43 @@ void allocMemoryUser(uint32_t size){
     char allocMemoryBuffer[10]; 
     printf("entre a allocMemoryUser");
     NewLine();
+    //
     uint64_t aux = syscall(14, size);
-    itoaBase(aux, allocMemoryBuffer, 10);
+    if(aux){
+        printf("Hay algo");
+        NewLine();
+    }
+    itoaBase(aux, allocMemoryBuffer, 16);
     printf(allocMemoryBuffer);
+    NewLine();
+    //
+    aux = syscall(14, size);
+    if(aux){
+        printf("Hay algo");
+        NewLine();
+    }
+    itoaBase(aux, allocMemoryBuffer, 16);
+    printf(allocMemoryBuffer);
+    NewLine();
+    //
+    aux = syscall(14, size);
+    if(aux){
+        printf("Hay algo");
+        NewLine();
+    }
+    itoaBase(aux, allocMemoryBuffer, 16);
+    printf(allocMemoryBuffer);
+    NewLine();
+    //
+    aux = syscall(14, size);
+    if(aux){
+        printf("Hay algo");
+        NewLine();
+    }
+    itoaBase(aux, allocMemoryBuffer, 16);
+    printf(allocMemoryBuffer);
+    NewLine();
+    //
     printf("entre a allocMemoryUser");
     NewLine();
 }
@@ -346,6 +380,10 @@ int increasePriority(Pid pid){
 
 int decreasePriority(Pid pid){
     return syscall(27, pid);
+}
+
+void hlt(){
+    syscall(29);
 }
 
 //EXCEPTION TRIGGERS:

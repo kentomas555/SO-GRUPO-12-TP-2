@@ -2,6 +2,7 @@
 #define GLOBAL_LIB_H
 
 #include <stdint.h>
+#include <stddef.h>
 
 typedef struct
 {
@@ -57,6 +58,7 @@ int unblockProcess(Pid pid);
 int getPriority(Pid pid);
 int increasePriority(Pid pid);
 int decreasePriority(Pid pid);
+void hlt();
 
 //EXCEPTION TRIGGERS:
 void zeroDivisionTrigger();

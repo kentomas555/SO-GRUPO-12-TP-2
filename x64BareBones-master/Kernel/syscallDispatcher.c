@@ -119,6 +119,9 @@ uint64_t syscallDispatcher(uint64_t id, ...) {
         case SYSCALL_DECREASE_PRIORITY:
             ret = handleDecreasePrioritySyscall(args);
             break;
+        case SYSCALL_HLT:
+            _hlt();
+            break;
     }
 
     va_end(args);

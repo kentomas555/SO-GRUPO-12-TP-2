@@ -30,5 +30,5 @@
 #define SYSCALL_INCREASE_PRIORITY 26
 #define SYSCALL_DECREASE_PRIORITY 27
 #define SYSCALL_WAIT_PID 28
-
+#define SYSCALL_HLT 29
 uint64_t syscallDispatcher(uint64_t id, ...);

@@ -5,6 +5,7 @@
     "scheduler.h": "c",
     "stdint.h": "c",
     "memorymanager.h": "c",
-    "process.h": "c"
+    "process.h": "c",
+    "stddef.h": "c"
   }
 }
