@@ -15,6 +15,24 @@
 #include <scheduler.h>
 #include <stack.h>
 
+static uint64_t handleReadSyscall(void);
+static void handleWriteSyscall(va_list args);
+static void handleInitDisplaySyscall(va_list args);
+static void handleDrawRectangleSyscall(va_list args);
+static void handleDrawCircleSyscall(va_list args);
+static void handleSoundOnSyscall(va_list args);
+static void handleDateSyscall(va_list args);
+static uint64_t handleAllocMemorySyscall(va_list args);
+static uint64_t handleGetPidSyscall(void);
+static uint64_t handleCreateProcessSyscall(va_list args);
+static uint64_t handleCreateDummyProcessSyscall(void);
+static uint64_t handleBlockProcessSyscall(va_list args);
+static uint64_t handleUnblockProcessSyscall(va_list args);
+static uint64_t handleKillProcessSyscall(va_list args);
+static uint64_t handleGetPrioritySyscall(va_list args);
+static uint64_t handleIncreasePrioritySyscall(va_list args); 
+static uint64_t handleDecreasePrioritySyscall(va_list args);
+
 // ========== DISPATCHER PRINCIPAL ==========
 uint64_t syscallDispatcher(uint64_t id, ...) {
     va_list args;

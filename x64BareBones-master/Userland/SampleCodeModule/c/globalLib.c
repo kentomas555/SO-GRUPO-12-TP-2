@@ -298,9 +298,12 @@ void wait(int ticks){
 //void * allocMemory(MemoryManagerADT mm, size_t memoryToAllocate) 
 
 void allocMemoryUser(uint32_t size){
+    char allocMemoryBuffer[10]; 
     printf("entre a allocMemoryUser");
     NewLine();
-    printf(syscall(14, size));
+    uint64_t aux = syscall(14, size);
+    itoaBase(aux, allocMemoryBuffer, 10);
+    printf(allocMemoryBuffer);
     printf("entre a allocMemoryUser");
     NewLine();
 }

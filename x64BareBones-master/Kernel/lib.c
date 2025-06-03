@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stddef.h>
 
 void * memset(void * destination, int32_t c, uint64_t length)
 {
@@ -59,7 +60,7 @@ int countArguments(void **argc){
 
 int strlen(char *arr){
 	int toReturn = 0;
-	while(arr[toReturn] != NULL){
+	while(arr[toReturn] != 0){
 		toReturn++;
 	}
 	return toReturn;

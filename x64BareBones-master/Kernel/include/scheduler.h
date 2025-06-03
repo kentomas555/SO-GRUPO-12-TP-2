@@ -1,7 +1,6 @@
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
-#include <stdio.h>
 #include <stdint.h>
 
 
@@ -16,6 +15,9 @@ typedef enum {LOWEST_PRIORITY = 0, LOW_PRIORITY, AVERAGE_PRIORITY, HIGH_PRIORITY
 typedef enum {READY = 0, RUNNING, BLOCKED, KILLED} ProcessStatus;
 
 void startScheduler();
+uint64_t onCreateProcess(char * processName, void * processProgram, char** args, Priority priority, int16_t fds[]);
+uint64_t createDummyProcess();
+int getProcessPriority(Pid pid);
 int getCurrentPID();
 int getCurrentPPID();
 int getProcessQty();

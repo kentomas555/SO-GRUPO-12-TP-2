@@ -9,7 +9,7 @@ PCB * createProcess(char * processName, void * processProgram, char** args, Prio
     return NULL;
   }
 
-  PCB * newPCB;
+  PCB * newPCB = allocMemory(sizeof(PCB));
 
   newPCB->rbp = createStack();
   if(newPCB->rbp == NULL) {
@@ -30,7 +30,7 @@ PCB * createProcess(char * processName, void * processProgram, char** args, Prio
   newPCB->fds[1] = 1;
 
   //Arg configs
-  newPCB->argc = countArguments(args);
+  newPCB->argc = countArguments((void **)args);
   newPCB->argv = args;
   
   newPCB->status = READY;

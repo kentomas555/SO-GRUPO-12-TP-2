@@ -25,7 +25,7 @@ EXTERN syscallDispatcher
 EXTERN getStackBase
 EXTERN saveRegs
 
-EXTERN scheduler
+EXTERN schedule
 
 SECTION .text
 

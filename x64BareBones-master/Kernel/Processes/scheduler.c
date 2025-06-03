@@ -47,7 +47,7 @@ void * schedule(void * currentRSP){
 
     if(scheduler->currentPID != IDLE_PID){
       ((PCB*)currentRunning->info)->rsp = currentRSP;
-      remove(scheduler->readyList, currentRunning); //dequeue(readyList);
+      removeFromQueue(scheduler->readyList, currentRunning); //dequeue(readyList);
       queue(scheduler->readyList, currentRunning);
     }
     
@@ -74,7 +74,7 @@ void * switchContext(Pid pid){
   // }
   Node * processAux = scheduler->processes[pid];
   PCB * nextPCB = (PCB *)processAux->info;
-  nextPCB->roundsLeft = (int *)nextPCB->priority;
+  nextPCB->roundsLeft = (int)nextPCB->priority;
   nextPCB->status = RUNNING;
   scheduler->currentPID = pid;
   scheduler->currentPPID = nextPCB->parentPID;
@@ -123,20 +123,19 @@ uint64_t onCreateProcess(char * processName, void * processProgram, char** args,
 }
 
 void randomFunction(){
-    printArray("Random function '_' \n");
     while (1)
         ;
 }
 
 uint64_t createDummyProcess(){
     int dummyFD[] = {0, 1};
-    return onCreateProcess("DUMMY Function", (void *)randomFunction, NULL, AVERAGE_PRIORITY, dummyFD);
+    return onCreateProcess("DUMMY Function", (void *)randomFunction, NULL, AVERAGE_PRIORITY, (int16_t *)dummyFD);
 }
 
 
 int blockProcess(Pid pid){
-  PCB * pcb = scheduler->processes[pid];
-  if(pcb->status == BLOCKED || pcb->status == KILLED || pcb->status == NULL){
+  PCB * pcb = scheduler->processes[pid]->info;
+  if(pcb->status == BLOCKED || pcb->status == KILLED || pcb == NULL){
     return -1;
   }
   pcb->status = BLOCKED;
@@ -144,7 +143,7 @@ int blockProcess(Pid pid){
 }
 
 int unblockProcess(Pid pid){
-  PCB * pcb = scheduler->processes[pid];
+  PCB * pcb = scheduler->processes[pid]->info;
   if(pcb->status != BLOCKED){
     return -1;
   }
@@ -153,12 +152,12 @@ int unblockProcess(Pid pid){
 }
 
 int getProcessPriority(Pid pid){
-  PCB * pcb = scheduler->processes[pid];
+  PCB * pcb = scheduler->processes[pid]->info;
   return pcb->priority;
 }
 
 int increaseProcessPriority(Pid pid){
-  PCB * pcb = scheduler->processes[pid];
+  PCB * pcb = scheduler->processes[pid]->info;
   if(pcb->priority == HIGHEST_PRIORITY){
     return pcb->priority;
   }
@@ -167,7 +166,7 @@ int increaseProcessPriority(Pid pid){
 }
 
 int decreaseProcessPriority(Pid pid){
-  PCB * pcb = scheduler->processes[pid];
+  PCB * pcb = scheduler->processes[pid]->info;
   if(pcb->priority == LOWEST_PRIORITY){
     return pcb->priority;
   }
@@ -177,13 +176,14 @@ int decreaseProcessPriority(Pid pid){
 
 //TODO: fix proper free
 uint64_t killProcess(Pid pid){
-  PCB * pcb = scheduler->processes[pid];
+  PCB * pcb = scheduler->processes[pid]->info;
   if(pcb == NULL || pid == 0 || pid == 1){
     return -1;
   }
   pcb->status = KILLED;
   freeMemory(pcb);
   scheduler->processes[pid] = NULL;
+  return 0;
 }
 
 void waitChilds(){

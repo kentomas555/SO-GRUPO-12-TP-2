@@ -67,7 +67,7 @@ void * dequeue(LinkedListADT list) { // ver
     return info;
 }
 
-void remove(LinkedListADT list, Node * node){
+void removeFromQueue(LinkedListADT list, Node * node){
     if (list == NULL || node == NULL || list->size == 0){
         return;
     }

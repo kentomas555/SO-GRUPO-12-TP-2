@@ -4,6 +4,7 @@
     "time.h": "c",
     "scheduler.h": "c",
     "stdint.h": "c",
-    "memorymanager.h": "c"
+    "memorymanager.h": "c",
+    "process.h": "c"
   }
 }
