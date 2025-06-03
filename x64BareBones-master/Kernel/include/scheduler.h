@@ -12,7 +12,7 @@
 #define DEFAULT_PRIO 3
 
 typedef int Pid;
-typedef enum {LOWEST_PRIORITY = 1, LOW_PRIORITY, AVERAGE_PRIORITY, HIGH_PRIORITY, HIGHEST_PRIORITY} Priority;
+typedef enum {LOWEST_PRIORITY = 0, LOW_PRIORITY, AVERAGE_PRIORITY, HIGH_PRIORITY, HIGHEST_PRIORITY} Priority;
 typedef enum {READY = 0, RUNNING, BLOCKED, KILLED} ProcessStatus;
 
 void startScheduler();
@@ -23,6 +23,8 @@ int blockProcess(Pid pid);
 int unblockProcess(Pid pid);
 
 void * schedule(void * currentRSP);
+Pid getNextProcess();
+void * switchContext(Pid pid);
 
 int increaseProcessPriority(Pid pid);
 int decreaseProcessPriority(Pid pid);

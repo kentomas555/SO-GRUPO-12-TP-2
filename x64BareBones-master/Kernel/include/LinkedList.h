@@ -2,6 +2,7 @@
 #define LINKEDLIST_H
 
 #include <stdint.h>
+#include "process.h"
 
 typedef struct Node {
     void * info;
@@ -18,6 +19,7 @@ int isEmpty(LinkedListADT list);
 int listLength(LinkedListADT list);
 int listHasNext(LinkedListADT list);
 void * listNext(LinkedListADT list);
+void listIterator(LinkedListADT list);
 
 typedef struct LinkedListCDT * LinkedListADT;
 

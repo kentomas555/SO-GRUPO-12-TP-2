@@ -49,7 +49,7 @@ void push(LinkedListADT list, Node * node){
     list->size++;    
 }
 
-void * dequeue(LinkedListADT list) {
+void * dequeue(LinkedListADT list) { // ver 
     if(list->size == 0) {
         return NULL;
     }
@@ -57,7 +57,7 @@ void * dequeue(LinkedListADT list) {
     void * info = nodeToFree->info;
     list->first = nodeToFree->next;
     if(list->first == NULL) {
-        list->last == NULL;
+        list->last = NULL;
     }
     else {
         list->first->previous = NULL;
@@ -65,7 +65,6 @@ void * dequeue(LinkedListADT list) {
     list->size--;
     freeMemory(nodeToFree);
     return info;
-    
 }
 
 void remove(LinkedListADT list, Node * node){
@@ -120,6 +119,13 @@ void * listNext(LinkedListADT list){
         return aux;
     }
     return NULL;
+}
+
+void listIterator(LinkedListADT list){
+    if(list == NULL){
+        return;
+    }
+    list->current = list->first;
 }
 
 //TO-DO freeList(LinkedListADT list)

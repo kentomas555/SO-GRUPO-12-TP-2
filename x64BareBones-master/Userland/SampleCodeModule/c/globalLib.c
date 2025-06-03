@@ -309,6 +309,42 @@ void freeMemoryUser(){
     syscall(15);
 }
 
+Pid getpid(){
+    return syscall(17);
+}
+
+int createNewProcess(char * processName, void * processProgram, char** args, Priority priority, int16_t fds[]){
+    return syscall(18, processName,  processProgram, args, priority, fds);
+}
+
+int createDummyProcess(){
+    return syscall(19);
+}
+
+int blockProcess(Pid pid){
+    return syscall(21, pid);
+}
+
+int unblockProcess(Pid pid){
+    return syscall(22, pid);
+}
+
+int killProcess(Pid pid){
+    return syscall(23, pid);
+}
+
+int getPriority(Pid pid){
+    return syscall(25, pid);
+}
+
+int increasePriority(Pid pid){
+    return syscall(26, pid);
+}
+
+int decreasePriority(Pid pid){
+    return syscall(27, pid);
+}
+
 //EXCEPTION TRIGGERS:
 
 void zeroDivisionTrigger(){

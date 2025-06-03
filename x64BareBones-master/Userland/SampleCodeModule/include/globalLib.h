@@ -13,6 +13,10 @@ typedef struct
     uint8_t year;
 }date;
 
+typedef int Pid;
+
+typedef enum {LOWEST_PRIORITY = 0, LOW_PRIORITY, AVERAGE_PRIORITY, HIGH_PRIORITY, HIGHEST_PRIORITY} Priority;
+
 
 void moveCurrentX(int newX);
 void moveCurrentY(int newY);
@@ -45,6 +49,14 @@ void wait(int ticks);
 
 //TP2-SO//
 void allocMemoryUser(uint32_t size);
+int getpid();
+int createNewProcess(char * processName, void * processProgram, char** args, Priority priority, int16_t fds[]);
+int createDummyProcess();
+int blockProcess(Pid pid);
+int unblockProcess(Pid pid);
+int getPriority(Pid pid);
+int increasePriority(Pid pid);
+int decreasePriority(Pid pid);
 
 //EXCEPTION TRIGGERS:
 void zeroDivisionTrigger();

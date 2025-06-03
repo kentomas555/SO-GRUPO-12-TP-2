@@ -35,6 +35,8 @@ static void help(){
     NewLine();
     printf("TESTALLOC - Test para alocar memoria con MM");
     NewLine();
+    printf("GETPID - Imprime el PID del proceso corriendo");
+    NewLine();
     NewLine();
     printf("Para ver el valor de los registros, presione TAB");
     NewLine();
@@ -95,6 +97,10 @@ static void bufferInterpreter(){
         invalidOpcodeTrigger();
     } else if (strCompare(shellBuffer, "TESTALLOC")){
         allocMemoryUser(10);
+    } else if (strCompare(shellBuffer, "GETPID")){
+        ;
+    }else if (strCompare(shellBuffer, "CREATEDUMMY")){
+        ;
     } else {
         printf("Comando no reconocido. Use HELP para mas informacion");
         NewLine();

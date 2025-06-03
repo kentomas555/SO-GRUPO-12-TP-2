@@ -3,6 +3,7 @@
 
 #include "scheduler.h"
 #define FDS 2
+#define IDLE_PID 0
 
 typedef struct PCB{
     Pid PID;

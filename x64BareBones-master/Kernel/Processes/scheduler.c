@@ -5,7 +5,7 @@
 
 
 typedef struct SchedulerCDT{
-  PCB * processes[MAX_PROCESSES];
+  Node * processes[MAX_PROCESSES];
   LinkedListADT readyList;
   uint16_t currentPID;
   uint16_t currentPPID;
@@ -16,7 +16,7 @@ typedef struct SchedulerCDT{
 
 SchedulerCDT * scheduler = NULL;
 
-Pid availablePidValue = 0;
+Pid availablePidValue = IDLE_PID;
 
 void startScheduler() {
   scheduler = allocMemory(sizeof(SchedulerCDT));
@@ -32,9 +32,53 @@ void startScheduler() {
 }
 
 void * schedule(void * currentRSP){
-  scheduler->currentPID = 
-  if()
-  return;
+  //retornar siguiente proceso
+  
+  Node * currentRunning = scheduler->processes[scheduler->currentPID];
+  
+  //ceder al siguiente proceso
+  if(currentRunning != NULL && ((PCB*)currentRunning->info)->status == RUNNING){
+
+    //uso del priority del proceso
+    if(((PCB*)currentRunning->info)->roundsLeft > 0){
+      ((PCB*)currentRunning->info)->roundsLeft--;
+      return currentRSP; // o currentRSP (ver, deberia ser lo mismo)
+    }
+
+    if(scheduler->currentPID != IDLE_PID){
+      ((PCB*)currentRunning->info)->rsp = currentRSP;
+      remove(scheduler->readyList, currentRunning); //dequeue(readyList);
+      queue(scheduler->readyList, currentRunning);
+    }
+    
+    ((PCB*)currentRunning->info)->status = READY;
+  }
+
+  Pid nextProcessPID = getNextProcess();
+    
+  return switchContext(nextProcessPID);
+}
+
+Pid getNextProcess(){
+  listIterator(scheduler->readyList);
+  Node * auxNode = (Node*) listNext(scheduler->readyList);
+  if(auxNode == NULL){
+    return IDLE_PID;
+  }
+  return ((PCB*)auxNode->info)->PID;
+}
+
+void * switchContext(Pid pid){
+  // if(pid == IDLE_PID){ // ver caso especial idle
+
+  // }
+  Node * processAux = scheduler->processes[pid];
+  PCB * nextPCB = (PCB *)processAux->info;
+  nextPCB->roundsLeft = (int *)nextPCB->priority;
+  nextPCB->status = RUNNING;
+  scheduler->currentPID = pid;
+  scheduler->currentPPID = nextPCB->parentPID;
+  return nextPCB->rsp;
 }
 
 int getCurrentPID(){
@@ -62,15 +106,18 @@ uint64_t onCreateProcess(char * processName, void * processProgram, char** args,
   myNewProcess->PID = availablePidValue;
   availablePidValue++;
 
-  scheduler->processes[myNewProcess->PID] = myNewProcess;
-  scheduler->processQty++;
-
-  Node * node = allocMemory(sizeof(node));
+  Node * node = allocMemory(sizeof(Node));
   if(node == NULL){
     return -1;
   }
   node->info = (void*)myNewProcess;
-  queue(scheduler->readyList, node);
+
+  scheduler->processes[myNewProcess->PID] = node;
+  scheduler->processQty++;
+
+  if(myNewProcess->PID != IDLE_PID){
+    queue(scheduler->readyList, node);
+  }  
   
   return 0;
 }
@@ -105,6 +152,11 @@ int unblockProcess(Pid pid){
   return 1;
 }
 
+int getProcessPriority(Pid pid){
+  PCB * pcb = scheduler->processes[pid];
+  return pcb->priority;
+}
+
 int increaseProcessPriority(Pid pid){
   PCB * pcb = scheduler->processes[pid];
   if(pcb->priority == HIGHEST_PRIORITY){
@@ -123,14 +175,10 @@ int decreaseProcessPriority(Pid pid){
   return pcb->priority;
 }
 
-void * switchContext(Pid pid){
-  return;
-}
-
 //TODO: fix proper free
 uint64_t killProcess(Pid pid){
   PCB * pcb = scheduler->processes[pid];
-  if(pcb == NULL){
+  if(pcb == NULL || pid == 0 || pid == 1){
     return -1;
   }
   pcb->status = KILLED;

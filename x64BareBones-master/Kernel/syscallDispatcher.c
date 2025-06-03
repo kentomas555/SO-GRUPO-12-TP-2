@@ -15,18 +15,6 @@
 #include <scheduler.h>
 #include <stack.h>
 
-// ========== PROTOTIPOS DE FUNCIONES ==========
-static uint64_t handleReadSyscall(void);
-static void handleWriteSyscall(va_list args);
-static void handleInitDisplaySyscall(va_list args);
-static void handleDrawRectangleSyscall(va_list args);
-static void handleDrawCircleSyscall(va_list args);
-static void handleSoundOnSyscall(va_list args);
-static void handleDateSyscall(va_list args);
-static uint64_t handleAllocMemorySyscall(va_list args);
-static uint64_t handleCreateProcessSyscall(va_list args);
-static uint64_t handleCreateDummyProcessSyscall(va_list args);
-
 // ========== DISPATCHER PRINCIPAL ==========
 uint64_t syscallDispatcher(uint64_t id, ...) {
     va_list args;
@@ -83,19 +71,35 @@ uint64_t syscallDispatcher(uint64_t id, ...) {
         //Process
         
         case SYSCALL_GET_PID:
-            ret = handleCreateProcessSyscall(args);
+            ret = handleGetPidSyscall();
             break;
         case SYSCALL_CREATE_PROCESS:
             ret = handleCreateProcessSyscall(args);
             break;
         case SYSCALL_CREATE_DUMMY_PROCESS:
-            ret = handleCreateDummyProcessSyscall(args);
+            ret = handleCreateDummyProcessSyscall();
             break;
         case SYSCALL_EXIT:
             break;
         case SYSCALL_BLOCK_PROCESS:
+            ret = handleBlockProcessSyscall(args);
             break;
         case SYSCALL_UNBLOCK_PROCESS:
+            ret = handleUnblockProcessSyscall(args);
+            break;
+        case SYSCALL_KILL_PROCESS:
+            ret = handleKillProcessSyscall(args);
+            break;
+        case SYSCALL_LIST_PROCESSES:
+            break;
+        case SYSCALL_GET_PRIORITY:
+            ret = handleGetPrioritySyscall(args);
+            break;
+        case SYSCALL_INCREASE_PRIORITY:
+            ret = handleIncreasePrioritySyscall(args); 
+            break;
+        case SYSCALL_DECREASE_PRIORITY:
+            ret = handleDecreasePrioritySyscall(args);
             break;
     }
 
@@ -166,13 +170,52 @@ static void handleDateSyscall(va_list args) {
 
 static uint64_t handleAllocMemorySyscall(va_list args) {
     uint32_t size = va_arg(args, uint32_t);
-    return (uint64_t) allocMemory(getKernelMem(), size);
+    return (uint64_t) allocMemory(size);
+}
+
+static uint64_t handleGetPidSyscall(void){
+    return (uint64_t)getCurrentPID();
 }
 
 static uint64_t handleCreateProcessSyscall(va_list args){
-    return (uint64_t) 
+    char* processName = va_arg(args, char*);
+    void* processProgram = va_arg(args, void*);
+    char** ProcessArgs = va_arg(args, char**);
+    Priority priority = va_arg(args, Priority);
+    int16_t* fds = va_arg(args, int16_t*);
+    return (uint64_t) onCreateProcess( processName, processProgram, ProcessArgs, priority, fds);
 }
 
-static uint64_t handleCreateDummyProcessSyscall(va_list args){
-    return (uint64_t) 
+static uint64_t handleCreateDummyProcessSyscall(void){
+    return (uint64_t) createDummyProcess();
+}
+
+static uint64_t handleBlockProcessSyscall(va_list args){
+    Pid pid = va_arg(args,Pid);
+    return (uint64_t) blockProcess(pid);
+}
+
+static uint64_t handleUnblockProcessSyscall(va_list args){
+    Pid pid = va_arg(args,Pid);
+    return (uint64_t) unblockProcess(pid);
+}
+
+static uint64_t handleKillProcessSyscall(va_list args){
+    Pid pid = va_arg(args,Pid);
+    return (uint64_t) killProcess(pid);
+}
+
+static uint64_t handleGetPrioritySyscall(va_list args){
+    Pid pid = va_arg(args,Pid);
+    return (uint64_t) getProcessPriority(pid);
+}
+
+static uint64_t handleIncreasePrioritySyscall(va_list args){
+    Pid pid = va_arg(args,Pid);
+    return (uint64_t) increaseProcessPriority(pid);
+}
+
+static uint64_t handleDecreasePrioritySyscall(va_list args){
+    Pid pid = va_arg(args,Pid);
+    return (uint64_t) decreaseProcessPriority(pid);
 }

@@ -25,7 +25,7 @@ PCB * createProcess(char * processName, void * processProgram, char** args, Prio
   memcpy(newPCB->processName, processName, nameLength);
   newPCB->processName[nameLength] = '\0';
   
-  //TODO: fds
+  //TODO: fds VER PARA SEMAPHORES
   newPCB->fds[0] = 0;
   newPCB->fds[1] = 1;
 
@@ -34,7 +34,7 @@ PCB * createProcess(char * processName, void * processProgram, char** args, Prio
   newPCB->argv = args;
   
   newPCB->status = READY;
-  newPCB->priority = DEFAULT_PRIO;
+  newPCB->priority = priority;
   newPCB->roundsLeft = 0;
   newPCB->rsp = createProcessStackframe(newPCB->argc, newPCB->argv, newPCB->rbp, processProgram); //TODO: proper call to createProcessStackFrame
   return newPCB;
