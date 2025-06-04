@@ -2,6 +2,7 @@
 #include "../include/process.h"
 #include "../include/MemoryManager.h"
 #include "../include/LinkedList.h"
+#include "../include/kernel.h"
 
 
 typedef struct SchedulerCDT{
@@ -16,8 +17,18 @@ typedef struct SchedulerCDT{
 
 SchedulerCDT * scheduler = NULL;
 
-Pid availablePidValue = IDLE_PID;
+static int firstScheduleCall = 1;
 
+static Pid availablePidValue = IDLE_PID;
+
+
+static void idleKernel(){
+    while(1){
+		_hlt();
+    }
+}
+
+//void startScheduler(PCB * shell, PCB * idle)
 void startScheduler() {
   scheduler = allocMemory(sizeof(SchedulerCDT));
   for (int i = 0; i < MAX_PROCESSES; i++){
@@ -29,12 +40,22 @@ void startScheduler() {
   scheduler->processQty = 0;
   scheduler->foregroundPID = 0;
   scheduler->readyList = initializeLinkedList();
+
+  int16_t fds[2] = {0,1};
+	char * args[] = {NULL};
+  onCreateProcess("idle", (mainFunc)idleKernel, args, LOWEST_PRIORITY, fds);
 }
 
 void * schedule(void * currentRSP){
+
+  if(firstScheduleCall){
+    firstScheduleCall = 0;
+    Node * firstProcess = scheduler->processes[IDLE_PID]->info;
+    return ((PCB*)firstProcess->info)->rsp;
+  }
   
   Node * currentRunning = scheduler->processes[scheduler->currentPID];
-  
+ 
   if(currentRunning != NULL && ((PCB*)currentRunning->info)->status == RUNNING){
 
     if(((PCB*)currentRunning->info)->roundsLeft > 0){
@@ -91,15 +112,14 @@ int getProcessQty(){
 }
 
 //SYSCALL para crear proceso
-uint64_t onCreateProcess(char * processName, void * processProgram, char** args, Priority priority, int16_t fds[]){
-
+//void * processProgram
+uint64_t onCreateProcess(char * processName, mainFunc processProgram, char** args, Priority priority, int16_t fds[]){
   PCB * myNewProcess = createProcess(processName, processProgram, args, priority, fds);
 
   if(myNewProcess == NULL){
     return -1;
   }
   
-
   int currentPID = getCurrentPID();
 
   myNewProcess->parentPID = currentPID;
@@ -116,10 +136,12 @@ uint64_t onCreateProcess(char * processName, void * processProgram, char** args,
   scheduler->processes[myNewProcess->PID] = node;
   scheduler->processQty++;
 
-  if(myNewProcess->PID != IDLE_PID){
-    queue(scheduler->readyList, node);
-  }  
-  
+  // if(myNewProcess->PID != IDLE_PID){
+  //   queue(scheduler->readyList, node);
+  // }  
+
+  queue(scheduler->readyList, node);
+
   return 0;
 }
 

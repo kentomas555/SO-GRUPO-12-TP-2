@@ -1,38 +1,42 @@
 GLOBAL createProcessStackframe
 
 start:
-    call rcx
+    call rcx        ; Llama al "main" del programa del proceso
     mov rax, 0x42
-    int 80h
+    int 80h         ; Simula syscall exit(0)
 
 createProcessStackframe:
     push rbp
     mov rbp, rsp
-    
-    mov rsp, rdx    ;rdx = CurrentStack
-    push 0x0
-    push rdx        ;push RSP = CurrentStack
-    push 0x202
-    push 0x8
-    push start   
-    
-    push 0x10           ; R15
-    push 0x0F           ; R14
-    push 0x0E           ; R13
-    push 0x0D           ; R12
-    push 0x0C           ; R11
-    push 0x0B           ; R10
-    push 0x0A           ; R9
-    push 0x09           ; R8
-    push rsi            ; RSI = argv
-    push rdi            ; RDI = argc
-    push rdx            ; RDX = stack
-    push rcx            ; RCX = program
-    push 0x02           ; RBX
-    push 0x01           ; RAX  
 
-    mov rax, rsp
+    mov rsp, rdx    ; rdx = stack top del nuevo proceso
+
+    ; Simula interrupción (en orden: SS, RSP, RFLAGS, CS, RIP)
+    push 0x0        ; SS
+    push rdx        ; RSP
+    push 0x202      ; RFLAGS (interrupt enable)
+    push 0x8        ; CS (user code segment)
+    push start      ; RIP (entry point del proceso)
+
+    ; Simula pushState (DEBE respetar el mismo orden que la macro pushState)
+    push 0x01       ; RAX
+    push 0x02       ; RBX
+    push rcx        ; RCX (dirección del main del programa)
+    push rdx        ; RDX (stack del proceso, opcional)
+    push 0x00       ; RBP
+    push rdi        ; RDI (argc)
+    push rsi        ; RSI (argv)
+    push 0x09       ; R8
+    push 0x0A       ; R9
+    push 0x0B       ; R10
+    push 0x0C       ; R11
+    push 0x0D       ; R12
+    push 0x0E       ; R13
+    push 0x0F       ; R14
+    push 0x10       ; R15
+
+    mov rax, rsp    ; rax = nuevo stack pointer (RSP) para el PCB
 
     mov rsp, rbp
     pop rbp
-    ret 
+    ret

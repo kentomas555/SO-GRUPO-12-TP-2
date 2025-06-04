@@ -11,4 +11,6 @@
 
 MemoryManagerADT getKernelMem();
 
+extern void _hlt();
+
 //MemoryManagerADT createMemoryManager(void * heapStartAddress);

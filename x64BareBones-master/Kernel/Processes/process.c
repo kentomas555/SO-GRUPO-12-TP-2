@@ -4,7 +4,9 @@
 #include "../include/stack.h"
 #include "../include/lib.h"
 
-PCB * createProcess(char * processName, void * processProgram, char** args, Priority priority, int16_t fds[]){
+//void * processProgram
+
+PCB * createProcess(char * processName, mainFunc processProgram, char** args, Priority priority, int16_t fds[]){
   
   if(getProcessQty() >= MAX_PROCESSES || processName == NULL || processProgram == NULL || priority > HIGHEST_PRIORITY || priority < LOWEST_PRIORITY || fds == NULL){
     return NULL;

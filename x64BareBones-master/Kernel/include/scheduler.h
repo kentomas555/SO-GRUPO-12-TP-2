@@ -10,12 +10,17 @@
 
 #define DEFAULT_PRIO 3
 
+#define SHELL_PID 1
+#define IDLE_PID 0
+
+typedef int (*mainFunc)(int argc, char **args);
+
 typedef int Pid;
 typedef enum {LOWEST_PRIORITY = 0, LOW_PRIORITY, AVERAGE_PRIORITY, HIGH_PRIORITY, HIGHEST_PRIORITY} Priority;
 typedef enum {READY = 0, RUNNING, BLOCKED, KILLED} ProcessStatus;
 
 void startScheduler();
-uint64_t onCreateProcess(char * processName, void * processProgram, char** args, Priority priority, int16_t fds[]);
+uint64_t onCreateProcess(char * processName, mainFunc processProgram, char** args, Priority priority, int16_t fds[]); //void * processProgram
 uint64_t createDummyProcess();
 int getProcessPriority(Pid pid);
 int getCurrentPID();
@@ -37,5 +42,8 @@ uint64_t killProcess(Pid pid);
 void waitChilds();
 
 void printProcesses();
+
+extern void _cli(void);
+extern void _sti(void);
 
 #endif

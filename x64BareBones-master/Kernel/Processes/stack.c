@@ -13,7 +13,7 @@ void startStack(void* ptr) {
     start = ptr;
 
     for (int i = 0; i < MAX_PROCESSES; i++) {
-        stackPtrs[i] = (void*)((uint8_t*)start + STACK_SIZE * (MAX_PROCESSES - i));
+        stackPtrs[i] = (void*)((uint8_t*)start + STACK_SIZE * i); //(MAX_PROCESSES - i)
     }
     current = 0;
 }
