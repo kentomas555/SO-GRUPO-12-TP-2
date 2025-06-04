@@ -58,6 +58,7 @@ int unblockProcess(Pid pid);
 int getPriority(Pid pid);
 int increasePriority(Pid pid);
 int decreasePriority(Pid pid);
+void printProcesses(void);
 void hlt();
 
 //EXCEPTION TRIGGERS:

@@ -179,6 +179,7 @@ _irq00Handler:
 	
 	mov rdi, 0 ; pasaje de parametro
 	call irqDispatcher
+	mov rsp, rax
 
 	; signal pic EOI (End of Interrupt)
 	mov al, 20h

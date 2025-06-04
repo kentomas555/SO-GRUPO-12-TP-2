@@ -386,6 +386,10 @@ void hlt(){
     syscall(29);
 }
 
+void printProcesses(){
+    syscall(24);
+}
+
 //EXCEPTION TRIGGERS:
 
 void zeroDivisionTrigger(){

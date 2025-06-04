@@ -97,8 +97,8 @@ static void bufferInterpreter(){
         invalidOpcodeTrigger();
     } else if (strCompare(shellBuffer, "TESTALLOC")){
         allocMemoryUser(10);
-    } else if (strCompare(shellBuffer, "GETPID")){
-        ;
+    } else if (strCompare(shellBuffer, "PS")){
+        printProcesses();
     }else if (strCompare(shellBuffer, "CREATEDUMMY")){
         ;
     } else {

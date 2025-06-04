@@ -17,8 +17,6 @@ typedef struct SchedulerCDT{
 
 SchedulerCDT * scheduler = NULL;
 
-static int firstScheduleCall = 1;
-
 static Pid availablePidValue = IDLE_PID;
 
 
@@ -36,7 +34,6 @@ void startScheduler() {
   }
   scheduler->currentPID = 0;
   scheduler->currentPPID = 0;
-  //scheduler->nextPID = 0;
   scheduler->processQty = 0;
   scheduler->foregroundPID = 0;
   scheduler->readyList = initializeLinkedList();
@@ -46,12 +43,16 @@ void startScheduler() {
   onCreateProcess("idle", (mainFunc)idleKernel, args, LOWEST_PRIORITY, fds);
 }
 
+static void * runIdleProcess(){
+  Node * firstProcess = scheduler->processes[IDLE_PID]->info;
+  ((PCB*)firstProcess->info)->status = RUNNING;
+  return ((PCB*)firstProcess->info)->rsp; 
+}
+
 void * schedule(void * currentRSP){
 
-  if(firstScheduleCall){
-    firstScheduleCall = 0;
-    Node * firstProcess = scheduler->processes[IDLE_PID]->info;
-    return ((PCB*)firstProcess->info)->rsp;
+  if(isEmpty(scheduler->readyList)){
+    return runIdleProcess();
   }
   
   Node * currentRunning = scheduler->processes[scheduler->currentPID];
@@ -60,7 +61,7 @@ void * schedule(void * currentRSP){
 
     if(((PCB*)currentRunning->info)->roundsLeft > 0){
       ((PCB*)currentRunning->info)->roundsLeft--;
-      return currentRSP; // o currentRSP (ver, deberia ser lo mismo)
+      return currentRSP;
     }
 
     if(scheduler->currentPID != IDLE_PID){
@@ -87,9 +88,6 @@ Pid getNextProcess(){
 }
 
 void * switchContext(Pid pid){
-  // if(pid == IDLE_PID){ // ver caso especial idle
-
-  // }
   Node * processAux = scheduler->processes[pid];
   PCB * nextPCB = (PCB *)processAux->info;
   nextPCB->roundsLeft = (int)nextPCB->priority;

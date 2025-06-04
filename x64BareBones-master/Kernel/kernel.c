@@ -49,18 +49,12 @@ MemoryManagerADT getKernelMem() {
 	return kernelMM;
 }
 
-static void idleKernel(){
-    while(1){
-		_hlt();
-    }
-}
-
 int main()
 {	
 
-	//_cli();
-	//setTickFreq(100);
-	load_idt();	
+	_cli();
+	setTickFreq(100);
+	load_idt();
 	
 	//sound(800, 10);
 
@@ -70,14 +64,12 @@ int main()
 
 	int16_t fds[2] = {0,1};
 	char * args[] = {NULL};
-	//onCreateProcess("idle", (mainFunc)idleKernel, args, LOWEST_PRIORITY, fds);
 	onCreateProcess("shell", sampleCodeModuleAddress, args, HIGHEST_PRIORITY, fds);
-	//_sti();
-	//createDummyProcess();
+		
+	_sti();
+
 	//((EntryPoint)sampleCodeModuleAddress)();
-	//create process of smapleCodeModule
-	
-	//Call timer tick
+
 	while(1);
 	return 0;
 }
