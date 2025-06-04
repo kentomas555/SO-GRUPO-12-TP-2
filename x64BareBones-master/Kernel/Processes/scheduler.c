@@ -134,11 +134,11 @@ uint64_t onCreateProcess(char * processName, mainFunc processProgram, char** arg
   scheduler->processes[myNewProcess->PID] = node;
   scheduler->processQty++;
 
-  // if(myNewProcess->PID != IDLE_PID){
-  //   queue(scheduler->readyList, node);
-  // }  
+  if(myNewProcess->PID != IDLE_PID){
+    queue(scheduler->readyList, node);
+  }  
 
-  queue(scheduler->readyList, node);
+  //queue(scheduler->readyList, node);
 
   return 0;
 }

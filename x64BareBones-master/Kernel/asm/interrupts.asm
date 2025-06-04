@@ -178,6 +178,7 @@ _irq00Handler:
 	pushState
 	
 	mov rdi, 0 ; pasaje de parametro
+	mov rsi, rsp
 	call irqDispatcher
 	mov rsp, rax
 

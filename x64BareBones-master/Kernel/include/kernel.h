@@ -8,9 +8,12 @@
 #include <MemoryManager.h>
 #include <stack.h>
 #include <scheduler.h>
+#include <interrupts.h>
 
 MemoryManagerADT getKernelMem();
 
-extern void _hlt();
+// extern void _hlt();
+// extern void _cli(void);
+// extern void _sti(void);
 
 //MemoryManagerADT createMemoryManager(void * heapStartAddress);

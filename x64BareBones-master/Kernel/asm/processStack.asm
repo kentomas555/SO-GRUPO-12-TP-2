@@ -1,6 +1,7 @@
 GLOBAL createProcessStackframe
 
 start:
+    ;mov rcx, 0x400000
     call rcx        ; Llama al "main" del programa del proceso
     mov rax, 0x42
     int 80h         ; Simula syscall exit(0)
@@ -22,8 +23,8 @@ createProcessStackframe:
     push 0x01       ; RAX
     push 0x02       ; RBX
     push rcx        ; RCX (dirección del main del programa)
-    push rdx        ; RDX (stack del proceso, opcional)
-    push 0x00       ; RBP
+    push 0x00       ; RDX (stack del proceso, opcional)
+    push rdx        ; RBP
     push rdi        ; RDI (argc)
     push rsi        ; RSI (argv)
     push 0x09       ; R8
