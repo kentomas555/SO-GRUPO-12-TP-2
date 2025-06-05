@@ -1,48 +1,48 @@
 #include "semaphore.h"
 
-static semaphoresADT semaphores;
+sem_t semaphores[MAX_SEM_QTY];
 
 void initializeSemaphores(){
   for (int i = 0; i < MAX_SEM_QTY; i++){
-    semaphores->semaphores->occupied = 0;
-    semaphores->semaphores->semName[0] = '\0';
-    semaphores->semaphores[i].value = 0;
-    semaphores->semaphores[i].lock = 1;
+    semaphores[i].occupied = 0;
+    semaphores[i].semName[0] = '\0';
+    semaphores[i].value = 0;
+    semaphores[i].lock = 1;
   }
   return;
 }
 
 uint64_t semInit(char * semName, int value){
     for (int i = 0; i < MAX_SEM_QTY; i++) {
-        if (semaphores->semaphores[i].occupied && strCompare(semaphores->semaphores[i].semName, semName) == 0) {
-            return (uint64_t)(&semaphores->semaphores[i]); // Ya existe
+        if (semaphores[i].occupied && strCompare(semaphores[i].semName, semName) == 0) {
+            return (uint64_t)(&semaphores[i]); // Ya existe
         }
     }
 
     //MEJORAR ESTA FUNCION
     for (int i = 0; i < MAX_SEM_QTY; i++) {
-        if (!semaphores->semaphores[i].occupied) {
-            semaphores->semaphores[i].occupied = 1;
-            semaphores->semaphores[i].value = value;
+        if (!semaphores[i].occupied) {
+            semaphores[i].occupied = 1;
+            semaphores[i].value = value;
             //strcpy
-            memcpy(semaphores->semaphores[i].semName, semName, MAX_SEM_CHAR - 1);
-            semaphores->semaphores[i].semName[MAX_SEM_CHAR - 1] = '\0';
-            semaphores->semaphores->blockedQueue = initializeLinkedList();
-            semaphores->semaphores[i].id = i;
-            return (uint64_t)(&semaphores->semaphores[i]);
+            memcpy(semaphores[i].semName, semName, MAX_SEM_CHAR - 1);
+            semaphores[i].semName[MAX_SEM_CHAR - 1] = '\0';
+            semaphores[i].blockedQueue = initializeLinkedList();
+            semaphores[i].id = i;
+            return (uint64_t)(&semaphores[i]);
             
         }
     }
-    return NULL; // No hay lugar
+    return 0; // No hay lugar
 }
 
-sem_t * getSemaphore(char * semName){
+static sem_t * getSemaphore(char * semName){
   if (semName == NULL)
     return NULL;
 
   for (int i = 0; i < MAX_SEM_QTY; i++) {
-    if (semaphores->semaphores[i].occupied && strCompare(semaphores->semaphores[i].semName, semName) == 0) {
-      return &semaphores->semaphores[i];
+    if (semaphores[i].occupied && strCompare(semaphores[i].semName, semName) == 0) {
+      return &semaphores[i];
     }
   }
 
@@ -69,7 +69,7 @@ void semPost(char * semName){
   release(&(sem->lock));
   int * pid = NULL;
   if(!isEmpty(sem->blockedQueue)){
-    pid = (int *)dequeue(semaphores->semaphores[sem->id].blockedQueue);
+    pid = (int *)dequeue(semaphores[sem->id].blockedQueue);
     unblockProcess(*pid);
   }
   return;
@@ -90,11 +90,10 @@ void semWait(char * semName){
         return;
       }
       node->info = (void*)&pid;
-      queue(semaphores->semaphores[sem->id].blockedQueue, node);
+      queue(semaphores[sem->id].blockedQueue, node);
       release(&(sem->lock));
       blockProcess(pid);
       yield();
     }
   } 
 }
-

@@ -20,12 +20,6 @@ typedef struct sem_t {
   LinkedListADT blockedQueue;
 } sem_t;
 
-typedef struct semaphoresCDT{
-  sem_t semaphores[MAX_SEM_QTY];
-}semaphoresCDT;
-
-typedef semaphoresCDT * semaphoresADT;
-
 void initializeSemaphores();
 uint64_t semInit(char * semName, int value);
 uint64_t semDestroy(char * semName);
