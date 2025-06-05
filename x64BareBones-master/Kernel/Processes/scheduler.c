@@ -3,6 +3,7 @@
 #include "../include/MemoryManager.h"
 #include "../include/LinkedList.h"
 #include "../include/kernel.h"
+#include "../include/nativeLibrary.h"
 
 
 typedef struct SchedulerCDT{
@@ -20,12 +21,6 @@ SchedulerCDT * scheduler = NULL;
 static Pid availablePidValue = IDLE_PID;
 
 
-static void idleKernel(){
-    while(1){
-		_hlt();
-    }
-}
-
 //void startScheduler(PCB * shell, PCB * idle)
 void startScheduler() {
   scheduler = allocMemory(sizeof(SchedulerCDT));
@@ -37,10 +32,6 @@ void startScheduler() {
   scheduler->processQty = 0;
   scheduler->foregroundPID = 0;
   scheduler->readyList = initializeLinkedList();
-
-  int16_t fds[2] = {0,1};
-	char * args[] = {NULL};
-  onCreateProcess("idle", (mainFunc)idleKernel, args, LOWEST_PRIORITY, fds);
 }
 
 static void * runIdleProcess(){
@@ -138,8 +129,6 @@ uint64_t onCreateProcess(char * processName, mainFunc processProgram, char** arg
     queue(scheduler->readyList, node);
   }  
 
-  //queue(scheduler->readyList, node);
-
   return 0;
 }
 
@@ -211,6 +200,21 @@ void waitChilds(){
   return;
 }
 
-void printProcesses(){
-  return;
+
+
+processesToPrint * printProcesses(){
+  processesToPrint * psList = allocMemory(sizeof(processesToPrint));
+  if(psList == NULL){
+    return NULL;
+  }
+  psList->cantProcess = scheduler->processQty;
+  for (int i = 0; i < scheduler->processQty; i++){
+    psList->names[i] = ((PCB*)scheduler->processes[i]->info)->processName;
+    psList->PIDs[i] = ((PCB*)scheduler->processes[i]->info)->PID;
+    psList->Priority[i] = ((PCB*)(uint8_t)scheduler->processes[i]->info)->priority;
+    psList->Status[i] = ((PCB*)(uint8_t)scheduler->processes[i]->info)->status;
+    psList->rspList[i] = ((PCB*)scheduler->processes[i]->info)->rsp;
+    psList->rbpList[i] = ((PCB*)scheduler->processes[i]->info)->rbp;
+  }
+  return psList;
 }

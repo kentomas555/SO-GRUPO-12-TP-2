@@ -1,7 +1,6 @@
 GLOBAL createProcessStackframe
 
 start:
-    ;mov rcx, 0x400000
     call rcx        ; Llama al "main" del programa del proceso
     mov rax, 0x42
     int 80h         ; Simula syscall exit(0)

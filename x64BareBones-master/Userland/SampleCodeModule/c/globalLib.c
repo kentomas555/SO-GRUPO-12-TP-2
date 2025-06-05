@@ -387,7 +387,47 @@ void hlt(){
 }
 
 void printProcesses(){
-    syscall(24);
+    
+    processesToPrint * pr = syscall(24);
+    char* state[4] = {"READY", "RUNNING", "BLOCKED", "KILLED"};
+    
+    for(int i = 0; i < pr->cantProcess; i++){
+        
+        char auxBuffer[20];
+        
+        NewLine();
+        printf("Proceso: ");
+        currentX += HorizontalOffset(fontSize) * 9;
+        printf(pr->names[i]);
+        NewLine();
+        printf("-------------");
+        NewLine();
+        printf(" PID: ");
+        currentX += HorizontalOffset(fontSize) * 6;
+        itoaBase((uint64_t)pr->PIDs[i], auxBuffer, 10);
+        printf(auxBuffer);
+        NewLine();
+        printf(" rsp: 0x");
+        currentX += HorizontalOffset(fontSize) * 8;
+        itoaBase((uint64_t)pr->rspList[i], auxBuffer, 16);
+        printf(auxBuffer);
+        NewLine();
+        printf(" rbp: 0x");
+        currentX += HorizontalOffset(fontSize) * 8;
+        itoaBase((uint64_t)pr->rbpList[i], auxBuffer, 16);
+        printf(auxBuffer);
+        NewLine();
+        printf(" status: ");
+        currentX += HorizontalOffset(fontSize) * 8;
+        printf(state[pr->Priority[i]]);
+        NewLine();
+        printf(" prioridad: ");
+        currentX += HorizontalOffset(fontSize) * 13;
+        itoaBase((uint64_t)pr->Priority[i], auxBuffer, 10);
+        printf(auxBuffer);
+        NewLine();
+        NewLine();
+    }
 }
 
 //EXCEPTION TRIGGERS:

@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#define MAX_PROCESSES 128
+
 typedef struct
 {
     uint8_t seconds;
@@ -13,6 +15,17 @@ typedef struct
     uint8_t month;
     uint8_t year;
 }date;
+
+typedef struct processesToPrint{
+    uint16_t cantProcess;
+    char * names[MAX_PROCESSES];
+    uint8_t PIDs[MAX_PROCESSES];
+    uint8_t Priority[MAX_PROCESSES];
+    uint8_t Status[MAX_PROCESSES];
+    void * rspList[MAX_PROCESSES];
+    void * rbpList[MAX_PROCESSES];
+    
+}processesToPrint;
 
 typedef int Pid;
 

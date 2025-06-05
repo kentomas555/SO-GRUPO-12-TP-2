@@ -408,3 +408,58 @@ make all
 exit
 ls
 exit
+cd root
+ls
+cd Toolchain/
+make clean
+make all
+cd ..
+make clean
+make all
+make clean
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+gdb
+make clean
+make clean
+make all
+make clean
+make all
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make clean
+make all
+make clean
+cd Toolchain/
+make cleam
+make clean
+make all
+cd ..
+make clean
+make all
+make clean
+exit

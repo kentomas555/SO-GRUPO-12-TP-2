@@ -37,6 +37,8 @@ static void help(){
     NewLine();
     printf("GETPID - Imprime el PID del proceso corriendo");
     NewLine();
+    printf("PS - Imprime los procesos");
+    NewLine();
     NewLine();
     printf("Para ver el valor de los registros, presione TAB");
     NewLine();

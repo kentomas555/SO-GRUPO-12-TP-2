@@ -19,6 +19,17 @@ typedef int Pid;
 typedef enum {LOWEST_PRIORITY = 0, LOW_PRIORITY, AVERAGE_PRIORITY, HIGH_PRIORITY, HIGHEST_PRIORITY} Priority;
 typedef enum {READY = 0, RUNNING, BLOCKED, KILLED} ProcessStatus;
 
+typedef struct processesToPrint{
+    uint16_t cantProcess;
+    char * names[MAX_PROCESSES];
+    uint8_t PIDs[MAX_PROCESSES];
+    uint8_t Priority[MAX_PROCESSES];
+    uint8_t Status[MAX_PROCESSES];
+    void * rspList[MAX_PROCESSES];
+    void * rbpList[MAX_PROCESSES];
+    
+} processesToPrint;
+
 void startScheduler();
 uint64_t onCreateProcess(char * processName, mainFunc processProgram, char** args, Priority priority, int16_t fds[]); //void * processProgram
 uint64_t createDummyProcess();
@@ -41,7 +52,7 @@ void * switchContext(Pid pid);
 uint64_t killProcess(Pid pid); 
 void waitChilds();
 
-void printProcesses();
+processesToPrint * printProcesses();
 
 extern void _cli(void);
 extern void _sti(void);
