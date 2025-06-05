@@ -367,11 +367,6 @@ void printProcesses(){
         itoaBase((uint64_t)pr->PIDs[i], auxBuffer, 10);
         printf(auxBuffer);
         NewLine();
-        printf(" PPID: ");
-        currentX += HorizontalOffset(fontSize) * 13;
-        itoaBase((uint64_t)pr->PPIDs[i], auxBuffer, 10);
-        printf(auxBuffer);
-        NewLine();
         printf(" rsp: 0x");
         currentX += HorizontalOffset(fontSize) * 8;
         itoaBase((uint64_t)pr->rspList[i], auxBuffer, 16);

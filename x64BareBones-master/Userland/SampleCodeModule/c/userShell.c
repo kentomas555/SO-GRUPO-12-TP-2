@@ -20,6 +20,8 @@ static void help(){
     NewLine();
     printf("TIME - Imprime la hora y fecha actual");
     NewLine();
+    //printf("OBSOLETO: REGISTERS - Imprime cada registro y su contenido");
+    //NewLine();
     printf("SNAKE - Comienza el juego");
     NewLine();
     printf("ZERODIV - Causa una excepcion: divide por cero");
@@ -31,15 +33,9 @@ static void help(){
     NewLine();
     printf("Comandos para TP2 SO 1C2025:");
     NewLine();
-    printf("TESTMM - Test para alocar memoria con MM");
+    printf("TESTALLOC - Test para alocar memoria con MM");
     NewLine();
-    printf("PS - Imprime los procesos");
-    NewLine();
-    printf("LOOP - Imprime su ID con un saludo cada n segundos.");
-    NewLine();
-    printf("PS - Imprime los procesos");
-    NewLine();
-    printf("KILL - Mata un proceso dado su ID");
+    printf("GETPID - Imprime el PID del proceso corriendo");
     NewLine();
     printf("PS - Imprime los procesos");
     NewLine();
@@ -101,7 +97,7 @@ static void bufferInterpreter(){
         zeroDivisionTrigger();
     } else if (strCompare(shellBuffer, "INVOPCODE")){
         invalidOpcodeTrigger();
-    } else if (strCompare(shellBuffer, "TESTMM")){
+    } else if (strCompare(shellBuffer, "TESTALLOC")){
         allocMemoryUser(10);
     } else if (strCompare(shellBuffer, "PS")){
         printProcesses();
@@ -128,11 +124,11 @@ void startShell(){
     NewLine();
     printf("------------------------------------------------------------------------------------");
     NewLine();
-	printf("Sistemas Operativos");
+	printf("Arquitectura de Computadoras");
 	NewLine();
     printf("------------------------------------------------------------------------------------");
 	NewLine();
-    printf("Berruti Roman, Kaneko Tomas, Kim Hwa Pyoung");
+    printf("Huerta Joaquin, Kaneko Tomas, Valentinuzzi Antonio");
     NewLine();
     printf("------------------------------------------------------------------------------------");
     NewLine();
