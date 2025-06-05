@@ -7,6 +7,9 @@ GLOBAL getHours
 GLOBAL getDays
 GLOBAL getMonth
 GLOBAL getYear
+GLOBAL forceTimerTick
+GLOBAL release
+GLOBAL acquire
 
 section .text
 	

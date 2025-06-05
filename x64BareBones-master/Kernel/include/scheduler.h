@@ -57,6 +57,6 @@ processesToPrint * printProcesses();
 
 extern void _cli(void);
 extern void _sti(void);
-extern void forceTimerTick();
+extern void forceTimerTick(void);
 
 #endif

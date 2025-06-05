@@ -297,49 +297,9 @@ void wait(int ticks){
 
 //void * allocMemory(MemoryManagerADT mm, size_t memoryToAllocate) 
 
-void allocMemoryUser(uint32_t size){
-    char allocMemoryBuffer[10]; 
-    printf("entre a allocMemoryUser");
-    NewLine();
-    //
+void * allocMemoryUser(uint32_t size){
     uint64_t aux = syscall(14, size);
-    if(aux){
-        printf("Hay algo");
-        NewLine();
-    }
-    itoaBase(aux, allocMemoryBuffer, 16);
-    printf(allocMemoryBuffer);
-    NewLine();
-    //
-    aux = syscall(14, size);
-    if(aux){
-        printf("Hay algo");
-        NewLine();
-    }
-    itoaBase(aux, allocMemoryBuffer, 16);
-    printf(allocMemoryBuffer);
-    NewLine();
-    //
-    aux = syscall(14, size);
-    if(aux){
-        printf("Hay algo");
-        NewLine();
-    }
-    itoaBase(aux, allocMemoryBuffer, 16);
-    printf(allocMemoryBuffer);
-    NewLine();
-    //
-    aux = syscall(14, size);
-    if(aux){
-        printf("Hay algo");
-        NewLine();
-    }
-    itoaBase(aux, allocMemoryBuffer, 16);
-    printf(allocMemoryBuffer);
-    NewLine();
-    //
-    printf("entre a allocMemoryUser");
-    NewLine();
+    return (void *) aux;
 }
 
 void freeMemoryUser(){

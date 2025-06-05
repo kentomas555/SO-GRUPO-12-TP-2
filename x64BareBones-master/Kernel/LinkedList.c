@@ -128,4 +128,7 @@ void listIterator(LinkedListADT list){
     list->current = list->first;
 }
 
-//TO-DO freeList(LinkedListADT list)
+void freeList(LinkedListADT list){
+    //TODO
+    return;
+}

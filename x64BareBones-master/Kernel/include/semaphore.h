@@ -28,9 +28,9 @@ typedef semaphoresCDT * semaphoresADT;
 
 void initializeSemaphores();
 uint64_t semInit(char * semName, int value);
-uint64_t semDestroy(sem_t * sem);
-void semPost(sem_t * sem);
-void semWait(sem_t * sem);
+uint64_t semDestroy(char * semName);
+void semPost(char * semName);
+void semWait(char * semName);
 
 extern void acquire(uint8_t * lock);
 extern void release(uint8_t * lock);

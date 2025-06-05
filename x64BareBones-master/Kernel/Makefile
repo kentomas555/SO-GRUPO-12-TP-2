@@ -1,7 +1,7 @@
 include Makefile.inc
 
 KERNEL=kernel.elf
-SOURCES=$(wildcard *.c) $(wildcard Processes/*.c)
+SOURCES=$(wildcard *.c) $(wildcard Processes/*.c) $(wildcard Semaphores/*.c)
 SOURCES_ASM=$(wildcard asm/*.asm)
 OBJECTS=$(SOURCES:.c=.o)
 OBJECTS_ASM=$(SOURCES_ASM:.asm=.o)

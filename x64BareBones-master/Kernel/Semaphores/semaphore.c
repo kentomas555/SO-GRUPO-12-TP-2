@@ -36,17 +36,32 @@ uint64_t semInit(char * semName, int value){
     return NULL; // No hay lugar
 }
 
-uint64_t semDestroy(sem_t * sem){
+sem_t * getSemaphore(char * semName){
+  if (semName == NULL)
+    return NULL;
+
+  for (int i = 0; i < MAX_SEM_QTY; i++) {
+    if (semaphores->semaphores[i].occupied && strCompare(semaphores->semaphores[i].semName, semName) == 0) {
+      return &semaphores->semaphores[i];
+    }
+  }
+
+  return NULL; 
+}
+
+uint64_t semDestroy(char * semName){
+  sem_t * sem = getSemaphore(semName);
     if (sem == NULL || sem->occupied)
         return -1;
-
     sem->occupied = 0;
     sem->value = 0;
     sem->semName[0] = '\0';
+    freeList(sem->blockedQueue);
     return 0;
 }
 
-void semPost(sem_t * sem){
+void semPost(char * semName){
+  sem_t * sem = getSemaphore(semName);
   if (sem == NULL || !sem->occupied)
     return;
   acquire(&(sem->lock));
@@ -60,7 +75,8 @@ void semPost(sem_t * sem){
   return;
 }
 
-void semWait(sem_t * sem){
+void semWait(char * semName){
+  sem_t * sem = getSemaphore(semName);
   if (sem->occupied){
     acquire(&(sem->lock));
     if(sem->value > 0){
