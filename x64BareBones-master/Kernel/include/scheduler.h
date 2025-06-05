@@ -51,10 +51,12 @@ void * switchContext(Pid pid);
 
 uint64_t killProcess(Pid pid); 
 void waitChilds();
+void yield();
 
 processesToPrint * printProcesses();
 
 extern void _cli(void);
 extern void _sti(void);
+extern void forceTimerTick();
 
 #endif

@@ -119,3 +119,19 @@ toBinary:
     or al, 4
     out 71h, al
 	ret
+
+acquire:
+    mov al, 0
+.loop
+    xchg [rdi], al
+    test al, al
+    jz .loop
+    ret
+
+release:
+    mov byte [rdi], 1
+    ret
+
+forceTimerTick:
+		int 20h
+		ret

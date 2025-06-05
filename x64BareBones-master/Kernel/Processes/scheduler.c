@@ -132,31 +132,35 @@ uint64_t onCreateProcess(char * processName, mainFunc processProgram, char** arg
   return 0;
 }
 
-void randomFunction(){
+void dummyFunction(){
     while (1)
         ;
 }
 
 uint64_t createDummyProcess(){
     int dummyFD[] = {0, 1};
-    return onCreateProcess("DUMMY Function", (void *)randomFunction, NULL, AVERAGE_PRIORITY, (int16_t *)dummyFD);
+    return onCreateProcess("Dummy Process", (void *)dummyFunction, NULL, AVERAGE_PRIORITY, (int16_t *)dummyFD);
 }
 
 
 int blockProcess(Pid pid){
+  Node * processToBeBlocked = scheduler->processes[pid];
   PCB * pcb = scheduler->processes[pid]->info;
-  if(pcb->status == BLOCKED || pcb->status == KILLED || pcb == NULL){
+  if(pcb->status == BLOCKED || pcb->status == KILLED || pcb == NULL || pid == SHELL_PID || pid == IDLE_PID){
     return -1;
   }
+  removeFromQueue(scheduler->readyList, processToBeBlocked);
   pcb->status = BLOCKED;
   return 1;
 }
 
 int unblockProcess(Pid pid){
+  Node * processToBeUnblocked = scheduler->processes[pid];
   PCB * pcb = scheduler->processes[pid]->info;
   if(pcb->status != BLOCKED){
     return -1;
   }
+  queue(scheduler->readyList, processToBeUnblocked);
   pcb->status = READY;
   return 1;
 }
@@ -200,7 +204,11 @@ void waitChilds(){
   return;
 }
 
-
+void yield(){
+  int pid = getCurrentPID();
+  ((PCB *)scheduler->processes[pid]->info)->roundsLeft = 0;
+  forceTimerTick();
+}
 
 processesToPrint * printProcesses(){
   processesToPrint * psList = allocMemory(sizeof(processesToPrint));
