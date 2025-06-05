@@ -23,6 +23,7 @@ typedef struct processesToPrint{
     uint16_t cantProcess;
     char * names[MAX_PROCESSES];
     uint8_t PIDs[MAX_PROCESSES];
+    //uint8_t PPIDs[MAX_PROCESSES];
     uint8_t Priority[MAX_PROCESSES];
     uint8_t Status[MAX_PROCESSES];
     void * rspList[MAX_PROCESSES];

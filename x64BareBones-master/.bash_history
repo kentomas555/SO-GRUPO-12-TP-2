@@ -1,47 +1,3 @@
-cd root/
-ls
-clear
-make clean all
-make clean all
-make clean all
-clear
-cd root/
-make clean all
-clear
-cd root/
-make clean all
-cd root/
-make clean all
-cd root/
-make clean all
-cd root/
-make clean all
-make clean all
-cd root/
-make clean all
-cd root/
-make clean all
-cd root/
-make clean all
-cd root/
-make clean all
-make clean all
-cd root/
-make clean all
-cd root/
-make clean all
-cd root/
-make clean all
-cd root/
-make clean all
-cd root/
-make clean all
-cd root/
-make clean all
-cd root/
-make clean all
-cd root/
-make clean all
 make clean all
 make clean all
 make clean all
@@ -463,3 +419,82 @@ make clean
 make all
 make clean
 exit
+cd
+make clean
+cd Toolchain/
+make clean
+make all
+cd ..
+make all
+make clean
+make all
+make clean
+make all
+ls
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make clean
+make all
+make clean
+make all
+make clean
+make all
+gdb
+make clean
+make all
+gdb
+make clean
+make all
+gdb
+y
+make clean
+make all
+gdb
+make clean
+make all
+gdb
+gdb
+make clean
+make all
+gdb
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+ps
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+gdb
+gdb
+make clean
+make all
+gdb

@@ -33,10 +33,10 @@ uint64_t semInit(char * semName, int value){
             
         }
     }
-    return NULL; // No hay lugar
+    return 0; // No hay lugar
 }
 
-sem_t * getSemaphore(char * semName){
+static sem_t * getSemaphore(char * semName){
   if (semName == NULL)
     return NULL;
 

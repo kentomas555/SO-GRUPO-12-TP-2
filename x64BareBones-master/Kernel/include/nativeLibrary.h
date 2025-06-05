@@ -1,5 +1,7 @@
-typedef struct
-{
+#ifndef NATIVELIBRARY_H
+#define NATIVELIBRARY_H
+
+typedef struct {
     uint64_t rax;
     uint64_t rbx;
     uint64_t rcx;
@@ -34,4 +36,4 @@ void charDelete(uint32_t bgColor, int x, int y, char size);
 
 void nativeShowAllRegisters();
 
-
+#endif

@@ -67,12 +67,13 @@ int main()
 	createMemoryManager();
 	startStack(stackStartAddress);
 	startScheduler();
+	initializeSemaphores();
 
 	int16_t fds[2] = {0,1};
 	char * args[] = {NULL};
 	onCreateProcess("idle", (mainFunc)idleKernel, args, LOWEST_PRIORITY, fds);
 	onCreateProcess("shell", sampleCodeModuleAddress, args, HIGHEST_PRIORITY, fds);
-  createDummyProcess();
+  
 	_sti();
 
 	//((EntryPoint)sampleCodeModuleAddress)();

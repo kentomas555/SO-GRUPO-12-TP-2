@@ -35,7 +35,7 @@ static void help(){
     NewLine();
     printf("TESTALLOC - Test para alocar memoria con MM");
     NewLine();
-    printf("GETPID - Imprime el PID del proceso corriendo");
+    printf("CREATEDUMMY - Crea un proceso dummy");
     NewLine();
     printf("PS - Imprime los procesos");
     NewLine();
@@ -102,7 +102,7 @@ static void bufferInterpreter(){
     } else if (strCompare(shellBuffer, "PS")){
         printProcesses();
     }else if (strCompare(shellBuffer, "CREATEDUMMY")){
-        ;
+        createDummyProcess();
     } else {
         printf("Comando no reconocido. Use HELP para mas informacion");
         NewLine();

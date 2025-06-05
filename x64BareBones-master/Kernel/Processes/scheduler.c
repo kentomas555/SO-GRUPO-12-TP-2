@@ -223,6 +223,7 @@ processesToPrint * printProcesses(){
     psList->Status[i] = (uint8_t)((PCB*)scheduler->processes[i]->info)->status;
     psList->rspList[i] = ((PCB*)scheduler->processes[i]->info)->rsp;
     psList->rbpList[i] = ((PCB*)scheduler->processes[i]->info)->rbp;
+    //psList->PPIDs[i] = ((PCB*)scheduler->processes[i]->info)->parentPID;
   }
   return psList;
 }

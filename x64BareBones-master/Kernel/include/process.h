@@ -12,7 +12,8 @@ typedef struct PCB{
     char * processName;
     int fds[FDS];
     ProcessStatus status;
-
+    //Pid children[MAX_PROCESSES];
+    //int childrenQty;
     void * rsp;
     void * rbp;
 
