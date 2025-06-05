@@ -211,8 +211,8 @@ processesToPrint * printProcesses(){
   for (int i = 0; i < scheduler->processQty; i++){
     psList->names[i] = ((PCB*)scheduler->processes[i]->info)->processName;
     psList->PIDs[i] = ((PCB*)scheduler->processes[i]->info)->PID;
-    psList->Priority[i] = ((PCB*)(uint8_t)scheduler->processes[i]->info)->priority;
-    psList->Status[i] = ((PCB*)(uint8_t)scheduler->processes[i]->info)->status;
+    psList->Priority[i] = (uint8_t)((PCB*)scheduler->processes[i]->info)->priority;
+    psList->Status[i] = (uint8_t)((PCB*)scheduler->processes[i]->info)->status;
     psList->rspList[i] = ((PCB*)scheduler->processes[i]->info)->rsp;
     psList->rbpList[i] = ((PCB*)scheduler->processes[i]->info)->rbp;
   }

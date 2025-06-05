@@ -72,7 +72,7 @@ int main()
 	char * args[] = {NULL};
 	onCreateProcess("idle", (mainFunc)idleKernel, args, LOWEST_PRIORITY, fds);
 	onCreateProcess("shell", sampleCodeModuleAddress, args, HIGHEST_PRIORITY, fds);
-  	createDummyProcess();
+  createDummyProcess();
 	_sti();
 
 	//((EntryPoint)sampleCodeModuleAddress)();

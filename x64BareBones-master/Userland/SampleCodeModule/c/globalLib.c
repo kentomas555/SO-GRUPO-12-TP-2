@@ -388,7 +388,7 @@ void hlt(){
 
 void printProcesses(){
     
-    processesToPrint * pr = syscall(24);
+    processesToPrint * pr = (processesToPrint *)syscall(24);
     char* state[4] = {"READY", "RUNNING", "BLOCKED", "KILLED"};
     
     for(int i = 0; i < pr->cantProcess; i++){
@@ -419,7 +419,7 @@ void printProcesses(){
         NewLine();
         printf(" status: ");
         currentX += HorizontalOffset(fontSize) * 8;
-        printf(state[pr->Priority[i]]);
+        printf(state[pr->Status[i]]);
         NewLine();
         printf(" prioridad: ");
         currentX += HorizontalOffset(fontSize) * 13;
