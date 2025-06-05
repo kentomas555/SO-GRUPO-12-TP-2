@@ -27,6 +27,7 @@ typedef struct processesToPrint{
     uint8_t Status[MAX_PROCESSES];
     void * rspList[MAX_PROCESSES];
     void * rbpList[MAX_PROCESSES];
+    uint8_t PPIDs[MAX_PROCESSES];
     
 } processesToPrint;
 
