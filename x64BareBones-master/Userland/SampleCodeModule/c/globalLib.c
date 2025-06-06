@@ -299,7 +299,7 @@ void printProcesses(){
         NewLine();
         printf(" prioridad: ");
         nextX(13);
-        printf(priority[pr->Status[i]]);
+        printf(priority[pr->Priority[i]]);
         NewLine();
         printf(" hijos: ");
         nextX(13);
@@ -313,6 +313,8 @@ void printProcesses(){
 /*====== TESTS ======*/
 
 void memoryManagerTest(){
+
+    //createNewProcess;
     return;
 }
 

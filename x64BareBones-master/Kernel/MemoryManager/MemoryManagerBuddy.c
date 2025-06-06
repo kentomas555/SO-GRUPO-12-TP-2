@@ -22,3 +22,4 @@ void *allocMemory(MemoryManagerADT const restrict memoryManager, const size_t me
 void *freeMemory(MemoryManagerADT const restrict memoryManager, const size_t memoryToFree){
 	return 0;
 }
+
