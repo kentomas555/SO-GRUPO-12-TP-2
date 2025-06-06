@@ -14,6 +14,7 @@
 #include <process.h>
 #include <scheduler.h>
 #include <stack.h>
+#include <semaphore.h>
 
 static uint64_t handleReadSyscall(void);
 static void handleWriteSyscall(va_list args);
@@ -33,6 +34,10 @@ static uint64_t handleGetPrioritySyscall(va_list args);
 static uint64_t handleIncreasePrioritySyscall(va_list args); 
 static uint64_t handleDecreasePrioritySyscall(va_list args);
 static processesToPrint * handleListProcesses();
+static uint64_t handleSemInitSyscall(va_list args);
+static void handleSemDestroySyscall(va_list args);
+static void handleSemPostSyscall(va_list args);
+static void handleSemWaitSyscall(va_list args);
 
 // ========== DISPATCHER PRINCIPAL ==========
 uint64_t syscallDispatcher(uint64_t id, ...) {
@@ -123,6 +128,18 @@ uint64_t syscallDispatcher(uint64_t id, ...) {
             break;
         case SYSCALL_HLT:
             _hlt();
+            break;
+        case SYSCALL_SEM_INIT:
+            ret = handleSemInitSyscall(args);
+            break;
+        case SYSCALL_SEM_DESTROY:
+            handleSemDestroySyscall(args);
+            break;
+        case SYSCALL_SEM_POST:
+            handleSemPostSyscall(args);
+            break;
+        case SYSCALL_SEM_WAIT:
+            handleSemWaitSyscall(args);
             break;
     }
 
@@ -245,4 +262,26 @@ static uint64_t handleDecreasePrioritySyscall(va_list args){
 
 static processesToPrint * handleListProcesses(){
     return printProcesses();
+}
+
+static uint64_t handleSemInitSyscall(va_list args){
+    char* semName = va_arg(args, char*);
+    int32_t value = va_arg(args, int32_t);
+    return semInit(semName, value);
+}
+
+static void handleSemDestroySyscall(va_list args){
+    char* semName = va_arg(args, char*);
+    semDestroy(semName);
+
+}
+
+static void handleSemPostSyscall(va_list args){
+    char* semName = va_arg(args, char*);
+    semPost(semName);
+}
+
+static void handleSemWaitSyscall(va_list args){
+    char* semName = va_arg(args, char*);
+    semWait(semName);
 }

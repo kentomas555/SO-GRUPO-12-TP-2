@@ -9,6 +9,7 @@
 #include <stack.h>
 #include <scheduler.h>
 #include <interrupts.h>
+#include <semaphore.h>
 
 MemoryManagerADT getKernelMem();
 

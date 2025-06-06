@@ -39,6 +39,13 @@ PCB * createProcess(char * processName, mainFunc processProgram, char** args, Pr
   //Arg configs
   newPCB->argc = countArguments((void **)args);
   newPCB->argv = args;
+
+  //setup children
+  for(int i = 0; i < MAX_PROCESSES; i++){
+    newPCB->children[i] = -1;
+  }
+  newPCB->childrenQty = 0;
+
   
   newPCB->status = READY;
   newPCB->priority = priority;
