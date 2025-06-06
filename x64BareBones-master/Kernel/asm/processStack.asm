@@ -1,8 +1,8 @@
 GLOBAL createProcessStackframe
 
 start:
-    call rcx        ; Llama al "main" del programa del proceso
-    mov rax, 0x42
+    call rcx        ; Llama al main del programa del proceso
+    mov rax, 0x17   ; syscall 23
     int 80h         ; Simula syscall exit(0)
 
 createProcessStackframe:
@@ -11,14 +11,12 @@ createProcessStackframe:
 
     mov rsp, rdx    ; rdx = stack top del nuevo proceso
 
-    ; Simula interrupción (en orden: SS, RSP, RFLAGS, CS, RIP)
     push 0x0        ; SS
     push rdx        ; RSP
-    push 0x202      ; RFLAGS (interrupt enable)
-    push 0x8        ; CS (user code segment)
+    push 0x202      ; RFLAGS 
+    push 0x8        ; CS 
     push start      ; RIP (entry point del proceso)
 
-    ; Simula pushState (DEBE respetar el mismo orden que la macro pushState)
     push 0x01       ; RAX
     push 0x02       ; RBX
     push rcx        ; RCX (dirección del main del programa)

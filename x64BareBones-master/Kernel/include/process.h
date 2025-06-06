@@ -15,6 +15,7 @@ typedef struct PCB{
 
     Pid children[MAX_PROCESSES];
     int childrenQty;
+    int retValue;
 
     void * rsp;
     void * rbp;

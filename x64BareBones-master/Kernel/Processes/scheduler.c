@@ -145,7 +145,7 @@ uint64_t createDummyProcess(){
 
 int blockProcess(Pid pid){
   Node * processToBeBlocked = scheduler->processes[pid];
-  PCB * pcb = scheduler->processes[pid]->info;
+  PCB * pcb = (PCB*)scheduler->processes[pid]->info;
   if(pcb->status == BLOCKED || pcb->status == KILLED || pcb == NULL || pid == SHELL_PID || pid == IDLE_PID){
     return -1;
   }
@@ -156,7 +156,7 @@ int blockProcess(Pid pid){
 
 int unblockProcess(Pid pid){
   Node * processToBeUnblocked = scheduler->processes[pid];
-  PCB * pcb = scheduler->processes[pid]->info;
+  PCB * pcb = (PCB*)scheduler->processes[pid]->info;
   if(pcb->status != BLOCKED){
     return -1;
   }
@@ -166,12 +166,12 @@ int unblockProcess(Pid pid){
 }
 
 int getProcessPriority(Pid pid){
-  PCB * pcb = scheduler->processes[pid]->info;
+  PCB * pcb = (PCB*)scheduler->processes[pid]->info;
   return pcb->priority;
 }
 
 int increaseProcessPriority(Pid pid){
-  PCB * pcb = scheduler->processes[pid]->info;
+  PCB * pcb = (PCB*)scheduler->processes[pid]->info;
   if(pcb->priority == HIGHEST_PRIORITY){
     return pcb->priority;
   }
@@ -180,7 +180,7 @@ int increaseProcessPriority(Pid pid){
 }
 
 int decreaseProcessPriority(Pid pid){
-  PCB * pcb = scheduler->processes[pid]->info;
+  PCB * pcb = (PCB*)scheduler->processes[pid]->info;
   if(pcb->priority == LOWEST_PRIORITY){
     return pcb->priority;
   }
@@ -190,10 +190,34 @@ int decreaseProcessPriority(Pid pid){
 
 //TODO: fix proper free
 uint64_t killProcess(Pid pid){
-  PCB * pcb = scheduler->processes[pid]->info;
-  if(pcb == NULL || pid == 0 || pid == 1){
+  PCB * pcb = (PCB*)scheduler->processes[pid]->info;
+  if(pcb == NULL || pid == IDLE_PID || pid == SHELL_PID || pid >= MAX_PROCESSES){
     return -1;
   }
+
+  if(pcb->parentPID != -1){
+    //PCB * parentPCB = (PCB*)scheduler->processes[pcb->parentPID]->info; // comentado porque tira warning al no usarse tdv
+  }
+
+  if(pcb->status != BLOCKED){
+    if(pcb->status == RUNNING){
+      pcb->retValue = -1;
+      yield();
+    }
+    Node * auxNode = scheduler->processes[pid];
+    removeFromQueue(scheduler->readyList, auxNode);
+  }
+
+  
+  // TO-DO: adoption
+  // if(pcb->info->childrenQty > 0){
+  //   for(int i=0; i<pcb->info->childrenQty; i++){
+      
+  //   }
+  // }
+
+
+
   pcb->status = KILLED;
   freeMemory(pcb);
   scheduler->processes[pid] = NULL;
