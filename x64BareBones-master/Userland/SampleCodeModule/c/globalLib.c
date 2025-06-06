@@ -260,6 +260,7 @@ void printProcesses(){
     
     processesToPrint * pr = (processesToPrint *)syscall(24);
     char* state[4] = {"READY", "RUNNING", "BLOCKED", "KILLED"};
+    char* priority[5] = {"LOWEST", "LOW", "AVERAGE", "HIGH", "HIGHEST"};
     
     for(int i = 0; i < pr->cantProcess; i++){
         
@@ -298,7 +299,11 @@ void printProcesses(){
         NewLine();
         printf(" prioridad: ");
         nextX(13);
-        itoaBase((uint64_t)pr->Priority[i], auxBuffer, 10);
+        printf(priority[pr->Status[i]]);
+        NewLine();
+        printf(" hijos: ");
+        nextX(13);
+        itoaBase((uint64_t)pr->childrens[i], auxBuffer, 16);
         printf(auxBuffer);
         NewLine();
         NewLine();

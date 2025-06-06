@@ -14,6 +14,7 @@ typedef struct processesToPrint{
     uint8_t PPIDs[MAX_PROCESSES];
     uint8_t Priority[MAX_PROCESSES];
     uint8_t Status[MAX_PROCESSES];
+    uint8_t childrens[MAX_PROCESSES];
     void * rspList[MAX_PROCESSES];
     void * rbpList[MAX_PROCESSES];
     

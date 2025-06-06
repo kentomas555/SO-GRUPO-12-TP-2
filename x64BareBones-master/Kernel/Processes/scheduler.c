@@ -9,8 +9,8 @@
 typedef struct SchedulerCDT{
   Node * processes[MAX_PROCESSES];
   LinkedListADT readyList;
-  uint16_t currentPID;
-  uint16_t currentPPID;
+  Pid currentPID;
+  Pid currentPPID;
   //uint16_t nextPID;
   uint16_t processQty;
   uint16_t foregroundPID;
@@ -19,6 +19,10 @@ typedef struct SchedulerCDT{
 SchedulerCDT * scheduler = NULL;
 
 static Pid availablePidValue = IDLE_PID;
+
+static uint8_t addChildren(Pid pid);
+
+static uint64_t getAvailablePIDValue();
 
 
 //void startScheduler(PCB * shell, PCB * idle)
@@ -88,11 +92,11 @@ void * switchContext(Pid pid){
   return nextPCB->rsp;
 }
 
-int getCurrentPID(){
+Pid getCurrentPID(){
    return scheduler->currentPID;
 }
 
-int getCurrentPPID(){
+Pid getCurrentPPID(){
    return scheduler->currentPPID;
 }
 
@@ -101,20 +105,46 @@ int getProcessQty(){
 }
 
 //SYSCALL para crear proceso
-//void * processProgram
+
+static uint8_t addChildren(Pid pid){
+  PCB *parent = (PCB *)scheduler->processes[pid]->info;
+  if (parent->childrenQty >= MAX_PROCESSES) {
+    return 0; // no hay más espacio para hijos
+  }
+  parent->children[parent->childrenQty++] = availablePidValue;
+  return 1;
+}
+
+static uint64_t getAvailablePIDValue(){
+  for (uint64_t i = 0; i < MAX_PROCESSES; i++) {
+    if (scheduler->processes[i] == NULL) {
+      return i;
+    }
+  }
+  return MAX_PROCESSES+1;
+}
+
 uint64_t onCreateProcess(char * processName, mainFunc processProgram, char** args, Priority priority, int16_t fds[]){
+  availablePidValue = getAvailablePIDValue();
+  if(availablePidValue == MAX_PROCESSES+1){
+    return -1;
+  }
+
   PCB * myNewProcess = createProcess(processName, processProgram, args, priority, fds);
 
   if(myNewProcess == NULL){
     return -1;
   }
   
-  int currentPID = getCurrentPID();
+  Pid currentPID = getCurrentPID();
 
   myNewProcess->parentPID = currentPID;
 
+  if(availablePidValue != SHELL_PID && availablePidValue != IDLE_PID && !addChildren(currentPID)){
+    return -1;
+  }
+
   myNewProcess->PID = availablePidValue;
-  availablePidValue++;
 
   Node * node = allocMemory(sizeof(Node));
   if(node == NULL){
@@ -245,6 +275,7 @@ processesToPrint * printProcesses(){
     psList->PIDs[i] = ((PCB*)scheduler->processes[i]->info)->PID;
     psList->Priority[i] = (uint8_t)((PCB*)scheduler->processes[i]->info)->priority;
     psList->Status[i] = (uint8_t)((PCB*)scheduler->processes[i]->info)->status;
+    psList->childrens[i] = (uint8_t)((PCB*)scheduler->processes[i]->info)->childrenQty;
     psList->rspList[i] = ((PCB*)scheduler->processes[i]->info)->rsp;
     psList->rbpList[i] = ((PCB*)scheduler->processes[i]->info)->rbp;
     psList->PPIDs[i] = ((PCB*)scheduler->processes[i]->info)->parentPID;
