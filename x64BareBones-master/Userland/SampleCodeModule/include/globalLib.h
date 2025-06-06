@@ -19,28 +19,53 @@ typedef struct processesToPrint{
     
 }processesToPrint;
 
+
+/*====== SCREEN FUNCTIONS ======*/
+
 void ClearScreen(uint64_t HexColor);
-
-void registers();
-
 void NewLine();
 void getBuffer(char * buffer, int size);
-
 void largerFontSize();
 void smallerFontSize();
+
+/*====== AUXILIAR FUNCTIONS ======*/
 
 void itoaBase(uint64_t value, char * buffer, uint32_t base);
 int strCompare(char *str1, char *str2);
 
+/*====== PRINT TIME ======*/
+
 void printCurrentTime();
 
+/*====== SOUNDS ======*/
+
 void sound(uint64_t frecuencia , uint64_t duración );
+
+/*====== WAIT ======*/
+
 void wait(int ticks);
 
-//TP2-SO//
+/*============================================*/
+/*================== TP2-SO ==================*/
+/*============================================*/
+
+
+
+/*====== PRINT PROCESSES ======*/
+
 void printProcesses();
 
-//EXCEPTION TRIGGERS:
+/*====== TESTS ======*/
+
+void memoryManagerTest();
+void processTest();
+void priorityTest();
+void syncroTest();
+void noSyncroTest();
+
+
+/*====== EXCEPTION TRIGGERS ======*/
+
 void zeroDivisionTrigger();
 void invalidOpcodeTrigger();
 

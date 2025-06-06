@@ -11,20 +11,7 @@ uint64_t bgColor = 0x00;
 int minX = 0;
 char buffer[48];
 
-//write
-
-void charDelete(int x, int y, char size){
-    if(size == 1){
-      drawRectangle(x, y, 8, 8, bgColor);
-    } else if (size == 2){
-        drawRectangle(x, y, 8, 12, bgColor);
-    } else {
-        drawRectangle(x, y, 16, 16, bgColor);
-    }
-}
-
-
-//read
+/*====== STATIC FUNCTIONS ======*/
 
 static int HorizontalOffset(char fontSize){
     if (fontSize == 3){
@@ -41,6 +28,19 @@ static void nextX(int i){
 static void prevX(int i){
     setCurrentX(getCurrentX() - HorizontalOffset(getFontSize()) * i);
 }
+
+/*====== SCREEN FUNCTIONS ======*/
+
+void charDelete(int x, int y, char size){
+    if(size == 1){
+      drawRectangle(x, y, 8, 8, bgColor);
+    } else if (size == 2){
+        drawRectangle(x, y, 8, 12, bgColor);
+    } else {
+        drawRectangle(x, y, 16, 16, bgColor);
+    }
+}
+
 
 void getBuffer(char * buffer, int size){
     printf("$");
@@ -88,6 +88,89 @@ void ClearScreen(uint64_t HexColor){
     setCurrentX(0);
     setCurrentY(0);
 }
+
+void NewLine(){
+    int offset;
+    if (getFontSize() == 3){
+        offset = 16;
+    } else if (getFontSize() == 2){
+        offset = 12;
+    } else {
+        offset = 8;
+    }
+    setCurrentY(getCurrentY()+offset);
+    setCurrentX(0);
+    if (getCurrentY() >= 750){
+        ClearScreen(bgColor);
+    }
+}
+
+void largerFontSize(){
+    if (getFontSize() == 3){
+        printf("No se puede agrandar mas la letra");
+        NewLine();
+        NewLine();
+    } else {
+        increaseFontSize();
+    }
+}
+
+void smallerFontSize(){
+    if (getFontSize() == 1){
+        printf("No se puede achicar mas la letra");
+        NewLine();
+        NewLine();
+    } else {
+        decreaseFontSize();
+    }
+}
+
+/*====== AUXILIAR FUNCTION ======*/
+
+void itoaBase(uint64_t value, char * buffer, uint32_t base)
+{
+	char *p = buffer;
+	char *p1, *p2;
+	uint32_t digits = 0;
+
+	//Calculate characters for each digit
+	do
+	{
+		uint32_t remainder = value % base;
+		*p++ = (remainder < 10) ? remainder + '0' : remainder + 'A' - 10;
+		digits++;
+	}
+	while (value /= base);
+
+	// Terminate string in buffer.
+	*p = 0;
+
+	//Reverse string in buffer.
+	p1 = buffer;
+	p2 = p - 1;
+	while (p1 < p2)
+	{
+		char tmp = *p1;
+		*p1 = *p2;
+		*p2 = tmp;
+		p1++;
+		p2--;
+	}
+
+}
+
+int strCompare(char *str1, char *str2) {
+    while (*str1 != 0 && *str2 != 0) {
+        if (*str1 != *str2) {
+            return 0;
+        }
+        str1++;
+        str2++;
+    }
+    return (*str1 == 0 && *str2 == 0) ? 1 : 0;
+}
+
+/*====== PRINT TIME ======*/
 
 void printCurrentTime(){
     int xAux = getCurrentX();
@@ -153,90 +236,15 @@ void printCurrentTime(){
     NewLine();
 }
 
-void NewLine(){
-    int offset;
-    if (getFontSize() == 3){
-        offset = 16;
-    } else if (getFontSize() == 2){
-        offset = 12;
-    } else {
-        offset = 8;
-    }
-    setCurrentY(getCurrentY()+offset);
-    setCurrentX(0);
-    if (getCurrentY() >= 750){
-        ClearScreen(bgColor);
-    }
-}
-
-void largerFontSize(){
-    if (getFontSize() == 3){
-        printf("No se puede agrandar mas la letra");
-        NewLine();
-        NewLine();
-    } else {
-        increaseFontSize();
-    }
-}
-
-void smallerFontSize(){
-    if (getFontSize() == 1){
-        printf("No se puede achicar mas la letra");
-        NewLine();
-        NewLine();
-    } else {
-        decreaseFontSize();
-    }
-}
-
-void itoaBase(uint64_t value, char * buffer, uint32_t base)
-{
-	char *p = buffer;
-	char *p1, *p2;
-	uint32_t digits = 0;
-
-	//Calculate characters for each digit
-	do
-	{
-		uint32_t remainder = value % base;
-		*p++ = (remainder < 10) ? remainder + '0' : remainder + 'A' - 10;
-		digits++;
-	}
-	while (value /= base);
-
-	// Terminate string in buffer.
-	*p = 0;
-
-	//Reverse string in buffer.
-	p1 = buffer;
-	p2 = p - 1;
-	while (p1 < p2)
-	{
-		char tmp = *p1;
-		*p1 = *p2;
-		*p2 = tmp;
-		p1++;
-		p2--;
-	}
-
-}
-
-int strCompare(char *str1, char *str2) {
-    while (*str1 != 0 && *str2 != 0) {
-        if (*str1 != *str2) {
-            return 0;
-        }
-        str1++;
-        str2++;
-    }
-    return (*str1 == 0 && *str2 == 0) ? 1 : 0;
-}
+/*====== SOUND ======*/
 
 void sound(uint64_t frecuencia , uint64_t duración ){
     soundOn(frecuencia);
     wait(duración);
     soundOff();
 }
+
+/*====== WAIT ======*/
 
 void wait(int ticks){
     int aux = ticks_elapsed();
@@ -245,6 +253,8 @@ void wait(int ticks){
     }
     return;
 }
+
+/*====== PRINT PROCESSES ======*/
 
 void printProcesses(){
     
@@ -295,7 +305,29 @@ void printProcesses(){
     }
 }
 
-//EXCEPTION TRIGGERS:
+/*====== TESTS ======*/
+
+void memoryManagerTest(){
+    return;
+}
+
+void processTest(){
+    return;
+}
+
+void priorityTest(){
+    return;
+}
+
+void syncroTest(){
+    return;
+}
+
+void noSyncroTest(){
+    return;
+}
+
+/*====== EXCEPTIONS TRIGGER ======*/
 
 void zeroDivisionTrigger(){
     throw_zero_division();

@@ -7,9 +7,8 @@ char shellBuffer[48];
 int bgColorIndex = 0;
 
 static void help(){
-    printf("Accediste a la funcion HELP");
-    NewLine();
     printf("Comandos disponibles:");
+    NewLine();
     NewLine();
     printf("CLEAR - Limpia la consola");
     NewLine();
@@ -32,7 +31,6 @@ static void help(){
     NewLine();
     printf("Comandos para TP2 SO 1C2025:");
     NewLine();
-    printf("TESTMM - Test para alocar memoria con MM");
     NewLine();
     printf("GETPID - Imprime el PID del proceso corriendo");
     NewLine();
@@ -61,6 +59,16 @@ static void help(){
     printf("FILTER - Filtra las vocales del input");
     NewLine();
     printf("PHYLO - Comienza el proceso de Filosofos comensales");
+    NewLine();
+    printf("TESTMM - Test del Memory Manager");
+    NewLine();
+    printf("TESTPROCESS - Test de procesos");
+    NewLine();
+    printf("TESTPRIO - Test para prioridades");
+    NewLine();
+    printf("TESTSYNC - Test para synchro");
+    NewLine();
+    printf("TESTNOSYNC - TEST para no synchro");
     NewLine();
     NewLine();
     printf("Para ver el valor de los registros, presione TAB");
