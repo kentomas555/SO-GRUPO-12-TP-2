@@ -6,6 +6,7 @@
     "stdint.h": "c",
     "memorymanager.h": "c",
     "process.h": "c",
-    "stddef.h": "c"
+    "stddef.h": "c",
+    "globallib.h": "c"
   }
 }

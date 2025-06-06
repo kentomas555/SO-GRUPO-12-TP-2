@@ -1,6 +1,7 @@
 #include <stdarg.h>
 #include <stdint.h>
 #include <globalLib.h>
+#include <syscall.h>
 #include <snakeApp.h>
 char shellBuffer[48];
 int bgColorIndex = 0;
@@ -42,6 +43,24 @@ static void help(){
     printf("LOOP - Imprime su ID con un saludo cada n segundos.");
     NewLine();
     printf("KILL - Mata un proceso dado su ID");
+    NewLine();
+    printf("    uso: KILL (process pid)");
+    NewLine();
+    printf("NICE - Cambia la prioridad de un proceso");
+    NewLine();
+    printf("    uso: NICE (process pid) (new priority)");
+    NewLine();
+    printf("BLOCK - Cambia el estado de un proceso entre bloqueado y listo");
+    NewLine();
+    printf("    uso: BLOCK (process pid)");
+    NewLine();
+    printf("CAT - Imprime el stdin tal como lo recibe");
+    NewLine();
+    printf("WC - Cuenta la cantidad de líneas del input");
+    NewLine();
+    printf("FILTER - Filtra las vocales del input");
+    NewLine();
+    printf("PHYLO - Comienza el proceso de Filosofos comensales");
     NewLine();
     NewLine();
     printf("Para ver el valor de los registros, presione TAB");
@@ -94,8 +113,6 @@ static void bufferInterpreter(){
         changeColor();
     } else if (strCompare(shellBuffer, "TIME")){
         printCurrentTime();
-    //} else if(strCompare(shellBuffer, "REGISTERS")){
-    //    registers();
     } else if (strCompare(shellBuffer, "SNAKE")){
         startGame();
     } else if (strCompare(shellBuffer, "ZERODIV")){
@@ -106,7 +123,7 @@ static void bufferInterpreter(){
         allocMemoryUser(10);
     } else if (strCompare(shellBuffer, "PS")){
         printProcesses();
-    }else if (strCompare(shellBuffer, "CREATEDUMMY")){
+    } else if (strCompare(shellBuffer, "CREATEDUMMY")){
         createDummyProcess();
     } else {
         printf("Comando no reconocido. Use HELP para mas informacion");

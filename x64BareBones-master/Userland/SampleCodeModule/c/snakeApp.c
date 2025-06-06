@@ -1,5 +1,7 @@
 #include <snakeApp.h>
 #include <globalLib.h>
+#include <syscall.h>
+
 typedef struct {
     char player;
     int nextDirectionX;

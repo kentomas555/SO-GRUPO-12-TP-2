@@ -1,33 +1,17 @@
 #include <libasm.h>
 #include <globalLib.h>
+#include <syscall.h>
 
 typedef void (*function)();
 
-int currentX = 0;
-int currentY = 0;
-char fontSize = 2;
+
 
 uint64_t bgColor = 0x00;
 
 int minX = 0;
 char buffer[48];
 
-void moveCurrentX(int newX){
-    currentX = newX;
-}
-
-void moveCurrentY(int newY){
-    currentY = newY;    
-}
-
 //write
-void printf(char *string){
-    syscall(4, currentX, currentY, fontSize, string);
-}
-
-void printfPos(char *string, int x, int y, char fontSizePos ){
-    syscall(4, x, y, fontSizePos, string);
-}
 
 void charDelete(int x, int y, char size){
     if(size == 1){
@@ -42,29 +26,29 @@ void charDelete(int x, int y, char size){
 
 //read
 
-char getChar(){
-
-    char ret = syscall(3);
-
-    while (ret == -1)
-    {
-        ret = syscall(3);
-    }
-    return ret;
-    
+static int HorizontalOffset(char fontSize){
+    if (fontSize == 3){
+        return 16;
+    } else {
+        return 8;
+    } 
 }
 
-char getKeyDown(){
-    return (char)syscall(3);
+static void nextX(int i){
+    setCurrentX(getCurrentX() + HorizontalOffset(getFontSize()) * i);
+}
+
+static void prevX(int i){
+    setCurrentX(getCurrentX() - HorizontalOffset(getFontSize()) * i);
 }
 
 void getBuffer(char * buffer, int size){
     printf("$");
-    currentX += HorizontalOffset(fontSize);
+    nextX(1);
     printf(">");
-    currentX += HorizontalOffset(fontSize);
+    nextX(1);
     int aux = minX;
-    minX = currentX;
+    minX = getCurrentX();
     char end = 0;
 
     int i = 0;
@@ -78,12 +62,12 @@ void getBuffer(char * buffer, int size){
         buffAux[0] = buffer[i];
         printf(buffAux);
         if (buffer[i] >= 32 && buffer[i] <=  126){
-            currentX += HorizontalOffset(fontSize);
-        } else if (buffer[i] == 8 && currentX > minX){
-            currentX -= HorizontalOffset(fontSize);
+            nextX(1);
+        } else if (buffer[i] == 8 && getCurrentX() > minX){
+            prevX(1);
             i--;
             buffer[i] = 32; 
-            charDelete(currentX, currentY, fontSize);
+            charDelete(getCurrentX(), getCurrentY(), getFontSize());
             i--;
         } else if (i >= 0) {
             i--;
@@ -95,129 +79,113 @@ void getBuffer(char * buffer, int size){
     buffer[i] = 0;
     NewLine();
     minX = aux;
-    currentX = minX;
+    setCurrentX(minX);
 }
 
 void ClearScreen(uint64_t HexColor){
     bgColor = HexColor;
-    syscall(5, HexColor, 0, 0);
-    currentX = 0;
-    currentY = 0;
-}
-
-void drawRectangle(int x , int y, int height, int width, uint64_t hexColor){
-    syscall(6, x , y, height, width,  hexColor);
+    initDisplay(HexColor);
+    setCurrentX(0);
+    setCurrentY(0);
 }
 
 void printCurrentTime(){
-    int xAux = currentX;
+    int xAux = getCurrentX();
     char timeBuffer[10]; 
 
     date time = {0};
     
-    syscall(13, &time);
+    getDate(&time);
     int aux = time.hours;
 	itoaBase(aux, timeBuffer, 10);
     //getCurrentHours(timeBuffer);
     printf(timeBuffer);
-    currentX += HorizontalOffset(fontSize) * 2;
+    nextX(2);
     
     printf(":");
-    currentX += HorizontalOffset(fontSize);
+    nextX(1);
 
-    syscall(13, &time);
+    getDate(&time);
     aux = time.minutes;
 	itoaBase(aux, timeBuffer, 10);
     //getCurrentMinutes(timeBuffer);
     printf(timeBuffer);
-    currentX += HorizontalOffset(fontSize) * 2;
+    nextX(2);
     
     printf(":");
-    currentX += HorizontalOffset(fontSize);
+    nextX(1);
 
-    syscall(13, &time);
+    getDate(&time);
     aux = time.seconds;
 	itoaBase(aux, timeBuffer, 10);
     //getCurrentSeconds(timeBuffer);
     printf(timeBuffer);
-    currentX = xAux;
+    setCurrentX(xAux);
     NewLine();
 
-    syscall(13, &time);
+    getDate(&time);
     aux = time.day;
 	itoaBase(aux, timeBuffer, 10);
     //getCurrentDay(timeBuffer);
     printf(timeBuffer);
-    currentX += HorizontalOffset(fontSize) * 2;
+    nextX(2);
     
     printf("/");
-    currentX += HorizontalOffset(fontSize);
+    nextX(1);
     
-    syscall(13, &time);
+    getDate(&time);
     aux = time.month;
 	itoaBase(aux, timeBuffer, 10);
     //getCurrentMonth(timeBuffer);
     printf(timeBuffer);
-    currentX += HorizontalOffset(fontSize) * 2;
+    nextX(2);
     
     printf("/");
-    currentX += HorizontalOffset(fontSize);
+    nextX(1);
 
-    syscall(13, &time);
+    getDate(&time);
     aux = time.year;
 	itoaBase(aux, timeBuffer, 10);
     //getCurrentYear(timeBuffer);
     printf(timeBuffer);
-    currentX = xAux;
+    setCurrentX(xAux);
     NewLine();
     NewLine();
-}
-
-void drawCircle(int x , int y, int radius, uint64_t hexColor){
-    syscall(7, x, y, radius, hexColor);
 }
 
 void NewLine(){
     int offset;
-    if (fontSize == 3){
+    if (getFontSize() == 3){
         offset = 16;
-    } else if (fontSize == 2){
+    } else if (getFontSize() == 2){
         offset = 12;
     } else {
         offset = 8;
     }
-    currentY += offset;
-    currentX = 0;
-    if (currentY >= 750){
+    setCurrentY(getCurrentY()+offset);
+    setCurrentX(0);
+    if (getCurrentY() >= 750){
         ClearScreen(bgColor);
     }
 }
 
-int HorizontalOffset(char fontSize){
-    if (fontSize == 3){
-        return 16;
-    } else {
-        return 8;
-    } 
-}
-
 void largerFontSize(){
-    if (fontSize == 3){
+    if (getFontSize() == 3){
         printf("No se puede agrandar mas la letra");
         NewLine();
         NewLine();
     } else {
-        fontSize++;
+        increaseFontSize();
     }
 }
 
 void smallerFontSize(){
-    if (fontSize == 1){
+    if (getFontSize() == 1){
         printf("No se puede achicar mas la letra");
         NewLine();
         NewLine();
     } else {
-        fontSize--;
+        decreaseFontSize();
     }
 }
 
@@ -264,27 +232,10 @@ int strCompare(char *str1, char *str2) {
     return (*str1 == 0 && *str2 == 0) ? 1 : 0;
 }
 
-int seconds_elapsed(){
-    return syscall(8);
-}
-
-
-void soundOn(uint64_t frecuencia){
-    syscall(9, frecuencia);
-}
-
-void soundOff(){
-    syscall(10);
-}
-
 void sound(uint64_t frecuencia , uint64_t duración ){
     soundOn(frecuencia);
     wait(duración);
     soundOff();
-}
-
-int ticks_elapsed(){
-    return syscall(11);
 }
 
 void wait(int ticks){
@@ -293,57 +244,6 @@ void wait(int ticks){
 
     }
     return;
-}
-
-//void * allocMemory(MemoryManagerADT mm, size_t memoryToAllocate) 
-
-void * allocMemoryUser(uint32_t size){
-    uint64_t aux = syscall(14, size);
-    return (void *) aux;
-}
-
-void freeMemoryUser(){
-    syscall(15);
-}
-
-Pid getpid(){
-    return syscall(17);
-}
-
-int createNewProcess(char * processName, void * processProgram, char** args, Priority priority, int16_t fds[]){
-    return syscall(18, processName,  processProgram, args, priority, fds);
-}
-
-int createDummyProcess(){
-    return syscall(19);
-}
-
-int blockProcess(Pid pid){
-    return syscall(21, pid);
-}
-
-int unblockProcess(Pid pid){
-    return syscall(22, pid);
-}
-
-int killProcess(Pid pid){
-    return syscall(23, pid);
-}
-
-int getPriority(Pid pid){
-    return syscall(25, pid);
-}
-
-int increasePriority(Pid pid){
-    return syscall(26, pid);
-}
-
-int decreasePriority(Pid pid){
-    return syscall(27, pid);
-}
-
-void hlt(){
-    syscall(29);
 }
 
 void printProcesses(){
@@ -357,37 +257,37 @@ void printProcesses(){
         
         NewLine();
         printf("Proceso: ");
-        currentX += HorizontalOffset(fontSize) * 9;
+        nextX(9);
         printf(pr->names[i]);
         NewLine();
         printf("-------------");
         NewLine();
         printf(" PID: ");
-        currentX += HorizontalOffset(fontSize) * 6;
+        nextX(6);
         itoaBase((uint64_t)pr->PIDs[i], auxBuffer, 10);
         printf(auxBuffer);
         NewLine();
         printf(" PPID: ");
-        currentX += HorizontalOffset(fontSize) * 6;
+        nextX(6);
         itoaBase((uint64_t)pr->PPIDs[i], auxBuffer, 10);
         printf(auxBuffer);
         NewLine();
         printf(" rsp: 0x");
-        currentX += HorizontalOffset(fontSize) * 8;
+        nextX(8);
         itoaBase((uint64_t)pr->rspList[i], auxBuffer, 16);
         printf(auxBuffer);
         NewLine();
         printf(" rbp: 0x");
-        currentX += HorizontalOffset(fontSize) * 8;
+        nextX(8);
         itoaBase((uint64_t)pr->rbpList[i], auxBuffer, 16);
         printf(auxBuffer);
         NewLine();
         printf(" status: ");
-        currentX += HorizontalOffset(fontSize) * 8;
+        nextX(8);
         printf(state[pr->Status[i]]);
         NewLine();
         printf(" prioridad: ");
-        currentX += HorizontalOffset(fontSize) * 13;
+        nextX(13);
         itoaBase((uint64_t)pr->Priority[i], auxBuffer, 10);
         printf(auxBuffer);
         NewLine();
