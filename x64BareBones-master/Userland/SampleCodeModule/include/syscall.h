@@ -67,6 +67,7 @@ typedef int Pid;
 typedef enum {LOWEST_PRIORITY = 0, LOW_PRIORITY, AVERAGE_PRIORITY, HIGH_PRIORITY, HIGHEST_PRIORITY} Priority;
 
 void * allocMemoryUser(uint32_t size);
+void freeMemoryUser();
 int getpid();
 
 /*====== NEW PROCESS SYSCALL ======*/
@@ -85,6 +86,15 @@ int decreasePriority(Pid pid);
 /*====== HLT SYSCALL ======*/
 
 void hlt();
+
+/*====== SEMAPHORE SYSCALLS======*/
+
+void * semInit(char * semName, int32_t value);
+void semDestroy(char * semName);
+void semPost(char * semName);
+void semWait(char * semName);
+
+/*====== PIPE SYSCALLS ======*/
 
 
 int64_t my_getpid();

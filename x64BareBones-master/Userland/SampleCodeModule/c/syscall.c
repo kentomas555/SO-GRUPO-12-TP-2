@@ -163,6 +163,26 @@ void hlt(){
     syscall(29);
 }
 
+/*====== SEMAPHORES ======*/
+
+void * semInit(char * semName, int32_t value){
+    return (void *)syscall(30, semName, value);
+}
+
+void semDestroy(char * semName){
+    syscall(31, semName);
+}
+
+void semPost(char * semName){
+    syscall(32, semName);
+}
+
+void semWait(char * semName){
+    syscall(33, semName);
+}
+
+/*====== PIPES ======*/
+
 // int64_t my_getpid() {
 //   return 0;
 // }
