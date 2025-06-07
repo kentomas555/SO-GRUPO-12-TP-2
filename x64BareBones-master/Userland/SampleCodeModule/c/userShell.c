@@ -133,10 +133,87 @@ static void bufferInterpreter(){
         printProcesses();
     } else if (strCompare(shellBuffer, "CREATEDUMMY")){
         createDummyProcess();
+    } else if (strCompare(shellBuffer, "LOOP")){
+        /*====TODO===*/
+        NewLine();
+        printf("Por implementar ...");
+        NewLine();
+        NewLine();
+        handleLoop();
+    } else if (strCompareFirstComand(shellBuffer, "KILL ")){
+        /*====TODO===*/
+        NewLine();
+        printf("Por implementar ...");
+        NewLine();
+        NewLine();
+        handleKill(shellBuffer);
     } else if (strCompareFirstComand(shellBuffer, "NICE ")){
         handleNice(shellBuffer);
     } else if (strCompareFirstComand(shellBuffer, "BLOCK ")){
         handleBlock(shellBuffer);
+    } else if (strCompareFirstComand(shellBuffer, "CAT")){
+        /*====TODO===*/
+        NewLine();
+        printf("Por implementar ...");
+        NewLine();
+        NewLine();
+        handleCat(shellBuffer);
+    } else if (strCompareFirstComand(shellBuffer, "WC")){
+        /*====TODO===*/
+        NewLine();
+        printf("Por implementar ...");
+        NewLine();
+        NewLine();
+        handleWC(shellBuffer);
+    } else if (strCompareFirstComand(shellBuffer, "FILTER")){
+        /*====TODO===*/
+        NewLine();
+        printf("Por implementar ...");
+        NewLine();
+        NewLine();
+        handleFilter(shellBuffer);
+    } else if (strCompare(shellBuffer, "PHYLO")){
+        /*====TODO===*/
+        NewLine();
+        printf("Por implementar ...");
+        NewLine();
+        NewLine();
+        handlePhylo();
+    } else if (strCompare(shellBuffer, "TESTMM")){
+        /*====TODO===*/
+        NewLine();
+        printf("Por implementar ...");
+        NewLine();
+        NewLine();
+        handleMemoryManagerTest();
+    } else if (strCompare(shellBuffer, "TESTPROCESS")){
+        /*====TODO===*/
+        NewLine();
+        printf("Por implementar ...");
+        NewLine();
+        NewLine();
+        handleProcessTest();
+    } else if (strCompare(shellBuffer, "TESTPRIO")){
+        /*====TODO===*/
+        NewLine();
+        printf("Por implementar ...");
+        NewLine();
+        NewLine();
+        handlePriorityTest();
+    } else if (strCompare(shellBuffer, "TESTSYNC")){
+        /*====TODO===*/
+        NewLine();
+        printf("Por implementar ...");
+        NewLine();
+        NewLine();
+        handleSyncroTest();
+    } else if (strCompare(shellBuffer, "TESTNOSYNC")){
+        /*====TODO===*/
+        NewLine();
+        printf("Por implementar ...");
+        NewLine();
+        NewLine();
+        handleNoSyncroTest();
     } else {
         printf("Comando no reconocido. Use HELP para mas informacion");
         NewLine();

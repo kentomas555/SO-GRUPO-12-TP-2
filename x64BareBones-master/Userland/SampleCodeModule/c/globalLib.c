@@ -521,27 +521,66 @@ void printProcesses(){
     NewLine();
 }
 
+void handleLoop(){
+    //TODO
+    return;
+}
+
+void handleKill(char * buffer){
+    //TODO
+    return;
+}
+
+
+/*====== INPUT CONTROLLER ======*/
+
+void handleCat(char * buffer){
+    //TODO
+    return;
+}
+
+void handleWC(char * buffer){
+    //TODO
+    return;
+}
+
+void handleFilter(char * buffer){
+    //TODO
+    return;
+}
+
+/*====== PHYLO ======*/
+
+void handlePhylo(){
+    return;
+}
+
 /*====== TESTS ======*/
 
-void memoryManagerTest(){
+void handleMemoryManagerTest(){
+    //TODO
     // char * args[] = {MEMORY_SIZE};
     // createNewProcess("Memory Test",(mainFunc)test_mm,);
     return;
 }
 
-void processTest(){
+void handleProcessTest(){
+    //TODO
     return;
 }
 
-void priorityTest(){
+void handlePriorityTest(){
+    //TODO
     return;
 }
 
-void syncroTest(){
+void handleSyncroTest(){
+    //TODO
     return;
 }
 
-void noSyncroTest(){
+void handleNoSyncroTest(){
+    //TODO
     return;
 }
 

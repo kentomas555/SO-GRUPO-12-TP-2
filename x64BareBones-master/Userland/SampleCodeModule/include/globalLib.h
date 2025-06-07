@@ -4,8 +4,6 @@
 #include <stdint.h>
 #include <stddef.h>
 
-
-
 #define MEMORY_SIZE
 
 #define MAX_PID_LENGTH 3
@@ -18,9 +16,6 @@
 #define LOWEST_PRIO 0
 
 typedef int (*mainFunc)(int argc, char **args);
-
-
-
 
 /*====== SCREEN FUNCTIONS ======*/
 
@@ -60,14 +55,25 @@ void handleBlock(char * buffer);
 void handleNice(char * buffer);
 void handleGetPid();
 void printProcesses();
+void handleKill(char * buffer);
+void handleLoop();
+
+/*====== INPUT CONTROLLER ======*/
+
+void handleCat(char * buffer);
+void handleWC(char * buffer);
+void handleFilter(char * buffer);
+
+/*======  ======*/
+void handlePhylo();
 
 /*====== TESTS ======*/
 
-void memoryManagerTest();
-void processTest();
-void priorityTest();
-void syncroTest();
-void noSyncroTest();
+void handleMemoryManagerTest();
+void handleProcessTest();
+void handlePriorityTest();
+void handleSyncroTest();
+void handleNoSyncroTest();
 
 
 /*====== EXCEPTION TRIGGERS ======*/
