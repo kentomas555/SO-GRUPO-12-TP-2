@@ -10,15 +10,15 @@ char fontSize = 2;
 /*====== READ ======*/
 
 char getChar(){
-  char ret = syscall(3);
+  char ret = syscall(SYSCALL_READ);
   while (ret == -1){
-    ret = syscall(3);
+    ret = syscall(SYSCALL_READ);
   }
   return ret;
 }
 
 char getKeyDown(){
-    return (char)syscall(3);
+    return (char)syscall(SYSCALL_READ);
 }
 
 
@@ -53,132 +53,142 @@ void decreaseFontSize(){
 }
 
 void printf(char *string){
-    syscall(4, currentX, currentY, fontSize, string);
+    syscall(SYSCALL_WRITE, currentX, currentY, fontSize, string);
 }
 
 void printfPos(char *string, int x, int y, char fontSizePos ){
-    syscall(4, x, y, fontSizePos, string);
+    syscall(SYSCALL_WRITE, x, y, fontSizePos, string);
 }
 
 /*====== INIT DISPLAY ======*/
 
 void initDisplay(uint64_t HexColor){
-  syscall(5, HexColor, 0, 0);
+  syscall(SYSCALL_INIT_DISPLAY, HexColor, 0, 0);
 }
 
 /*====== RECTANGLE ======*/
 
 void drawRectangle(int x , int y, int height, int width, uint64_t hexColor){
-    syscall(6, x , y, height, width,  hexColor);
+    syscall(SYSCALL_DRAW_RECTANGLE, x , y, height, width,  hexColor);
 }
 
 /*====== CIRCLE  ======*/
 
 void drawCircle(int x , int y, int radius, uint64_t hexColor){
-    syscall(7, x, y, radius, hexColor);
+    syscall(SYSCALL_DRAW_CIRCLE, x, y, radius, hexColor);
 }
 
 /*====== SECONDS ELAPSED ======*/
 
 int seconds_elapsed(){
-    return syscall(8);
+    return syscall(SYSCALL_SECONDS_ELAPSED);
 }
 
 /*====== SOUND ON AND OFF ======*/
 
 void soundOn(uint64_t frecuencia){
-    syscall(9, frecuencia);
+    syscall(SYSCALL_SOUND_ON, frecuencia);
 }
 
 void soundOff(){
-    syscall(10);
+    syscall(SYSCALL_SOUND_OFF);
 }
 
 /*====== TICKS ELAPSED ======*/
 
 int ticks_elapsed(){
-    return syscall(11);
+    return syscall(SYSCALL_TICKS_ELAPSED);
 }
 
 /*====== DATE ======*/
 
 void getDate(date * time){
-  syscall(13, time);
+  syscall(SYSCALL_DATE, time);
 }
 
 /*====== MEMORY MANAGER ======*/
 
 void * allocMemoryUser(uint32_t size){
-    uint64_t aux = syscall(14, size);
+    uint64_t aux = syscall(SYSCALL_ALLOC_MEMORY, size);
     return (void *) aux;
 }
 
 void freeMemoryUser(){
-    syscall(15);
+    syscall(SYSCALL_FREE_MEMORY);
 }
 
 /*====== NEW PROCESS ======*/
 
 int createNewProcess(char * processName, void * processProgram, char** args, Priority priority, int16_t fds[]){
-    return syscall(18, processName,  processProgram, args, priority, fds);
+    return syscall(SYSCALL_CREATE_PROCESS, processName,  processProgram, args, priority, fds);
 }
 
 int createDummyProcess(){
-    return syscall(19);
+    return syscall(SYSCALL_CREATE_DUMMY_PROCESS);
 }
 
 /*====== EXISTING PROCESSES ======*/
 
 Pid getpid(){
-    return syscall(17);
+    return syscall(SYSCALL_GET_PID);
 }
 
 int blockProcess(Pid pid){
-    return syscall(21, pid);
+    return syscall(SYSCALL_BLOCK_PROCESS, pid);
 }
 
 int unblockProcess(Pid pid){
-    return syscall(22, pid);
+    return syscall(SYSCALL_UNBLOCK_PROCESS, pid);
 }
 
 int killProcess(Pid pid){
-    return syscall(23, pid);
+    return syscall(SYSCALL_KILL_PROCESS, pid);
+}
+
+processesList * getProcesses(){
+    return (processesList *)syscall(SYSCALL_LIST_PROCESSES);
 }
 
 int getPriority(Pid pid){
-    return syscall(25, pid);
+    return syscall(SYSCALL_GET_PRIORITY, pid);
 }
 
 int increasePriority(Pid pid){
-    return syscall(26, pid);
+    return syscall(SYSCALL_INCREASE_PRIORITY, pid);
 }
 
 int decreasePriority(Pid pid){
-    return syscall(27, pid);
+    return syscall(SYSCALL_DECREASE_PRIORITY, pid);
 }
+
+int nice(Pid pid, Priority priority){
+    return syscall(SYSCALL_NICE, pid, priority);
+}
+
+//FALTA WAITPID
 
 /*====== HLT ======*/
 
 void hlt(){
-    syscall(29);
+    syscall(SYSCALL_HLT);
 }
 
 /*====== SEMAPHORES ======*/
 
 void * semInit(char * semName, int32_t value){
-    return (void *)syscall(30, semName, value);
+    return (void *)syscall(SYSCALL_SEM_INIT, semName, value);
 }
 
 void semDestroy(char * semName){
-    syscall(31, semName);
+    syscall(SYSCALL_SEM_DESTROY, semName);
 }
 
 void semPost(char * semName){
-    syscall(32, semName);
+    syscall(SYSCALL_SEM_POST, semName);
 }
 
 void semWait(char * semName){
-    syscall(33, semName);
+    syscall(SYSCALL_SEM_WAIT, semName);
 }
 
 /*====== PIPES ======*/

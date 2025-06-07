@@ -4,24 +4,22 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#define MAX_PROCESSES 128
+
 
 #define MEMORY_SIZE
 
+#define MAX_PID_LENGTH 3
+#define MAX_PRIORITY_LENGTH 8
+
+#define HIGHEST_PRIO 4
+#define HIGH_PRIO 3
+#define AVERAGE_PRIO 2
+#define LOW_PRIO 1
+#define LOWEST_PRIO 0
+
 typedef int (*mainFunc)(int argc, char **args);
 
-typedef struct processesToPrint{
-    uint16_t cantProcess;
-    char * names[MAX_PROCESSES];
-    uint8_t PIDs[MAX_PROCESSES];
-    uint8_t PPIDs[MAX_PROCESSES];
-    uint8_t Priority[MAX_PROCESSES];
-    uint8_t Status[MAX_PROCESSES];
-    uint8_t childrens[MAX_PROCESSES];
-    void * rspList[MAX_PROCESSES];
-    void * rbpList[MAX_PROCESSES];
-    
-}processesToPrint;
+
 
 
 /*====== SCREEN FUNCTIONS ======*/
@@ -36,6 +34,7 @@ void smallerFontSize();
 
 void itoaBase(uint64_t value, char * buffer, uint32_t base);
 int strCompare(char *str1, char *str2);
+int strCompareFirstComand(char *str1, char *str2);
 
 /*====== PRINT TIME ======*/
 
@@ -57,6 +56,7 @@ void wait(int ticks);
 
 /*====== PRINT PROCESSES ======*/
 
+void handleNice(char * buffer);
 void handleGetPid();
 void printProcesses();
 

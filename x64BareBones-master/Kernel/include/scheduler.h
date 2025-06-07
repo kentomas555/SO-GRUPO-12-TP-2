@@ -29,6 +29,7 @@ typedef struct processesToPrint{
     uint8_t childrens[MAX_PROCESSES];
     void * rspList[MAX_PROCESSES];
     void * rbpList[MAX_PROCESSES];
+    uint32_t processQty;
     
 } processesToPrint;
 
@@ -48,6 +49,7 @@ void * switchContext(Pid pid);
 
 int increaseProcessPriority(Pid pid);
 int decreaseProcessPriority(Pid pid);
+int nice(Pid pid,Priority priority);
 
 void * switchContext(Pid pid);
 

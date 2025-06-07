@@ -133,6 +133,8 @@ static void bufferInterpreter(){
         printProcesses();
     } else if (strCompare(shellBuffer, "CREATEDUMMY")){
         createDummyProcess();
+    } else if (strCompareFirstComand(shellBuffer, "NICE ")){
+        handleNice(shellBuffer);
     } else {
         printf("Comando no reconocido. Use HELP para mas informacion");
         NewLine();

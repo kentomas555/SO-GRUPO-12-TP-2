@@ -218,6 +218,15 @@ int decreaseProcessPriority(Pid pid){
   return pcb->priority;
 }
 
+int nice(Pid pid,Priority priority){
+  PCB * pcb = (PCB*)scheduler->processes[pid]->info;
+  if(priority > HIGHEST_PRIORITY || priority < LOWEST_PRIORITY){
+    return -1;
+  }
+  pcb->priority = priority;
+  return 1;
+}
+
 //TODO: fix proper free
 uint64_t killProcess(Pid pid){
   PCB * pcb = (PCB*)scheduler->processes[pid]->info;
@@ -280,5 +289,6 @@ processesToPrint * printProcesses(){
     psList->rbpList[i] = ((PCB*)scheduler->processes[i]->info)->rbp;
     psList->PPIDs[i] = ((PCB*)scheduler->processes[i]->info)->parentPID;
   }
+  psList->processQty = (uint32_t)scheduler->processQty;
   return psList;
 }

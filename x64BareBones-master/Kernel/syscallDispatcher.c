@@ -34,6 +34,7 @@ static uint64_t handleKillProcessSyscall(va_list args);
 static uint64_t handleGetPrioritySyscall(va_list args);
 static uint64_t handleIncreasePrioritySyscall(va_list args); 
 static uint64_t handleDecreasePrioritySyscall(va_list args);
+static int32_t handleNiceSyscall(va_list args);
 static processesToPrint * handleListProcesses();
 static uint64_t handleSemInitSyscall(va_list args);
 static void handleSemDestroySyscall(va_list args);
@@ -126,6 +127,9 @@ uint64_t syscallDispatcher(uint64_t id, ...) {
             break;
         case SYSCALL_DECREASE_PRIORITY:
             ret = handleDecreasePrioritySyscall(args);
+            break;
+        case SYSCALL_NICE:
+            ret = handleNiceSyscall(args);
             break;
         case SYSCALL_HLT:
             _hlt();
@@ -264,6 +268,12 @@ static uint64_t handleIncreasePrioritySyscall(va_list args){
 static uint64_t handleDecreasePrioritySyscall(va_list args){
     Pid pid = va_arg(args,Pid);
     return (uint64_t) decreaseProcessPriority(pid);
+}
+
+static int32_t handleNiceSyscall(va_list args){
+    Pid pid = va_arg(args,Pid);
+    Priority priority = va_arg(args, Priority);
+    return (uint64_t) nice(pid, priority);
 }
 
 static processesToPrint * handleListProcesses(){

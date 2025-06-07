@@ -171,6 +171,29 @@ int strCompare(char *str1, char *str2) {
     return (*str1 == 0 && *str2 == 0) ? 1 : 0;
 }
 
+int strCompareFirstComand(char *str1, char *str2) {
+    while (*str1 != 0 && *str2 != 0) {
+        if (*str1 != *str2) {
+            return 0;
+        }
+        str1++;
+        str2++;
+        if(*str1 == ' '){
+            return 1;
+        }
+    }
+    return (*str1 == 0 && *str2 == 0) ? 1 : 0;
+}
+
+static int atoi(char * str){
+    int result = 0;
+    while (*str >= '0' && *str <= '9') {
+        result = result * 10 + (*str - '0');
+        str++;
+    }
+    return result;
+}
+
 /*====== PRINT TIME ======*/
 
 void printCurrentTime(){
@@ -255,7 +278,7 @@ void wait(int ticks){
     return;
 }
 
-/*====== PRINT PROCESSES ======*/
+/*====== PROCESSES ======*/
 
 void handleGetPid(){
     NewLine();
@@ -265,9 +288,147 @@ void handleGetPid(){
     NewLine();
 }
 
+static int getPIDFromBuffer(char * buffer) {
+    char pid[MAX_PID_LENGTH + 1];
+    int i = 0;
+
+    while (i < MAX_PID_LENGTH && *buffer != ' ' && *buffer != '\0') {
+        if (*buffer < '0' || *buffer > '9') {
+            return -1;
+        }
+        pid[i++] = *buffer++;
+    }
+
+    pid[i] = '\0';
+
+    if (i == 0) {
+        return -1;
+    }
+
+    return atoi(pid);
+}
+
+static int getIndex(processesList * psList, int checkPID){
+    for (int i = 0; i < psList->processQty; i++){
+        if(psList->PIDs[i] == checkPID){
+            return i;
+        }
+    }
+    return -1;
+}
+
+static int getPriorityFromBuffer(char * buffer) {
+    char priority[MAX_PRIORITY_LENGTH + 1];
+    int i = 0;
+
+    while (i < MAX_PRIORITY_LENGTH && *buffer != ' ' && *buffer != '\0') {
+        priority[i++] = *buffer++;
+    }
+    priority[i] = '\0';
+
+    if (strCompare(priority, "HIGHEST")) {
+        return HIGHEST_PRIO;
+    } else if (strCompare(priority, "LOWEST")) {
+        return LOWEST_PRIO;
+    } else if (strCompare(priority, "AVERAGE")) {
+        return AVERAGE_PRIO;
+    } else if (strCompare(priority, "HIGH")) {
+        return HIGH_PRIO;
+    } else if (strCompare(priority, "LOW")) {
+        return LOW_PRIO;
+    } else {
+        return -1;
+    }
+}
+
+static int validPriority(int priority){
+    if(priority >= 0 && priority < 5){
+        return 1;
+    }
+    return 0;
+}
+
+void handleNice(char * buffer){
+    char* priorityList[5] = {"LOWEST", "LOW", "AVERAGE", "HIGH", "HIGHEST"};
+
+    while (*buffer != ' ' && *buffer != '\0') buffer++;
+    if (*buffer == '\0') {
+        printf("Faltan parametros");
+        NewLine();
+        printf("Ejemplo de llamada: NICE (PID) (PRIORIDAD)");
+        NewLine();
+        NewLine();
+        return;
+    }
+    buffer++;  
+
+    processesList * psList = getProcesses();
+    int checkPID = getPIDFromBuffer(buffer);
+
+    if (checkPID < 0) {
+        printf("Formato invalido de PID");
+        NewLine();
+        printf("Ejemplo de llamada: NICE (PID) (PRIORIDAD)");
+        NewLine();
+        NewLine();
+        return;
+    }
+
+    int psListIndex = getIndex(psList, checkPID);
+    if (psListIndex == -1) {
+        printf("No existe el PID");
+        NewLine();
+        NewLine();
+        return;
+    }
+
+    while (*buffer != ' ' && *buffer != '\0') buffer++;
+    if (*buffer == '\0') {
+        printf("Falta parametro de prioridad");
+        NewLine();
+        NewLine();
+        printf("Ejemplo de llamada: NICE (PID) (PRIORIDAD)");
+        NewLine();
+        printf("Prioridades: HIGHEST, HIGH, AVERAGE, LOW, LOWEST");
+        NewLine();
+        NewLine();
+        return;
+    }
+    buffer++;  
+
+    int checkPriority = getPriorityFromBuffer(buffer);
+    if (!validPriority(checkPriority)) {
+        printf("La prioridad es invalida.");
+        NewLine();
+        NewLine();
+        printf("Prioridades: HIGHEST, HIGH, AVERAGE, LOW, LOWEST");
+        NewLine();
+        NewLine();
+        return;
+    }
+
+    Priority priority = (Priority)checkPriority;
+    Pid pid = (Pid)checkPID;
+    nice(pid, priority);
+
+    // Mostrar resultado
+    printf("Process ");
+    setX(8);
+    printf(psList->names[psListIndex]);
+    NewLine();
+    printf("Priority change was successful!");
+    NewLine();
+    NewLine();
+    printf("New priority: ");
+    setX(14);
+    printf(priorityList[priority]);
+    NewLine();
+    NewLine();
+}
+
 void printProcesses(){
     
-    processesToPrint * pr = (processesToPrint *)syscall(24);
+    processesList * pr = getProcesses();
     char* state[4] = {"READY", "RUNNING", "BLOCKED", "KILLED"};
     char* priority[5] = {"LOWEST", "LOW", "AVERAGE", "HIGH", "HIGHEST"};
 
