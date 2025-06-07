@@ -25,6 +25,10 @@ static void nextX(int i){
     setCurrentX(getCurrentX() + HorizontalOffset(getFontSize()) * i);
 }
 
+static void setX(int i){
+    setCurrentX(HorizontalOffset(getFontSize()) * i);
+}
+
 static void prevX(int i){
     setCurrentX(getCurrentX() - HorizontalOffset(getFontSize()) * i);
 }
@@ -261,52 +265,35 @@ void printProcesses(){
     processesToPrint * pr = (processesToPrint *)syscall(24);
     char* state[4] = {"READY", "RUNNING", "BLOCKED", "KILLED"};
     char* priority[5] = {"LOWEST", "LOW", "AVERAGE", "HIGH", "HIGHEST"};
-    
+
+    NewLine();
+    printf(" PROCESS        PID PPID STATUS  PRIO     CHILDS RSP      RBP   ");
     for(int i = 0; i < pr->cantProcess; i++){
         
         char auxBuffer[20];
         
         NewLine();
-        printf("Proceso: ");
-        nextX(9);
+        setX(1);
         printf(pr->names[i]);
-        NewLine();
-        printf("-------------");
-        NewLine();
-        printf(" PID: ");
-        nextX(6);
+        setX(16);
         itoaBase((uint64_t)pr->PIDs[i], auxBuffer, 10);
         printf(auxBuffer);
-        NewLine();
-        printf(" PPID: ");
-        nextX(6);
+        setX(20);
         itoaBase((uint64_t)pr->PPIDs[i], auxBuffer, 10);
         printf(auxBuffer);
-        NewLine();
-        printf(" rsp: 0x");
-        nextX(8);
-        itoaBase((uint64_t)pr->rspList[i], auxBuffer, 16);
-        printf(auxBuffer);
-        NewLine();
-        printf(" rbp: 0x");
-        nextX(8);
-        itoaBase((uint64_t)pr->rbpList[i], auxBuffer, 16);
-        printf(auxBuffer);
-        NewLine();
-        printf(" status: ");
-        nextX(8);
+        setX(25);
         printf(state[pr->Status[i]]);
-        NewLine();
-        printf(" prioridad: ");
-        nextX(13);
+        setX(33);
         printf(priority[pr->Priority[i]]);
-        NewLine();
-        printf(" hijos: ");
-        nextX(13);
+        setX(42);
         itoaBase((uint64_t)pr->childrens[i], auxBuffer, 16);
         printf(auxBuffer);
-        NewLine();
-        NewLine();
+        setX(49);
+        itoaBase((uint64_t)pr->rspList[i], auxBuffer, 16);
+        printf(auxBuffer);
+        setX(58);
+        itoaBase((uint64_t)pr->rbpList[i], auxBuffer, 16);
+        printf(auxBuffer);
     }
 }
 
