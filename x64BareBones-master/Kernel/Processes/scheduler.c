@@ -234,31 +234,30 @@ uint64_t killProcess(Pid pid){
     return -1;
   }
 
-  if(pcb->parentPID != -1){
-    //PCB * parentPCB = (PCB*)scheduler->processes[pcb->parentPID]->info; // comentado porque tira warning al no usarse tdv
-  }
-
   if(pcb->status != BLOCKED){
     if(pcb->status == RUNNING){
       pcb->retValue = -1;
       yield();
     }
-    Node * auxNode = scheduler->processes[pid];
-    removeFromQueue(scheduler->readyList, auxNode);
   }
+  Node * auxNode = scheduler->processes[pid];
+  removeFromQueue(scheduler->readyList, auxNode);
 
+  if(pcb->childrenQty > 0){
+    for(int i=0; i<pcb->childrenQty; i++){
+      Pid childPid = pcb->children[i];
+      PCB *child = scheduler->processes[childPid]->info;
+
+      if (child->status != KILLED) {
+        child->parentPID = SHELL_PID;
+      }
+    }
+  }
   
-  // TO-DO: adoption
-  // if(pcb->info->childrenQty > 0){
-  //   for(int i=0; i<pcb->info->childrenQty; i++){
-      
-  //   }
-  // }
-
-
-
+  pcb->childrenQty = 0;
   pcb->status = KILLED;
   freeMemory(pcb);
+  scheduler->processQty--;
   scheduler->processes[pid] = NULL;
   return 0;
 }

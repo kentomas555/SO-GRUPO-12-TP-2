@@ -537,7 +537,48 @@ void handleLoop(char * buffer){
 }
 
 void handleKill(char * buffer){
-    //TODO
+    while (*buffer != ' ' && *buffer != '\0') buffer++;
+    if (*buffer == '\0') {
+        printf("Faltan parametros");
+        NewLine();
+        printf("Ejemplo de llamada: KILL (PID)");
+        NewLine();
+        NewLine();
+        return;
+    }
+    buffer++;  
+
+    processesList * psList = getProcesses();
+    int checkPID = getPIDFromBuffer(buffer);
+
+    if (checkPID < 0) {
+        printf("Formato invalido de PID");
+        NewLine();
+        printf("Ejemplo de llamada: KILL (PID)");
+        NewLine();
+        NewLine();
+        return;
+    }
+
+    int psListIndex = getIndex(psList, checkPID);
+    if (psListIndex == -1) {
+        printf("No existe el PID");
+        NewLine();
+        NewLine();
+        return;
+    }
+
+    Pid pid = (Pid)checkPID;
+    killProcess(pid);
+
+    // Mostrar resultado
+    printf("Process ");
+    setX(8);
+    printf(psList->names[psListIndex]);
+    NewLine();
+    printf("Fue eliminado exitosamente!");
+    NewLine();
+    NewLine();
     return;
 }
 

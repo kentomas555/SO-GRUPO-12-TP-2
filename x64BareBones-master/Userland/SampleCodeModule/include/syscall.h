@@ -133,6 +133,7 @@ typedef struct processesList{
     
 }processesList;
 
+int killProcess(Pid pid);
 int blockProcess(Pid pid);
 int unblockProcess(Pid pid);
 processesList * getProcesses();
