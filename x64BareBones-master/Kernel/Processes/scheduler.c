@@ -66,6 +66,11 @@ void * schedule(void * currentRSP){
     }
     
     ((PCB*)currentRunning->info)->status = READY;
+  } else if(((PCB*)currentRunning->info)->status == KILLED){
+    ((PCB*)currentRunning->info)->childrenQty = 0;
+    freeMemory(((PCB*)currentRunning->info));
+    scheduler->processQty--;
+    scheduler->processes[scheduler->currentPID] = NULL;
   }
 
   Pid nextProcessPID = getNextProcess();
@@ -230,7 +235,7 @@ int nice(Pid pid,Priority priority){
   return 1;
 }
 
-uint64_t exit(){
+uint64_t exitProcess(){
   killProcess(getCurrentPID());
   yield();
   return 1;
@@ -245,14 +250,12 @@ uint64_t killProcess(Pid pid){
 
   Node * auxNode = scheduler->processes[pid];
 
-  //if(pcb->status != BLOCKED){
-    if(pcb->status == RUNNING){
-      //removeFromQueue(scheduler->readyList, auxNode);
-      pcb->retValue = -1;
-      yield();
-      //return 0;
-    }
-  //}
+
+  // if(pcb->status == RUNNING){
+  //   pcb->retValue = -1;
+
+  //   yield();
+  // }
   
   if(pcb->status == READY){
     removeFromQueue(scheduler->readyList, auxNode);
@@ -267,6 +270,12 @@ uint64_t killProcess(Pid pid){
         child->parentPID = SHELL_PID;
       }
     }
+  }
+
+  if(pcb->status == RUNNING){
+    // pcb->retValue = -1;
+    pcb->status = KILLED;
+    return 0;
   }
 
   pcb->childrenQty = 0;

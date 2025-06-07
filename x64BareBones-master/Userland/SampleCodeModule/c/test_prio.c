@@ -3,9 +3,6 @@
 #include "../include/test_util.h"
 #include "../include/syscall.h"
 
-
-
-
 #define TOTAL_PROCESSES 5
 
 int64_t prio[TOTAL_PROCESSES] = {LOWEST_PRIO, LOW_PRIO, AVERAGE_PRIO, HIGH_PRIO, HIGHEST_PRIO};
@@ -53,8 +50,10 @@ void test_prio() {
   printf("KILLING...");
   NewLine();
 
-  // for (i = 0; i < TOTAL_PROCESSES; i++)
-  // killProcess(pids[i]);
+  for (i = 0; i < TOTAL_PROCESSES; i++)
+  killProcess(pids[i]);
+
+  printProcesses();
 
   NewLine();
   printf("TEST PASSED SUCCESFULLY!");

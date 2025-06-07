@@ -141,6 +141,10 @@ int unblockProcess(Pid pid){
     return syscall(SYSCALL_UNBLOCK_PROCESS, pid);
 }
 
+int exitProcess(){
+    return syscall(SYSCALL_EXIT);
+}
+
 int killProcess(Pid pid){
     return syscall(SYSCALL_KILL_PROCESS, pid);
 }
@@ -190,6 +194,8 @@ void semPost(char * semName){
 void semWait(char * semName){
     syscall(SYSCALL_SEM_WAIT, semName);
 }
+
+
 
 /*====== PIPES ======*/
 

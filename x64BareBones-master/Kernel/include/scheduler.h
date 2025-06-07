@@ -53,7 +53,7 @@ int nice(Pid pid,Priority priority);
 
 void * switchContext(Pid pid);
 
-uint5exit();
+uint64_t exitProcess();
 uint64_t killProcess(Pid pid); 
 int waitPID(Pid pid);
 void yield();

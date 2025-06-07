@@ -40,7 +40,7 @@ static uint64_t handleSemInitSyscall(va_list args);
 static void handleSemDestroySyscall(va_list args);
 static void handleSemPostSyscall(va_list args);
 static void handleSemWaitSyscall(va_list args);
-static void handleExitSyscall(va_list args);
+static uint64_t handleExitSyscall(va_list args);
 
 // ========== DISPATCHER PRINCIPAL ==========
 uint64_t syscallDispatcher(uint64_t id, ...) {
@@ -107,6 +107,7 @@ uint64_t syscallDispatcher(uint64_t id, ...) {
             ret = handleCreateDummyProcessSyscall();
             break;
         case SYSCALL_EXIT:
+            ret = handleExitSyscall(args);
             break;
         case SYSCALL_BLOCK_PROCESS:
             ret = handleBlockProcessSyscall(args);
@@ -303,6 +304,6 @@ static void handleSemWaitSyscall(va_list args){
     semWait(semName);
 }
 
-static void handleExitSyscall(va_list args){
-    exit();
+static uint64_t handleExitSyscall(va_list args){
+    return exitProcess();
 }
