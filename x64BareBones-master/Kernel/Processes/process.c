@@ -50,6 +50,8 @@ PCB * createProcess(char * processName, mainFunc processProgram, char** args, Pr
   newPCB->status = READY;
   newPCB->priority = priority;
   newPCB->roundsLeft = 0;
+  newPCB->retValue = 0;
+  newPCB->waitingPID = -1;
 
   newPCB->rsp = createProcessStackframe(newPCB->argc, newPCB->argv, newPCB->rbp, processProgram); //TODO: proper call to createProcessStackFrame
 

@@ -181,6 +181,9 @@ int blockProcess(Pid pid){
   }
   removeFromQueue(scheduler->readyList, processToBeBlocked);
   pcb->status = BLOCKED;
+  if(pid == scheduler->currentPID) {
+    yield();
+  }
   return 1;
 }
 
@@ -254,8 +257,13 @@ uint64_t killProcess(Pid pid){
   return 0;
 }
 
-void waitChilds(){
-  return;
+int waitPID(Pid pid){
+  if(scheduler->processes[pid] != NULL && pid != IDLE_PID && pid != SHELL_PID){
+    ((PCB*)scheduler->processes[scheduler->currentPID]->info)->waitingPID = pid;
+    blockProcess(pid);
+    return ((PCB*)scheduler->processes[pid]->info)->retValue;
+  }
+  return 0;
 }
 
 void yield(){

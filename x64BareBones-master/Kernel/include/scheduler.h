@@ -52,7 +52,7 @@ int decreaseProcessPriority(Pid pid);
 void * switchContext(Pid pid);
 
 uint64_t killProcess(Pid pid); 
-void waitChilds();
+int waitPID(Pid pid);
 void yield();
 
 processesToPrint * printProcesses();
