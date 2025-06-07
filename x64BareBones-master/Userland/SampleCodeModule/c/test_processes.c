@@ -1,6 +1,5 @@
 // #include <stdio.h>
-// #include "syscall.h"
-// #include "test_util.h"
+// #include "../include/test_util.h"
 
 // enum State { RUNNING,
 //              BLOCKED,
@@ -30,7 +29,7 @@
 
 //     // Create max_processes processes
 //     for (rq = 0; rq < max_processes; rq++) {
-//       p_rqs[rq].pid = my_create_process("endless_loop", 0, argvAux);
+//       p_rqs[rq].pid = createNewProcess("endless_loop", endless_loop,0, argvAux);
 
 //       if (p_rqs[rq].pid == -1) {
 //         printf("test_processes: ERROR creating process\n");
@@ -50,8 +49,9 @@
 //         switch (action) {
 //           case 0:
 //             if (p_rqs[rq].state == RUNNING || p_rqs[rq].state == BLOCKED) {
-//               if (my_kill(p_rqs[rq].pid) == -1) {
-//                 printf("test_processes: ERROR killing process\n");
+//               if (killProcess(p_rqs[rq].pid) == -1) {
+//                 printf("test_processes: ERROR killing process");
+//                 NewLine();
 //                 return -1;
 //               }
 //               p_rqs[rq].state = KILLED;

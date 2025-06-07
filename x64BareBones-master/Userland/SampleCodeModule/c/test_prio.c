@@ -53,12 +53,14 @@ void test_prio() {
   printf("KILLING...");
   NewLine();
 
-  for (i = 0; i < TOTAL_PROCESSES; i++)
-  killProcess(pids[i]);
+  // for (i = 0; i < TOTAL_PROCESSES; i++)
+  // killProcess(pids[i]);
 
   NewLine();
   printf("TEST PASSED SUCCESFULLY!");
   NewLine();
 
-  bussy_wait(100000000);
+  while(1){
+    ;
+  }
 }

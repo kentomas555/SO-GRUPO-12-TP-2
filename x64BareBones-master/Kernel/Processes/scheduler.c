@@ -241,7 +241,9 @@ uint64_t killProcess(Pid pid){
     }
   }
   Node * auxNode = scheduler->processes[pid];
-  removeFromQueue(scheduler->readyList, auxNode);
+  if(pcb->status == READY){
+    removeFromQueue(scheduler->readyList, auxNode);
+  }
 
   if(pcb->childrenQty > 0){
     for(int i=0; i<pcb->childrenQty; i++){
