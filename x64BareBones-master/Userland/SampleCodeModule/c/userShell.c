@@ -103,7 +103,7 @@ static void handleKillNoParams(){
     NewLine();
     printf("Faltan parametros");
     NewLine();
-    printf("Ejemplo de llamada: BLOCK (PID)");
+    printf("Ejemplo de llamada: KILL (PID)");
     NewLine();
     NewLine();
 }
@@ -215,18 +215,12 @@ static void bufferInterpreter(){
         NewLine();
         handleMemoryManagerTest();
     } else if (strCompare(shellBuffer, "TESTPROCESS")){
-        /*====TODO===*/
         NewLine();
         printf("Por implementar ...");
         NewLine();
         NewLine();
         handleProcessTest();
     } else if (strCompare(shellBuffer, "TESTPRIO")){
-        /*====TODO===*/
-        NewLine();
-        printf("Por implementar ...");
-        NewLine();
-        NewLine();
         handlePriorityTest();
     } else if (strCompare(shellBuffer, "TESTSYNC")){
         /*====TODO===*/

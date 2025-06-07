@@ -18,15 +18,15 @@ static int HorizontalOffset(char fontSize){
     } 
 }
 
-static void nextX(int i){
+void nextX(int i){
     setCurrentX(getCurrentX() + HorizontalOffset(getFontSize()) * i);
 }
 
-static void setX(int i){
+void setX(int i){
     setCurrentX(HorizontalOffset(getFontSize()) * i);
 }
 
-static void prevX(int i){
+void prevX(int i){
     setCurrentX(getCurrentX() - HorizontalOffset(getFontSize()) * i);
 }
 
@@ -616,12 +616,16 @@ void handleMemoryManagerTest(){
 }
 
 void handleProcessTest(){
-    //TODO
+    int16_t fds[2] = {0,1};
+    char *argv[] = {NULL};
+    createNewProcess("AAAAAAAAAAAAA",endless_loop_print, argv, HIGHEST_PRIO,fds);
     return;
 }
 
 void handlePriorityTest(){
-    //TODO
+    int16_t fds[2] = {0,1};
+    char *argv[] = {NULL};
+    createNewProcess("Priority Test",test_prio, argv, HIGHEST_PRIO,fds);
     return;
 }
 

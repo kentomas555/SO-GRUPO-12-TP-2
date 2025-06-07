@@ -159,7 +159,7 @@ uint64_t onCreateProcess(char * processName, mainFunc processProgram, char** arg
     queue(scheduler->readyList, node);
   }  
 
-  return 0;
+  return myNewProcess->PID;
 }
 
 void dummyFunction(){
@@ -253,7 +253,7 @@ uint64_t killProcess(Pid pid){
       }
     }
   }
-  
+
   pcb->childrenQty = 0;
   pcb->status = KILLED;
   freeMemory(pcb);

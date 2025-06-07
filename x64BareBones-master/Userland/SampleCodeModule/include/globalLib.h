@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include "../include/test_util.h"
 
 #define MEMORY_SIZE
 
@@ -30,6 +31,7 @@ void smallerFontSize();
 void itoaBase(uint64_t value, char * buffer, uint32_t base);
 int strCompare(char *str1, char *str2);
 int strCompareFirstComand(char *str1, char *str2);
+void nextX(int i);
 
 /*====== PRINT TIME ======*/
 
