@@ -99,6 +99,33 @@ static void changeColor(){
     ClearScreen(newColor);
 }
 
+static void handleKillNoParams(){
+    NewLine();
+    printf("Faltan parametros");
+    NewLine();
+    printf("Ejemplo de llamada: BLOCK (PID)");
+    NewLine();
+    NewLine();
+}
+
+static void handleNiceNoParams(){
+    NewLine();
+    printf("Faltan parametros");
+    NewLine();
+    printf("Ejemplo de llamada: NICE (PID) (PRIORITY)");
+    NewLine();
+    NewLine();
+}
+
+static void handleBlockNoParams(){
+    NewLine();
+    printf("Faltan parametros");
+    NewLine();
+    printf("Ejemplo de llamada: BLOCK (PID)");
+    NewLine();
+    NewLine();
+}
+
 static void bufferInterpreter(){
     NewLine();
     if(strCompare(shellBuffer, "HELP")){
@@ -141,17 +168,18 @@ static void bufferInterpreter(){
         NewLine();
         handleLoop(shellBuffer);
     } else if (strCompareFirstComand(shellBuffer, "KILL ")){
-        /*====TODO===*/
-        NewLine();
-        printf("Por implementar ...");
-        NewLine();
-        NewLine();
         handleKill(shellBuffer);
+    } else if (strCompare(shellBuffer, "KILL")){
+        handleKillNoParams();
     } else if (strCompareFirstComand(shellBuffer, "NICE ")){
         handleNice(shellBuffer);
+    } else if (strCompare(shellBuffer, "NICE")){
+        handleNiceNoParams();
     } else if (strCompareFirstComand(shellBuffer, "BLOCK ")){
         handleBlock(shellBuffer);
-    } else if (strCompareFirstComand(shellBuffer, "CAT")){
+    } else if (strCompare(shellBuffer, "BLOCK")){
+        handleBlockNoParams();
+    } else if (strCompareFirstComand(shellBuffer, "CAT ")){
         /*====TODO===*/
         NewLine();
         printf("Por implementar ...");
