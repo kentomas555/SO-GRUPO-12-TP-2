@@ -348,6 +348,61 @@ static int validPriority(int priority){
     return 0;
 }
 
+void handleBlock(char * buffer){
+    while (*buffer != ' ' && *buffer != '\0') buffer++;
+    if (*buffer == '\0') {
+        printf("Faltan parametros");
+        NewLine();
+        printf("Ejemplo de llamada: BLOCK (PID)");
+        NewLine();
+        NewLine();
+        return;
+    }
+    buffer++;
+
+    processesList * psList = getProcesses();
+    int checkPID = getPIDFromBuffer(buffer);
+
+    if (checkPID < 0) {
+        printf("Formato invalido de PID");
+        NewLine();
+        printf("Ejemplo de llamada: BLOCK (PID)");
+        NewLine();
+        NewLine();
+        return;
+    }
+
+    int psListIndex = getIndex(psList, checkPID);
+    if (psListIndex == -1) {
+        printf("No existe el PID");
+        NewLine();
+        NewLine();
+        return;
+    }
+
+    int status = (int)psList->Status[psListIndex];
+    Pid pid = (Pid)checkPID;
+    if (status != 0 && status != 2){
+        printf("El proceso elegido no esta BLOCKED ni READY");
+    } else if(status == 0){
+        blockProcess(pid);
+        printf("Process ");
+        setX(8);
+        printf(psList->names[psListIndex]);
+        NewLine();
+        printf("Cambio de estado a BLOCKED exitosamente!");
+    } else if(status == 2){
+        unblockProcess(pid);
+        printf("Process ");
+        setX(8);
+        printf(psList->names[psListIndex]);
+        NewLine();
+        printf("Cambio de estado a READY exitosamente!");
+    }
+    NewLine();
+    NewLine();
+}
+
 void handleNice(char * buffer){
     char* priorityList[5] = {"LOWEST", "LOW", "AVERAGE", "HIGH", "HIGHEST"};
 
@@ -416,7 +471,7 @@ void handleNice(char * buffer){
     setX(8);
     printf(psList->names[psListIndex]);
     NewLine();
-    printf("Priority change was successful!");
+    printf("La prioridad fue cambiada exitosamente!");
     NewLine();
     NewLine();
     printf("New priority: ");
@@ -434,6 +489,7 @@ void printProcesses(){
 
     NewLine();
     printf(" PROCESS        PID PPID STATUS  PRIO     CHILDS RSP      RBP   ");
+    NewLine();
     for(int i = 0; i < pr->cantProcess; i++){
         
         char auxBuffer[20];

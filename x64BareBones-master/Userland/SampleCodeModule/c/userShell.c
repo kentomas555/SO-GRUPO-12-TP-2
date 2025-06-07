@@ -135,6 +135,8 @@ static void bufferInterpreter(){
         createDummyProcess();
     } else if (strCompareFirstComand(shellBuffer, "NICE ")){
         handleNice(shellBuffer);
+    } else if (strCompareFirstComand(shellBuffer, "BLOCK ")){
+        handleBlock(shellBuffer);
     } else {
         printf("Comando no reconocido. Use HELP para mas informacion");
         NewLine();

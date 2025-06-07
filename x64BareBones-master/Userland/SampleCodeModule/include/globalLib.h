@@ -56,6 +56,7 @@ void wait(int ticks);
 
 /*====== PRINT PROCESSES ======*/
 
+void handleBlock(char * buffer);
 void handleNice(char * buffer);
 void handleGetPid();
 void printProcesses();
