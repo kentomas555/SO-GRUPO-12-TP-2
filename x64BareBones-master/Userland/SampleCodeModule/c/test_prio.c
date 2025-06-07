@@ -59,8 +59,5 @@ void test_prio() {
   NewLine();
   printf("TEST PASSED SUCCESFULLY!");
   NewLine();
-
-  while(1){
-    ;
-  }
+  
 }

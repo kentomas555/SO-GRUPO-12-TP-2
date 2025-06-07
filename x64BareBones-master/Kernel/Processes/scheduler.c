@@ -181,6 +181,9 @@ int blockProcess(Pid pid){
   }
   removeFromQueue(scheduler->readyList, processToBeBlocked);
   pcb->status = BLOCKED;
+  if(pid == scheduler->currentPID) {
+    yield();
+  }
   return 1;
 }
 
