@@ -1,10 +1,7 @@
 #include <libasm.h>
 #include <globalLib.h>
 #include <syscall.h>
-
-typedef void (*function)();
-
-
+#include <tests.h>
 
 uint64_t bgColor = 0x00;
 
@@ -260,6 +257,14 @@ void wait(int ticks){
 
 /*====== PRINT PROCESSES ======*/
 
+void handleGetPid(){
+    NewLine();
+    char auxBuffer[20];
+    itoaBase((uint64_t)getpid(), auxBuffer, 10);
+    printf(auxBuffer);
+    NewLine();
+}
+
 void printProcesses(){
     
     processesToPrint * pr = (processesToPrint *)syscall(24);
@@ -295,13 +300,15 @@ void printProcesses(){
         itoaBase((uint64_t)pr->rbpList[i], auxBuffer, 16);
         printf(auxBuffer);
     }
+    NewLine();
+    NewLine();
 }
 
 /*====== TESTS ======*/
 
 void memoryManagerTest(){
-
-    //createNewProcess;
+    // char * args[] = {MEMORY_SIZE};
+    // createNewProcess("Memory Test",(mainFunc)test_mm,);
     return;
 }
 

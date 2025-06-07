@@ -6,6 +6,9 @@
 
 #define MAX_PROCESSES 128
 
+#define MEMORY_SIZE
+
+typedef int (*mainFunc)(int argc, char **args);
 
 typedef struct processesToPrint{
     uint16_t cantProcess;
@@ -54,6 +57,7 @@ void wait(int ticks);
 
 /*====== PRINT PROCESSES ======*/
 
+void handleGetPid();
 void printProcesses();
 
 /*====== TESTS ======*/

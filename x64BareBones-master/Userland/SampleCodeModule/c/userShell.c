@@ -127,8 +127,8 @@ static void bufferInterpreter(){
         zeroDivisionTrigger();
     } else if (strCompare(shellBuffer, "INVOPCODE")){
         invalidOpcodeTrigger();
-    } else if (strCompare(shellBuffer, "TESTMM")){
-        allocMemoryUser(10);
+    } else if (strCompare(shellBuffer, "GETPID")){
+        handleGetPid();
     } else if (strCompare(shellBuffer, "PS")){
         printProcesses();
     } else if (strCompare(shellBuffer, "CREATEDUMMY")){

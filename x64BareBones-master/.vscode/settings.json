@@ -7,6 +7,10 @@
     "memorymanager.h": "c",
     "process.h": "c",
     "stddef.h": "c",
-    "globallib.h": "c"
+    "globallib.h": "c",
+    "syscall.h": "c",
+    "stdlib.h": "c",
+    "string.h": "c",
+    "test_util.h": "c"
   }
 }
