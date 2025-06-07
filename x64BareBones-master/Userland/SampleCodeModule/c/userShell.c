@@ -133,13 +133,13 @@ static void bufferInterpreter(){
         printProcesses();
     } else if (strCompare(shellBuffer, "CREATEDUMMY")){
         createDummyProcess();
-    } else if (strCompare(shellBuffer, "LOOP")){
+    } else if (strCompareFirstComand(shellBuffer, "LOOP ")){
         /*====TODO===*/
         NewLine();
         printf("Por implementar ...");
         NewLine();
         NewLine();
-        handleLoop();
+        handleLoop(shellBuffer);
     } else if (strCompareFirstComand(shellBuffer, "KILL ")){
         /*====TODO===*/
         NewLine();

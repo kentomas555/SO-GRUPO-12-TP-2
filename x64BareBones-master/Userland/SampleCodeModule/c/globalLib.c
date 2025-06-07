@@ -521,8 +521,18 @@ void printProcesses(){
     NewLine();
 }
 
-void handleLoop(){
+static void loopFuction(int seconds){
+    while(1){
+        if(seconds_elapsed()%seconds == 0){
+            printf("Hello User!! I'm still here :)");
+            NewLine();
+        }
+    }
+}
+
+void handleLoop(char * buffer){
     //TODO
+    // createNewProcess();
     return;
 }
 

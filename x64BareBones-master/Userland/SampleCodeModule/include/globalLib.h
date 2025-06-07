@@ -56,7 +56,7 @@ void handleNice(char * buffer);
 void handleGetPid();
 void printProcesses();
 void handleKill(char * buffer);
-void handleLoop();
+void handleLoop(char * buffer);
 
 /*====== INPUT CONTROLLER ======*/
 
