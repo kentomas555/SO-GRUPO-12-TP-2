@@ -230,6 +230,12 @@ int nice(Pid pid,Priority priority){
   return 1;
 }
 
+uint64_t exit(){
+  killProcess(getCurrentPID());
+  yield();
+  return 1;
+}
+
 //TODO: fix proper free
 uint64_t killProcess(Pid pid){
   PCB * pcb = (PCB*)scheduler->processes[pid]->info;
@@ -237,13 +243,17 @@ uint64_t killProcess(Pid pid){
     return -1;
   }
 
-  if(pcb->status != BLOCKED){
+  Node * auxNode = scheduler->processes[pid];
+
+  //if(pcb->status != BLOCKED){
     if(pcb->status == RUNNING){
+      //removeFromQueue(scheduler->readyList, auxNode);
       pcb->retValue = -1;
       yield();
+      //return 0;
     }
-  }
-  Node * auxNode = scheduler->processes[pid];
+  //}
+  
   if(pcb->status == READY){
     removeFromQueue(scheduler->readyList, auxNode);
   }

@@ -40,6 +40,7 @@ static uint64_t handleSemInitSyscall(va_list args);
 static void handleSemDestroySyscall(va_list args);
 static void handleSemPostSyscall(va_list args);
 static void handleSemWaitSyscall(va_list args);
+static void handleExitSyscall(va_list args);
 
 // ========== DISPATCHER PRINCIPAL ==========
 uint64_t syscallDispatcher(uint64_t id, ...) {
@@ -300,4 +301,8 @@ static void handleSemPostSyscall(va_list args){
 static void handleSemWaitSyscall(va_list args){
     char* semName = va_arg(args, char*);
     semWait(semName);
+}
+
+static void handleExitSyscall(va_list args){
+    exit();
 }
