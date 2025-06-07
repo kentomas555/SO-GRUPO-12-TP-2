@@ -1,4 +1,4 @@
-#include <stdio.h>
+//#include <stdio.h>
 #include "../include/test_util.h"
 
 enum State { RUNNING,

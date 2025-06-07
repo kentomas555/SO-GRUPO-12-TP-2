@@ -125,7 +125,7 @@ toBinary:
 
 acquire:
     mov al, 0
-.loop
+.loop:
     xchg [rdi], al
     test al, al
     jz .loop
