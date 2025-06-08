@@ -11,7 +11,7 @@ static const uint64_t PageSize = 0x1000;
 
 static void * const sampleCodeModuleAddress = (void*)0x400000;
 static void * const sampleDataModuleAddress = (void*)0x500000;
-static void * const stackStartAddress = (void*)0x600000;
+static void * const stackStartAddress = (void*)0x700000;
 
 
 static MemoryManagerADT kernelMM;
@@ -64,19 +64,16 @@ int main()
 	
 	//sound(800, 10);
 
-	createMemoryManager();
-	startStack(stackStartAddress);
-	startScheduler();
-	//initializeSemaphores();
+	createMemoryManager(); // empieza en 0x700000
+	startStack(stackStartAddress); // empieza en 0x600000
+	startScheduler(); // empieza en 0x700000 (usa el memory manager, alloc)
+	//initializeSemaphores(); // en que parte de memoria inician?
 
 	int16_t fds[2] = {0,1};
 	char * args[] = {NULL};
 	onCreateProcess("idle", (mainFunc)idleKernel, args, LOWEST_PRIORITY, fds);
 	onCreateProcess("shell", sampleCodeModuleAddress, args, HIGHEST_PRIORITY, fds);
-  //createDummyProcess();
 	_sti();
-
-	//((EntryPoint)sampleCodeModuleAddress)();
 
 	while(1);
 	return 0;

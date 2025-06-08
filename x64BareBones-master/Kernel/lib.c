@@ -52,6 +52,9 @@ void * memcpy(void * destination, const void * source, uint64_t length)
 
 int countArguments(void **argc){
 	int toReturn = 0;
+	if(argc == NULL){
+		return 0;
+	}
 	while(argc[toReturn] != NULL){
 		toReturn++;
 	}

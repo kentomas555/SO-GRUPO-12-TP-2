@@ -309,7 +309,7 @@ static int getPIDFromBuffer(char * buffer) {
 }
 
 static int getIndex(processesList * psList, int checkPID){
-    for (int i = 0; i < psList->processQty; i++){
+    for (int i = 0; i < psList->cantProcess; i++){
         if(psList->PIDs[i] == checkPID){
             return i;
         }
@@ -508,7 +508,7 @@ void printProcesses(){
         setX(33);
         printf(priority[pr->Priority[i]]);
         setX(42);
-        itoaBase((uint64_t)pr->childrens[i], auxBuffer, 16);
+        itoaBase((uint64_t)pr->childrens[i], auxBuffer, 10);
         printf(auxBuffer);
         setX(49);
         itoaBase((uint64_t)pr->rspList[i], auxBuffer, 16);

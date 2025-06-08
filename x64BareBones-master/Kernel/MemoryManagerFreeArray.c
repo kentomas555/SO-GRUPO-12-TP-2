@@ -11,8 +11,8 @@ typedef struct MemoryManagerCDT {
     size_t currentBlock;          
 } MemoryManagerCDT;
 
-static void * const mmControlStart = (void *) 0x700000;
-static void * const heapStartAddress = (void *) ((char *)0x700000 + sizeof(struct MemoryManagerCDT));
+static void * const mmControlStart = (void *) 0x900000;
+static void * const heapStartAddress = (void *) ((char *)0x900000 + sizeof(struct MemoryManagerCDT));
 
 static MemoryManagerADT mm = NULL;
 

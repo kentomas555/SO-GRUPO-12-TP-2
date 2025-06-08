@@ -129,7 +129,7 @@ typedef struct processesList{
     uint8_t childrens[MAX_PROCESSES];
     void * rspList[MAX_PROCESSES];
     void * rbpList[MAX_PROCESSES];
-    uint32_t processQty;
+    //uint32_t processQty;
     
 }processesList;
 

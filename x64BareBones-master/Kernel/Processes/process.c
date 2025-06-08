@@ -38,10 +38,14 @@ PCB * createProcess(char * processName, mainFunc processProgram, char** args, Pr
 
   //Arg configs
   newPCB->argc = countArguments((void **)args);
+  ///newPCB->argv = args;
 
   int argc = newPCB->argc;
   if (argc > 0) {
     newPCB->argv = allocMemory(sizeof(char *) * (argc + 1));  // +1 for NULL
+    if(newPCB->argv == NULL){
+      return NULL;
+    }
     for (int i = 0; i < argc; i++) {
         int len = strlen(args[i]);
         newPCB->argv[i] = allocMemory(len + 1);

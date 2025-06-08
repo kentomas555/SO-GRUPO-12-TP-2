@@ -272,6 +272,9 @@ uint64_t killProcess(Pid pid){
     }
   }
 
+  PCB * parentPCB = (PCB*)scheduler->processes[pcb->parentPID]->info;
+  parentPCB->childrenQty--;
+
   if(pcb->status == RUNNING){
     // pcb->retValue = -1;
     pcb->status = KILLED;
@@ -306,17 +309,22 @@ processesToPrint * printProcesses(){
   if(psList == NULL){
     return NULL;
   }
+  int i = 0;
   psList->cantProcess = scheduler->processQty;
-  for (int i = 0; i < scheduler->processQty; i++){
-    psList->names[i] = ((PCB*)scheduler->processes[i]->info)->processName;
-    psList->PIDs[i] = ((PCB*)scheduler->processes[i]->info)->PID;
-    psList->Priority[i] = (uint8_t)((PCB*)scheduler->processes[i]->info)->priority;
-    psList->Status[i] = (uint8_t)((PCB*)scheduler->processes[i]->info)->status;
-    psList->childrens[i] = (uint8_t)((PCB*)scheduler->processes[i]->info)->childrenQty;
-    psList->rspList[i] = ((PCB*)scheduler->processes[i]->info)->rsp;
-    psList->rbpList[i] = ((PCB*)scheduler->processes[i]->info)->rbp;
-    psList->PPIDs[i] = ((PCB*)scheduler->processes[i]->info)->parentPID;
+  for (int j = 0; j < MAX_PROCESSES; j++){
+    if(scheduler->processes[j] != NULL){
+      psList->names[i] = ((PCB*)scheduler->processes[j]->info)->processName;
+      psList->PIDs[i] = ((PCB*)scheduler->processes[j]->info)->PID;
+      psList->Priority[i] = (uint8_t)((PCB*)scheduler->processes[j]->info)->priority;
+      psList->Status[i] = (uint8_t)((PCB*)scheduler->processes[j]->info)->status;
+      psList->childrens[i] = (uint8_t)((PCB*)scheduler->processes[j]->info)->childrenQty;
+      psList->rspList[i] = ((PCB*)scheduler->processes[j]->info)->rsp;
+      psList->rbpList[i] = ((PCB*)scheduler->processes[j]->info)->rbp;
+      psList->PPIDs[i] = ((PCB*)scheduler->processes[j]->info)->parentPID;
+      i++;
+    }
   }
-  psList->processQty = (uint32_t)scheduler->processQty;
+  // psList->processQty = (uint32_t)scheduler->processQty;
+  psList->cantProcess = i;
   return psList;
 }
