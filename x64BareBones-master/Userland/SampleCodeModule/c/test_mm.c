@@ -6,6 +6,9 @@
 
 #define MAX_BLOCKS 128
 
+/*FOR TESTING*/
+#define MAX_MEMORY 1024
+
 typedef struct MM_rq {
   void *address;
   uint32_t size;
@@ -18,18 +21,18 @@ static void memset(void * address, uint32_t c, uint32_t length){
 		dst[length] = character;
 }
 
-uint64_t test_mm(uint64_t argc, char *argv[]) {
+uint64_t test_mm(/*uint64_t argc, char *argv[]*/) {
 
   mm_rq mm_rqs[MAX_BLOCKS];
   uint8_t rq;
   uint32_t total;
-  uint64_t max_memory;
+  uint64_t max_memory = MAX_MEMORY;
 
-  if (argc != 1)
-    return -1;
+  // if (argc != 1)
+  //   return -1;
 
-  if ((max_memory = satoi(argv[0])) <= 0)
-    return -1;
+  // if ((max_memory = satoi(argv[0])) <= 0)
+  //   return -1;
 
   while (1) {
     rq = 0;
@@ -56,8 +59,6 @@ uint64_t test_mm(uint64_t argc, char *argv[]) {
     for (i = 0; i < rq; i++)
       if (mm_rqs[i].address)
         if (!memcheck(mm_rqs[i].address, i, mm_rqs[i].size)) {
-          printf("Failed Memory Test");
-          NewLine();
           return -1;
         }
 

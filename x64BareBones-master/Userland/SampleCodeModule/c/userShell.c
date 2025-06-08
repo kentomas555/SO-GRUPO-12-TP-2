@@ -208,17 +208,8 @@ static void bufferInterpreter(){
         NewLine();
         handlePhylo();
     } else if (strCompare(shellBuffer, "TESTMM")){
-        /*====TODO===*/
-        NewLine();
-        printf("Por implementar ...");
-        NewLine();
-        NewLine();
         handleMemoryManagerTest();
     } else if (strCompare(shellBuffer, "TESTPROCESS")){
-        NewLine();
-        printf("Por implementar ...");
-        NewLine();
-        NewLine();
         handleProcessTest();
     } else if (strCompare(shellBuffer, "TESTPRIO")){
         handlePriorityTest();

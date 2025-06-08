@@ -1,33 +1,35 @@
 //#include <stdio.h>
 #include "../include/test_util.h"
 
-enum State { RUNNING,
-             BLOCKED,
-             KILLED };
+enum State { READY, RUNNING, BLOCKED, KILLED };
+
+#define MAX_PROCESSES_TEST 10
 
 typedef struct P_rq {
   int32_t pid;
   enum State state;
 } p_rq;
 
-int64_t test_processes(uint64_t argc, char *argv[]) {
+int64_t test_processes(/*uint64_t argc, char *argv[]*/) {
   uint8_t rq;
   uint8_t alive = 0;
   uint8_t action;
-  uint64_t max_processes;
+  uint64_t max_processes = MAX_PROCESSES_TEST;
 
   int16_t fds[2] = {0,1};
   char *argvAUX[] = {NULL};
 
-  if (argc != 1)
-    return -1;
+  // if (argc != 1)
+  //   return -1;
 
-  if ((max_processes = satoi(argv[0])) <= 0)
-    return -1;
+  // if ((max_processes = satoi(argv[0])) <= 0)
+  //   return -1;
 
   p_rq p_rqs[max_processes];
 
   while (1) {
+
+    printf("entered loop");
 
     // Create max_processes processes
     for (rq = 0; rq < max_processes; rq++) {
@@ -91,4 +93,7 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
   printf("PROCESSES TEST PASSED SUCCESFULLY!");
   NewLine();
   NewLine();
+  while(1){
+    ;
+  }
 }

@@ -609,23 +609,24 @@ void handlePhylo(){
 /*====== TESTS ======*/
 
 void handleMemoryManagerTest(){
-    //TODO
-    // char * args[] = {MEMORY_SIZE};
-    // createNewProcess("Memory Test",(mainFunc)test_mm,);
+    int16_t fds[2] = {0,1};
+    char *args[] = {"1024", NULL};
+    createNewProcess("Memory Test", test_mm, args, AVERAGE_PRIORITY, fds);
     return;
 }
 
 void handleProcessTest(){
     int16_t fds[2] = {0,1};
     char *argv[] = {NULL};
-    createNewProcess("Process Test",test_processes, argv, HIGHEST_PRIO,fds);
+    createNewProcess("Process Test", test_processes, argv, HIGHEST_PRIO,fds);
+    printf("Created");
     return;
 }
 
 void handlePriorityTest(){
     int16_t fds[2] = {0,1};
     char *argv[] = {NULL};
-    createNewProcess("Priority Test",test_prio, argv, HIGHEST_PRIO,fds);
+    createNewProcess("Priority Test", test_prio, argv, HIGHEST_PRIO,fds);
     return;
 }
 

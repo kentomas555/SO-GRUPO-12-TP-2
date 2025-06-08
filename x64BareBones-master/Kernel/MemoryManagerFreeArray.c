@@ -1,58 +1,61 @@
 #include "MemoryManager.h"
 
 #define BLOCK_SIZE 0x1000        
-#define BLOCK_QTY  0x1000       
+#define BLOCK_QTY  0x1000    
+
+#define HEAP_BASE_ADDRESS ((uintptr_t)0x700000)
+
+typedef struct MemoryBlock {
+    void* address;
+    uint8_t isFree;
+} MemoryBlock;
 
 typedef struct MemoryManagerCDT {
-    void * freeArray[BLOCK_QTY]; 
+    MemoryBlock blocks[BLOCK_QTY]; 
     size_t totalSize;             
     size_t freeMemory;           
     size_t usedMemory;           
     size_t currentBlock;          
 } MemoryManagerCDT;
 
-static void * const mmControlStart = (void *) 0x700000;
-static void * const heapStartAddress = (void *) ((char *)0x700000 + sizeof(struct MemoryManagerCDT));
-
-static MemoryManagerADT mm = NULL;
+static MemoryManagerCDT memoryManager;
 
 void createMemoryManager() {
-    mm = (MemoryManagerADT) mmControlStart;
+    memoryManager.totalSize = BLOCK_SIZE * BLOCK_QTY;
+    memoryManager.freeMemory = memoryManager.totalSize;
+    memoryManager.usedMemory = 0;
 
     for (int i = 0; i < BLOCK_QTY; i++) {
-        mm->freeArray[i] = (void *)((char *)heapStartAddress + BLOCK_SIZE * i);
+        memoryManager.blocks[i].address = (void*)(HEAP_BASE_ADDRESS + i * BLOCK_SIZE);
+        memoryManager.blocks[i].isFree = 1;
     }
-
-    size_t memorySize = BLOCK_QTY * BLOCK_SIZE;
-    mm->totalSize = memorySize;
-    mm->freeMemory = memorySize;
-    mm->usedMemory = 0;
-    mm->currentBlock = 0;
 }
 
-void * allocMemory(size_t memoryToAllocate) {
-    if (mm == NULL || memoryToAllocate > BLOCK_SIZE || mm->currentBlock >= BLOCK_QTY) {
+void* allocMemory(size_t size) {
+    if (size > BLOCK_SIZE || size == 0 || memoryManager.freeMemory < size)
         return NULL;
+
+    for (int i = 0; i < BLOCK_QTY; i++) {
+        if (memoryManager.blocks[i].isFree) {
+            memoryManager.blocks[i].isFree = 0;
+            memoryManager.usedMemory += BLOCK_SIZE;
+            memoryManager.freeMemory -= BLOCK_SIZE;
+            return memoryManager.blocks[i].address;
+        }
     }
 
-    void * block = mm->freeArray[mm->currentBlock++];
-
-    mm->freeMemory -= BLOCK_SIZE;
-    mm->usedMemory += BLOCK_SIZE;
-
-    return block;
+    return NULL;
 }
 
-void freeMemory(void * freeAddress) {
-    if (mm == NULL || mm->currentBlock == 0) {
-        return;
+void freeMemory(void* ptr) {
+    for (int i = 0; i < BLOCK_QTY; i++) {
+        if (memoryManager.blocks[i].address == ptr && !memoryManager.blocks[i].isFree) {
+            memoryManager.blocks[i].isFree = 1;
+            memoryManager.usedMemory -= BLOCK_SIZE;
+            memoryManager.freeMemory += BLOCK_SIZE;
+            return;
+        }
     }
-
-    mm->currentBlock--;
-    mm->freeArray[mm->currentBlock] = freeAddress;
-
-    mm->usedMemory -= BLOCK_SIZE;
-    mm->freeMemory += BLOCK_SIZE;
 }
 
 

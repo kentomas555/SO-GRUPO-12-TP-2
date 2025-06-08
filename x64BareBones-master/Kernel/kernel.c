@@ -67,7 +67,7 @@ int main()
 	createMemoryManager();
 	startStack(stackStartAddress);
 	startScheduler();
-	//initializeSemaphores();
+	initializeSemaphores();
 
 	int16_t fds[2] = {0,1};
 	char * args[] = {NULL};

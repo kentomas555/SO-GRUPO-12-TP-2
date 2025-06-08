@@ -6,6 +6,9 @@
 #define TOTAL_PROCESSES 5
 
 int64_t prio[TOTAL_PROCESSES] = {LOWEST_PRIO, LOW_PRIO, AVERAGE_PRIO, HIGH_PRIO, HIGHEST_PRIO};
+void breakpoint(){
+  return;
+}
 
 void test_prio() {
   int64_t pids[TOTAL_PROCESSES];
@@ -58,5 +61,8 @@ void test_prio() {
   NewLine();
   printf("TEST PASSED SUCCESFULLY!");
   NewLine();
-  
+  while(1){
+    ;
+  }
+  return;
 }
