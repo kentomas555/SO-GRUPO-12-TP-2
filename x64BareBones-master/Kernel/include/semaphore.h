@@ -15,13 +15,13 @@ typedef struct sem_t {
   uint32_t value;
   char semName[MAX_SEM_CHAR];
   int occupied;
-  int id;
+  uint16_t id;
   uint8_t lock;
   LinkedListADT blockedQueue;
 } sem_t;
 
 void initializeSemaphores();
-uint64_t semInit(char * semName, int value);
+sem_t * semInit(char * semName, uint32_t value);
 uint64_t semDestroy(char * semName);
 void semPost(char * semName);
 void semWait(char * semName);
