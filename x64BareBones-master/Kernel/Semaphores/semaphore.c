@@ -1,100 +1,101 @@
 #include "semaphore.h"
 
-sem_t * semaphores[MAX_SEM_QTY];
+static sem_t * semaphores[MAX_SEM_QTY] = {NULL};
 
-void initializeSemaphores(){
-  for (int i = 0; i < MAX_SEM_QTY; i++){
-    semaphores[i] = allocMemory(sizeof(sem_t));
-    semaphores[i]->occupied = 0;
-    semaphores[i]->semName[0] = '\0';
-    //semaphores[i].value = 0;
-    semaphores[i]->lock = 1;
-    semaphores[i]->id = i;
+static int availableID = 0;
+
+// void initializeSemaphores(){
+//   for (int i = 0; i < MAX_SEM_QTY; i++){
+//     //semaphores[i] = allocMemory(sizeof(sem_t));
+//     semaphores[i]->occupied = 0;
+//     //semaphores[i]->semName[0] = '\0';
+//     semaphores[i]->lock = 1;
+//     semaphores[i]->id = i;
+//   }
+//   return;
+// }
+
+
+static int getAvailableSemID(){
+  if(availableID >= MAX_SEM_QTY){
+    return -1;
   }
-  return;
+  return availableID++;
 }
 
-sem_t * semInit(char * semName, uint32_t value){
-    for (int i = 0; i < MAX_SEM_QTY; i++) {
-        if (semaphores[i]->occupied && strCompare(semaphores[i]->semName, semName) == 0) {
-            return semaphores[i]; // Ya existe
-        }
-    }
+sem_t * semInit(uint32_t value){
 
-    //MEJORAR ESTA FUNCION
-    for (int i = 0; i < MAX_SEM_QTY; i++) {
-        if (!semaphores[i]->occupied) {
-            semaphores[i]->occupied = 1;
-            semaphores[i]->value = value;
-            //strcpy
-            memcpy(semaphores[i]->semName, semName, MAX_SEM_CHAR - 1);
-            semaphores[i]->semName[MAX_SEM_CHAR - 1] = '\0';
-            semaphores[i]->blockedQueue = initializeLinkedList();
-            //semaphores[i]->id = i;
-            return semaphores[i]; 
-        }
-    }
-    return NULL; // No hay lugar
-}
-
-static sem_t * getSemaphore(char * semName){
-  if (semName == NULL)
+  if(availableID >= MAX_SEM_QTY){
     return NULL;
-
-  for (int i = 0; i < MAX_SEM_QTY; i++) {
-    if (semaphores[i]->occupied && strCompare(semaphores[i]->semName, semName) == 0) {
-      return semaphores[i];
-    }
   }
+  
+  sem_t * semaphore = allocMemory(sizeof(sem_t));
 
-  return NULL; 
+  semaphore->value = value;
+  semaphore->blockedQueue = initializeLinkedList();
+  semaphore->lock = 1;
+  semaphore->id = getAvailableSemID();
+
+  semaphores[semaphore->id] = semaphore;
+
+  return semaphore;
 }
 
-uint64_t semDestroy(char * semName){
-  sem_t * sem = getSemaphore(semName);
-    if (sem == NULL || sem->occupied)
+static sem_t * getSemaphore(int id){
+
+  if(id >= MAX_SEM_QTY - 1){
+    return NULL;
+  }
+  return semaphores[id];
+}
+
+uint64_t semDestroy(int id){
+  sem_t * sem = getSemaphore(id);
+    if (sem == NULL)
         return -1;
-    sem->occupied = 0;
-    sem->value = 0;
-    sem->semName[0] = '\0';
     freeList(sem->blockedQueue); // hay que hacer bien free
+    freeMemory(sem);
+    availableID--;
     return 0;
 }
 
-void semPost(char * semName){
-  sem_t * sem = getSemaphore(semName);
-  if (sem == NULL || !sem->occupied)
+void semPost(int id){
+  sem_t * sem = getSemaphore(id);
+  if (sem == NULL)
     return;
   acquire(&(sem->lock));
   sem->value++;
   release(&(sem->lock));
-  int * pid = NULL;
   if(!isEmpty(sem->blockedQueue)){
-    pid = (int *)dequeue(semaphores[sem->id]->blockedQueue); // ver esto 
-    unblockProcess(*pid);
+    Node * auxNode = (Node *)dequeue(semaphores[sem->id]->blockedQueue); // funciona como un "pop"
+    Pid pid = (Pid)(uint64_t)(auxNode->info); // a chequear
+    unblockProcess(pid);
   }
   return;
 }
 
-void semWait(char * semName){
-  sem_t * sem = getSemaphore(semName);
-  if (sem->occupied){
+void semWait(int id){
+  sem_t * sem = getSemaphore(id);
+  if (sem == NULL){
+    return;
+  }
+
     acquire(&(sem->lock));
+    
     if(sem->value > 0){
       sem->value--;
       release(&(sem->lock));
     } else {
-      int pid = getCurrentPID();
+      Pid pid = (Pid) getCurrentPID();
 
       Node * node = allocMemory(sizeof(Node));
       if(node == NULL){
         return;
       }
-      node->info = (void*)&pid;
-      queue(semaphores[sem->id]->blockedQueue, node);
+      node->info = (void*)(uint64_t)pid; // chequear si realmente es asi, deberia
+      push(semaphores[sem->id]->blockedQueue, node);
       release(&(sem->lock));
       blockProcess(pid);
       yield();
     }
-  } 
 }

@@ -126,10 +126,12 @@ uint64_t exitProcess(){
   pcb->status = KILLED;
   yield();
   //_sti();
+  return 0;
 }
 
 //TODO: fix proper free
 uint64_t killProcess(Pid pid){
+  
   PCB * pcb = (PCB*)scheduler->processes[pid]->info;
   if(pcb == NULL || pid == IDLE_PID || pid == SHELL_PID || pid >= MAX_PROCESSES){
     return -1;
@@ -163,8 +165,16 @@ uint64_t killProcess(Pid pid){
     forceTimerTick();
     return 0;
   }
-
+  //////////////
+  freeMemory(pcb->processName);
+  for(int i = 0; i < pcb->argc; i++){
+    freeMemory(pcb->argv[i]);
+  }
+  freeStack(pcb->rbp);
   freeMemory(pcb);
+  //////////////
+
+  freeMemory(scheduler->processes[pid]);
   scheduler->processQty--;
   scheduler->processes[pid] = NULL;
   return 0;
