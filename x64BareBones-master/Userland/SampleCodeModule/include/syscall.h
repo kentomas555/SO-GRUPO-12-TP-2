@@ -22,7 +22,7 @@
 
 #define SYSCALL_ALLOC_MEMORY 14
 #define SYSCALL_FREE_MEMORY 15
-#define SYSCALL_MEMORY_INFO 16
+#define SYSCALL_MEMORY_STATE 16
 
 #define SYSCALL_GET_PID 17
 #define SYSCALL_CREATE_PROCESS 18
@@ -105,6 +105,15 @@ void getDate(date * time);
 typedef int Pid;
 
 typedef enum {LOWEST_PRIORITY = 0, LOW_PRIORITY, AVERAGE_PRIORITY, HIGH_PRIORITY, HIGHEST_PRIORITY} Priority;
+
+typedef struct memoryState{
+    uint64_t total;
+    uint64_t reserved;
+    uint64_t free;
+    
+}memoryState;
+
+memoryState * getMemoryState();
 
 void * allocMemoryUser(uint32_t size);
 void freeMemoryUser();

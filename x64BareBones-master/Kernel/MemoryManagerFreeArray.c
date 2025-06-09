@@ -55,4 +55,12 @@ void freeMemory(void * freeAddress) {
     mm->freeMemory += BLOCK_SIZE;
 }
 
+memoryState * getMemoryState(){
+    memoryState * memState = allocMemory(sizeof(memoryState));
+    memState->total = (uint64_t)mm->totalSize;
+    memState->reserved = (uint64_t)mm->usedMemory;
+    memState->free = (uint64_t)mm->freeMemory;
+    return memState;
+}
+
 

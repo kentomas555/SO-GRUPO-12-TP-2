@@ -280,8 +280,34 @@ void wait(int ticks){
 
 /*====== MEMORY STATE =======*/
 void printMemState(){
+
+    memoryState * memState = getMemoryState();
+
+    char aux[20];
+
     printf("Memory state: ");
     NewLine();
+    NewLine();
+    printf("Total: ");
+    NewLine();
+    itoaBase(memState->total, aux, 10);
+    printf(aux);
+    NewLine();
+    NewLine();
+    printf("Reserved: ");
+    NewLine();
+    itoaBase(memState->reserved, aux, 10);
+    printf(aux);
+    NewLine();
+    NewLine();
+    printf("Free: ");
+    NewLine();
+    itoaBase(memState->free, aux, 10);
+    printf(aux);
+    NewLine();
+    NewLine();   
+    
+    freeMemoryUser(memState);
     return;
 }
 
@@ -376,6 +402,7 @@ void handleBlock(char * buffer){
         printf("Ejemplo de llamada: BLOCK (PID)");
         NewLine();
         NewLine();
+        freeMemoryUser(psList);
         return;
     }
 
@@ -384,6 +411,7 @@ void handleBlock(char * buffer){
         printf("No existe el PID");
         NewLine();
         NewLine();
+        freeMemoryUser(psList);
         return;
     }
 
@@ -408,6 +436,7 @@ void handleBlock(char * buffer){
     }
     NewLine();
     NewLine();
+    freeMemoryUser(psList);
 }
 
 void handleNice(char * buffer){
@@ -433,6 +462,7 @@ void handleNice(char * buffer){
         printf("Ejemplo de llamada: NICE (PID) (PRIORIDAD)");
         NewLine();
         NewLine();
+        freeMemoryUser(psList);
         return;
     }
 
@@ -441,6 +471,7 @@ void handleNice(char * buffer){
         printf("No existe el PID");
         NewLine();
         NewLine();
+        freeMemoryUser(psList);
         return;
     }
 
@@ -454,6 +485,7 @@ void handleNice(char * buffer){
         printf("Prioridades: HIGHEST, HIGH, AVERAGE, LOW, LOWEST");
         NewLine();
         NewLine();
+        freeMemoryUser(psList);
         return;
     }
     buffer++;  
@@ -466,6 +498,7 @@ void handleNice(char * buffer){
         printf("Prioridades: HIGHEST, HIGH, AVERAGE, LOW, LOWEST");
         NewLine();
         NewLine();
+        freeMemoryUser(psList);
         return;
     }
 
@@ -486,6 +519,7 @@ void handleNice(char * buffer){
     printf(priorityList[priority]);
     NewLine();
     NewLine();
+    freeMemoryUser(psList);
 }
 
 void printProcesses(){
@@ -524,6 +558,7 @@ void printProcesses(){
         itoaBase((uint64_t)pr->rbpList[i], auxBuffer, 16);
         printf(auxBuffer);
     }
+    freeMemoryUser(pr);
     NewLine();
     NewLine();
 }
@@ -535,6 +570,7 @@ static void loopFuction(int seconds){
             NewLine();
         }
     }
+    return;
 }
 
 void handleLoop(char * buffer){
@@ -564,6 +600,7 @@ void handleKill(char * buffer){
         printf("Ejemplo de llamada: KILL (PID)");
         NewLine();
         NewLine();
+        freeMemoryUser(psList);
         return;
     }
 
@@ -572,6 +609,7 @@ void handleKill(char * buffer){
         printf("No existe el PID");
         NewLine();
         NewLine();
+        freeMemoryUser(psList);
         return;
     }
 
@@ -586,6 +624,7 @@ void handleKill(char * buffer){
     printf("Fue eliminado exitosamente!");
     NewLine();
     NewLine();
+    freeMemoryUser(psList);
     return;
 }
 

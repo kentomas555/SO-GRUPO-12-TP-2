@@ -66,6 +66,7 @@ uint64_t test_mm(uint64_t argc, char *argv[]) {
       itoaBase((uint64_t)mm_rqs[rq].address, aux, 16);
       printf(aux);
       NewLine();
+      printMemState();
       bussy_wait(50000000);      
       if (mm_rqs[rq].address) {
         total += mm_rqs[rq].size;

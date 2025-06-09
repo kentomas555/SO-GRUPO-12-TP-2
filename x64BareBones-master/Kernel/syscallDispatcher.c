@@ -25,6 +25,7 @@ static void handleSoundOnSyscall(va_list args);
 static void handleDateSyscall(va_list args);
 static uint64_t handleAllocMemorySyscall(va_list args);
 static void handleFreeMemorySyscall(va_list args);
+static memoryState * handleMemoryState();
 static uint64_t handleGetPidSyscall(void);
 static uint64_t handleCreateProcessSyscall(va_list args);
 static uint64_t handleCreateDummyProcessSyscall(void);
@@ -91,8 +92,8 @@ uint64_t syscallDispatcher(uint64_t id, ...) {
         case SYSCALL_FREE_MEMORY:
             handleFreeMemorySyscall(args);
             break;
-        case SYSCALL_MEMORY_INFO:
-            // TODO: memoryInfo
+        case SYSCALL_MEMORY_STATE:
+            ret = (uint64_t)handleMemoryState();
             break;
 
         //Process
@@ -223,6 +224,10 @@ static uint64_t handleAllocMemorySyscall(va_list args) {
 static void handleFreeMemorySyscall(va_list args) {
     void * address = va_arg(args, void *);
     freeMemory(address);
+}
+
+static memoryState * handleMemoryState(){
+    return getMemoryState();
 }
 
 static uint64_t handleGetPidSyscall(void){
