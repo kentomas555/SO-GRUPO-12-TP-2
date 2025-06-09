@@ -11,8 +11,8 @@ typedef struct MemoryManagerCDT {
     size_t currentBlock;          
 } MemoryManagerCDT;
 
-static void * const mmControlStart = (void *) 0x900000;
-static void * const heapStartAddress = (void *) ((char *)0x900000 + sizeof(struct MemoryManagerCDT));
+static void * const mmControlStart = (void *) 0x700000;
+static void * const heapStartAddress = (void *) ((char *)0x700000 + sizeof(struct MemoryManagerCDT));
 
 static MemoryManagerADT mm = NULL;
 
@@ -55,4 +55,18 @@ void freeMemory(void * freeAddress) {
     mm->freeMemory += BLOCK_SIZE;
 }
 
+memoryState * getMemState(){
+    memoryState * memState = allocMemory(sizeof(memoryState));
+    if(memState == NULL){
+        return NULL;
+    }
+    memState->total = mm->totalSize;
+    memState->reserved = mm->usedMemory;
+    memState->free = mm->freeMemory;
+    return memState;
+}
+
+uint64_t getCurrent(){
+    return (uint64_t)mm->currentBlock;
+}
 

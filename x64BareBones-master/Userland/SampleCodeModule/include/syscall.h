@@ -23,6 +23,7 @@
 #define SYSCALL_ALLOC_MEMORY 14
 #define SYSCALL_FREE_MEMORY 15
 #define SYSCALL_MEMORY_INFO 16
+#define SYSCALL_GETCURRENTBLOCK 40
 
 #define SYSCALL_GET_PID 17
 #define SYSCALL_CREATE_PROCESS 18
@@ -108,10 +109,20 @@ typedef enum {LOWEST_PRIORITY = 0, LOW_PRIORITY, AVERAGE_PRIORITY, HIGH_PRIORITY
 
 void * allocMemoryUser(uint32_t size);
 void freeMemoryUser();
-int getpid();
+
+typedef struct memoryState{
+    uint64_t total;
+    uint64_t reserved;
+    uint64_t free;
+}memoryState;
+
+memoryState * getMemoryState();
+
+uint64_t getCurrentBlock();
 
 /*====== NEW PROCESS SYSCALL ======*/
 
+int getpid();
 int createNewProcess(char * processName, void * processProgram, char** args, Priority priority, int16_t fds[]);
 int createDummyProcess();
 

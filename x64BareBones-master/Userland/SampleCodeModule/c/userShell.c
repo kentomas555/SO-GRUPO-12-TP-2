@@ -32,6 +32,8 @@ static void help(){
     printf("Comandos para TP2 SO 1C2025:");
     NewLine();
     NewLine();
+    printf("MEM - Imprime el estado de memoria");
+    NewLine();
     printf("GETPID - Imprime el PID del proceso corriendo");
     NewLine();
     printf("PS - Imprime los procesos");
@@ -154,6 +156,8 @@ static void bufferInterpreter(){
         zeroDivisionTrigger();
     } else if (strCompare(shellBuffer, "INVOPCODE")){
         invalidOpcodeTrigger();
+    } else if (strCompare(shellBuffer, "MEM")){
+        handlePrintMemState();
     } else if (strCompare(shellBuffer, "GETPID")){
         handleGetPid();
     } else if (strCompare(shellBuffer, "PS")){

@@ -38,4 +38,6 @@
 #define SYSCALL_SEM_POST 33
 #define SYSCALL_SEM_WAIT 34
 
+#define SYSCALL_GETCURRENTBLOCK 40
+
 uint64_t syscallDispatcher(uint64_t id, ...);

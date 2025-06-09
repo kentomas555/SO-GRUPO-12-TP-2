@@ -117,6 +117,18 @@ void freeMemoryUser(){
     syscall(SYSCALL_FREE_MEMORY);
 }
 
+/*AGREGADO*/
+
+memoryState * getMemoryState(){
+    return (memoryState *)syscall(SYSCALL_MEMORY_INFO);
+}
+
+uint64_t getCurrentBlock(){
+    return (uint64_t)syscall(SYSCALL_GETCURRENTBLOCK);
+}
+
+/*AGREGADO END*/
+
 /*====== NEW PROCESS ======*/
 
 int createNewProcess(char * processName, void * processProgram, char** args, Priority priority, int16_t fds[]){

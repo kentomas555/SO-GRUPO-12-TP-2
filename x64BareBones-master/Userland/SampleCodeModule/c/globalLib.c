@@ -481,7 +481,38 @@ void handleNice(char * buffer){
     NewLine();
 }
 
+void handlePrintMemState(){
+    memoryState * memState = getMemoryState();
+    char aux[20];
+    NewLine();
+    printf("Memory state:");
+    NewLine();
+    NewLine();
+    printf("Total size:");
+    NewLine();
+    itoaBase(memState->total, aux, 10); 
+    printf(aux);
+    NewLine();
+    printf("Used memory:");
+    NewLine();
+    itoaBase(memState->reserved, aux, 10);
+    printf(aux);
+    NewLine();
+    printf("Free memory:");
+    NewLine();
+    itoaBase(memState->free, aux, 10);
+    printf(aux);
+    NewLine();
+    NewLine();
+    printf("-----------------------------");
+    // freeMemoryUser(memState);
+    NewLine();
+}
+
 void printProcesses(){
+    // printf("EStoy en  printProcess");
+    //     NewLine();
+    //     NewLine();
     
     processesList * pr = getProcesses();
     char* state[4] = {"READY", "RUNNING", "BLOCKED", "KILLED"};
@@ -492,8 +523,9 @@ void printProcesses(){
     NewLine();
     for(int i = 0; i < pr->cantProcess; i++){
         
-        char auxBuffer[20];
-        
+        char auxBuffer[10];
+
+        printf("");
         NewLine();
         setX(1);
         printf(pr->names[i]);
@@ -516,7 +548,13 @@ void printProcesses(){
         setX(58);
         itoaBase((uint64_t)pr->rbpList[i], auxBuffer, 16);
         printf(auxBuffer);
+        printf("");
     }
+    /*AGREGADO*/
+    if(pr != NULL){
+        freeMemoryUser(pr);
+    }
+    /*AGREGADO END*/
     NewLine();
     NewLine();
 }
@@ -537,6 +575,9 @@ void handleLoop(char * buffer){
 }
 
 void handleKill(char * buffer){
+    printf("EStoy en el kill");
+        NewLine();
+        NewLine();
     while (*buffer != ' ' && *buffer != '\0') buffer++;
     if (*buffer == '\0') {
         printf("Faltan parametros");
@@ -548,8 +589,18 @@ void handleKill(char * buffer){
     }
     buffer++;  
 
+    printf("Antes del getProcess");
+    NewLine();
     processesList * psList = getProcesses();
+    if(psList == NULL){
+        printf("NULL");
+        NewLine();
+        return;
+    }
     int checkPID = getPIDFromBuffer(buffer);
+    printf("Despues del getProcess");
+            NewLine();
+        NewLine();
 
     if (checkPID < 0) {
         printf("Formato invalido de PID");
@@ -567,9 +618,14 @@ void handleKill(char * buffer){
         NewLine();
         return;
     }
-
+    printf("Antes del kill");
+            NewLine();
+        NewLine();
     Pid pid = (Pid)checkPID;
     killProcess(pid);
+    printf("Despues del kill");
+            NewLine();
+        NewLine();
 
     // Mostrar resultado
     printf("Process ");
@@ -610,8 +666,9 @@ void handlePhylo(){
 
 void handleMemoryManagerTest(){
     //TODO
-    // char * args[] = {MEMORY_SIZE};
+    char * args[] = {"1024"};
     // createNewProcess("Memory Test",(mainFunc)test_mm,);
+    test_mm((uint64_t)1, args);
     return;
 }
 

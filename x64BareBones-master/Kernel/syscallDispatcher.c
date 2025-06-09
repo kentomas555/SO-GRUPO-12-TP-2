@@ -25,6 +25,7 @@ static void handleSoundOnSyscall(va_list args);
 static void handleDateSyscall(va_list args);
 static uint64_t handleAllocMemorySyscall(va_list args);
 static void handleFreeMemorySyscall(va_list args);
+static uint64_t handlePrintMem();
 static uint64_t handleGetPidSyscall(void);
 static uint64_t handleCreateProcessSyscall(va_list args);
 static uint64_t handleCreateDummyProcessSyscall(void);
@@ -41,6 +42,7 @@ static void handleSemDestroySyscall(va_list args);
 static void handleSemPostSyscall(va_list args);
 static void handleSemWaitSyscall(va_list args);
 static uint64_t handleExitSyscall(va_list args);
+static uint64_t handleGetCurrentBlock();
 
 // ========== DISPATCHER PRINCIPAL ==========
 uint64_t syscallDispatcher(uint64_t id, ...) {
@@ -92,7 +94,7 @@ uint64_t syscallDispatcher(uint64_t id, ...) {
             handleFreeMemorySyscall(args);
             break;
         case SYSCALL_MEMORY_INFO:
-            // TODO: memoryInfo
+            ret = handlePrintMem();
             break;
 
         //Process
@@ -147,6 +149,9 @@ uint64_t syscallDispatcher(uint64_t id, ...) {
             break;
         case SYSCALL_SEM_WAIT:
             handleSemWaitSyscall(args);
+            break;
+        case SYSCALL_GETCURRENTBLOCK:
+            handleGetCurrentBlock();
             break;
     }
 
@@ -223,6 +228,11 @@ static uint64_t handleAllocMemorySyscall(va_list args) {
 static void handleFreeMemorySyscall(va_list args) {
     void * address = va_arg(args, void *);
     freeMemory(address);
+    return;
+}
+
+static uint64_t handlePrintMem(){
+    return (uint64_t)getMemState();
 }
 
 static uint64_t handleGetPidSyscall(void){
@@ -309,4 +319,8 @@ static void handleSemWaitSyscall(va_list args){
 
 static uint64_t handleExitSyscall(va_list args){
     return exitProcess();
+}
+
+static uint64_t handleGetCurrentBlock(){
+    return getCurrent();
 }

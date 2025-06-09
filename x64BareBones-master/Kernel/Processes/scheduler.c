@@ -51,6 +51,23 @@ void * schedule(void * currentRSP){
   if (toCleanupPID != -1) {
     Node * deadNode = scheduler->processes[toCleanupPID];
     if (deadNode != NULL) {
+      /*AGREGADO*/
+
+      // if(((PCB*)deadNode->info)->childrenQty > 0){
+      //   for(int i=0; i<((PCB*)deadNode->info)->childrenQty; i++){
+      //     Pid childPid = ((PCB*)deadNode->info)->children[i];
+      //     PCB *child = scheduler->processes[childPid]->info;
+
+      //     if (child->status != KILLED) {
+      //         child->parentPID = ((PCB*)deadNode->info)->parentPID;
+      //     }
+      //     PCB *parent = scheduler->processes[child->parentPID]->info;
+      //     parent->children[parent->childrenQty] = child->PID;
+      //     parent->childrenQty++;
+      //   }
+      // }
+
+      /*AGREGADO END*/
       removeFromQueue(scheduler->readyList, deadNode);
       freeStack(((PCB*)deadNode->info)->rbp);
       freeMemory(deadNode->info);
@@ -149,8 +166,14 @@ uint64_t killProcess(Pid pid){
       PCB *child = scheduler->processes[childPid]->info;
 
       if (child->status != KILLED) {
-        child->parentPID = SHELL_PID;
+        child->parentPID = pcb->parentPID;
       }
+
+      /*AGREGADO*/
+      // PCB *parent = scheduler->processes[child->parentPID]->info;
+      // parent->children[parent->childrenQty] = child->PID;
+      // parent->childrenQty++;
+      /*AGREGADO END*/
     }
   }
 

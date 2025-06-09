@@ -4,6 +4,8 @@ typedef struct MemoryManagerCDT {
 	char *nextAddress;
 } MemoryManagerCDT;
 
+//NODOS -> bloques
+
 MemoryManagerADT createMemoryManager(void *const restrict memoryForMemoryManager, void *const restrict managedMemory) {
 	MemoryManagerADT memoryManager = (MemoryManagerADT) memoryForMemoryManager;
 	memoryManager->nextAddress = managedMemory;

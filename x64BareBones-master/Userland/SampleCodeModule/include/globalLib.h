@@ -53,6 +53,8 @@ void wait(int ticks);
 
 /*====== PRINT PROCESSES ======*/
 
+void handlePrintMemState();
+
 void handleBlock(char * buffer);
 void handleNice(char * buffer);
 void handleGetPid();
