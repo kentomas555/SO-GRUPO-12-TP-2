@@ -563,19 +563,26 @@ void printProcesses(){
     NewLine();
 }
 
-static void loopFuction(int seconds){
-    while(1){
-        if(seconds_elapsed()%seconds == 0){
+static void loopFuction(/*int seconds*/){
+    int seconds = 5;
+    int lastPrinted = -1;
+
+    while (1) {
+        int current = seconds_elapsed();
+
+        if (current != lastPrinted && current % seconds == 0) {
             printf("Hello User!! I'm still here :)");
             NewLine();
+
+            lastPrinted = current;
         }
     }
-    return;
 }
 
 void handleLoop(char * buffer){
-    //TODO
-    // createNewProcess();
+    int16_t fds[2] = {0,1};
+    char *argv[] = {NULL};
+    createNewProcess("Loop Process", loopFuction, argv, HIGHEST_PRIO,fds);
     return;
 }
 
@@ -624,7 +631,7 @@ void handleKill(char * buffer){
     printf("Fue eliminado exitosamente!");
     NewLine();
     NewLine();
-    freeMemoryUser(psList);
+
     return;
 }
 
