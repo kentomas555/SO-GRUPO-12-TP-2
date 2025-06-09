@@ -44,7 +44,26 @@ static void * runIdleProcess(){
   return ((PCB*)firstProcess->info)->rsp; 
 }
 
+static Pid toCleanupPID = -1;
+
 void * schedule(void * currentRSP){
+  
+  if (toCleanupPID != -1) {
+    Node * deadNode = scheduler->processes[toCleanupPID];
+    if (deadNode != NULL) {
+      removeFromQueue(scheduler->readyList, deadNode);
+      freeStack(((PCB*)deadNode->info)->rbp);
+      freeMemory(deadNode->info);
+      freeMemory(deadNode);
+      PCB * parentPCB = (PCB*)scheduler->processes[((PCB*)deadNode->info)->parentPID]->info;
+      if(parentPCB->childrenQty > 0){
+        parentPCB->childrenQty--;
+      } 
+      scheduler->processes[toCleanupPID] = NULL;
+      scheduler->processQty--;
+    }
+    toCleanupPID = -1;
+  }
 
   if(isEmpty(scheduler->readyList)){
     return runIdleProcess();
@@ -61,41 +80,96 @@ void * schedule(void * currentRSP){
 
     if(scheduler->currentPID != IDLE_PID){
       ((PCB*)currentRunning->info)->rsp = currentRSP;
-      removeFromQueue(scheduler->readyList, currentRunning); //dequeue(readyList);
+      removeFromQueue(scheduler->readyList, currentRunning);
       queue(scheduler->readyList, currentRunning);
     }
     
     ((PCB*)currentRunning->info)->status = READY;
-  } else if(((PCB*)currentRunning->info)->status == KILLED){
-    ((PCB*)currentRunning->info)->childrenQty = 0;
-    freeMemory(((PCB*)currentRunning->info));
-    scheduler->processQty--;
-    scheduler->processes[scheduler->currentPID] = NULL;
+  } 
+  else if (currentRunning != NULL && ((PCB*)currentRunning->info)->status == KILLED) {
+    toCleanupPID = scheduler->currentPID;
   }
 
-  Pid nextProcessPID = getNextProcess();
-    
+  Pid nextProcessPID = getNextProcess();    
   return switchContext(nextProcessPID);
 }
 
 Pid getNextProcess(){
   listIterator(scheduler->readyList);
-  Node * auxNode = (Node*) listNext(scheduler->readyList);
-  if(auxNode == NULL){
-    return IDLE_PID;
+  Node * auxNode; 
+  while ((auxNode = (Node*) listNext(scheduler->readyList)) != NULL) {
+    PCB * pcb = (PCB *)auxNode->info;
+    if (pcb != NULL && pcb->status != KILLED) {
+      return ((PCB*)auxNode->info)->PID;
+    }
   }
-  return ((PCB*)auxNode->info)->PID;
+  return IDLE_PID;
 }
 
 void * switchContext(Pid pid){
   Node * processAux = scheduler->processes[pid];
+  if(processAux == NULL){
+    return runIdleProcess();
+  }
   PCB * nextPCB = (PCB *)processAux->info;
+  
   nextPCB->roundsLeft = (int)nextPCB->priority;
   nextPCB->status = RUNNING;
   scheduler->currentPID = pid;
   scheduler->currentPPID = nextPCB->parentPID;
   return nextPCB->rsp;
 }
+
+uint64_t exitProcess(){
+  //_cli();
+  PCB * pcb = (PCB*)scheduler->processes[getCurrentPID()]->info;
+  pcb->status = KILLED;
+  yield();
+  //_sti();
+}
+
+//TODO: fix proper free
+uint64_t killProcess(Pid pid){
+  PCB * pcb = (PCB*)scheduler->processes[pid]->info;
+  if(pcb == NULL || pid == IDLE_PID || pid == SHELL_PID || pid >= MAX_PROCESSES){
+    return -1;
+  }
+
+  Node * auxNode = scheduler->processes[pid];
+  
+  if(pcb->status == READY){
+    removeFromQueue(scheduler->readyList, auxNode);
+  }
+
+  if(pcb->childrenQty > 0){
+    for(int i=0; i<pcb->childrenQty; i++){
+      Pid childPid = pcb->children[i];
+      PCB *child = scheduler->processes[childPid]->info;
+
+      if (child->status != KILLED) {
+        child->parentPID = SHELL_PID;
+      }
+    }
+  }
+
+  PCB * parentPCB = (PCB*)scheduler->processes[pcb->parentPID]->info;
+  if(parentPCB->childrenQty > 0){
+    parentPCB->childrenQty--;
+  }  
+
+  if(pcb->status == RUNNING){
+    pcb->retValue = -1;
+    pcb->status = KILLED;
+    forceTimerTick();
+    return 0;
+  }
+
+  freeMemory(pcb);
+  scheduler->processQty--;
+  scheduler->processes[pid] = NULL;
+  return 0;
+}
+
 
 Pid getCurrentPID(){
    return scheduler->currentPID;
@@ -235,59 +309,7 @@ int nice(Pid pid,Priority priority){
   return 1;
 }
 
-uint64_t exitProcess(){
-  killProcess(getCurrentPID());
-  yield();
-  return 1;
-}
 
-//TODO: fix proper free
-uint64_t killProcess(Pid pid){
-  PCB * pcb = (PCB*)scheduler->processes[pid]->info;
-  if(pcb == NULL || pid == IDLE_PID || pid == SHELL_PID || pid >= MAX_PROCESSES){
-    return -1;
-  }
-
-  Node * auxNode = scheduler->processes[pid];
-
-
-  // if(pcb->status == RUNNING){
-  //   pcb->retValue = -1;
-
-  //   yield();
-  // }
-  
-  if(pcb->status == READY){
-    removeFromQueue(scheduler->readyList, auxNode);
-  }
-
-  if(pcb->childrenQty > 0){
-    for(int i=0; i<pcb->childrenQty; i++){
-      Pid childPid = pcb->children[i];
-      PCB *child = scheduler->processes[childPid]->info;
-
-      if (child->status != KILLED) {
-        child->parentPID = SHELL_PID;
-      }
-    }
-  }
-
-  PCB * parentPCB = (PCB*)scheduler->processes[pcb->parentPID]->info;
-  parentPCB->childrenQty--;
-
-  if(pcb->status == RUNNING){
-    // pcb->retValue = -1;
-    pcb->status = KILLED;
-    return 0;
-  }
-
-  pcb->childrenQty = 0;
-  pcb->status = KILLED;
-  freeMemory(pcb);
-  scheduler->processQty--;
-  scheduler->processes[pid] = NULL;
-  return 0;
-}
 
 int waitPID(Pid pid){
   if(scheduler->processes[pid] != NULL && pid != IDLE_PID && pid != SHELL_PID){

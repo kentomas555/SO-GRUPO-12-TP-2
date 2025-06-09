@@ -8,6 +8,7 @@
 int64_t prio[TOTAL_PROCESSES] = {LOWEST_PRIO, LOW_PRIO, AVERAGE_PRIO, HIGH_PRIO, HIGHEST_PRIO};
 
 void test_prio() {
+
   int64_t pids[TOTAL_PROCESSES];
   int16_t fds[2] = {0,1};
   char *argv[] = {0};
@@ -58,5 +59,5 @@ void test_prio() {
   NewLine();
   printf("TEST PASSED SUCCESFULLY!");
   NewLine();
-  
+
 }

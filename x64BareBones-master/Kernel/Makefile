@@ -25,6 +25,6 @@ $(LOADEROBJECT):
 	$(ASM) $(ASMFLAGS) $(LOADERSRC) -o $(LOADEROBJECT)
 
 clean:
-	rm -rf asm/*.o *.o *.elf *.bin Processes/*.o Semaphores/*.o
+	rm -rf asm/*.o *.o *.elf *.bin Processes/*.o Semaphores/*.o Pipes/*.o
 
 .PHONY: all clean

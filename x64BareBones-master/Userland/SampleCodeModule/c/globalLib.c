@@ -617,7 +617,7 @@ void handleMemoryManagerTest(){
 
 void handleProcessTest(){
     int16_t fds[2] = {0,1};
-    char *argv[] = {NULL};
+    char *argv[] = {"2", 0}; //{NULL}
     createNewProcess("Process Test",test_processes, argv, HIGHEST_PRIO,fds);
     return;
 }
