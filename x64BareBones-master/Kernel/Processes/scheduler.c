@@ -51,6 +51,20 @@ void * schedule(void * currentRSP){
   if (toCleanupPID != -1) {
     Node * deadNode = scheduler->processes[toCleanupPID];
     if (deadNode != NULL) {
+      if(((PCB*)deadNode->info)->childrenQty > 0){
+        for(int i=0; i<((PCB*)deadNode->info)->childrenQty; i++){
+          Pid childPid = ((PCB*)deadNode->info)->children[i];
+          PCB *child = scheduler->processes[childPid]->info;
+
+          if (child->status != KILLED) {
+              child->parentPID = SHELL_PID;
+          }
+          PCB *parent = scheduler->processes[child->parentPID]->info;
+          parent->children[parent->childrenQty] = child->PID;
+          parent->childrenQty++;
+        }
+      }
+
       removeFromQueue(scheduler->readyList, deadNode);
       freeStack(((PCB*)deadNode->info)->rbp);
       freeMemory(deadNode->info);
@@ -151,6 +165,10 @@ uint64_t killProcess(Pid pid){
       if (child->status != KILLED) {
         child->parentPID = SHELL_PID;
       }
+      PCB *parent = scheduler->processes[child->parentPID]->info;
+      parent->children[parent->childrenQty] = child->PID;
+      parent->childrenQty++;
+
     }
   }
 
