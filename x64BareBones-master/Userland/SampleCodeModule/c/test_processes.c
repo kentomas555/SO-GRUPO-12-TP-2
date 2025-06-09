@@ -11,8 +11,6 @@ typedef struct P_rq {
 } p_rq;
 
 int64_t test_processes(uint64_t argc, char *argv[]) {
-  printf("DENTRO");
-  NewLine();
   uint8_t rq;
   uint8_t alive = 0;
   uint8_t action;
@@ -22,17 +20,11 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
   char *argvAUX[] = {NULL};
 
   if (argc != 1){
-     NewLine();
-    printf("argc != 1");
-    NewLine();
     return -1;
 
   }
    
   if ((max_processes = satoi(argv[0])) <= 0){
-    NewLine();  
-    printf("SATOI");
-    NewLine();
     return -1;
   }
     
@@ -99,8 +91,4 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
         }
     }
   }
-  NewLine();
-  printf("PROCESSES TEST PASSED SUCCESFULLY!");
-  NewLine();
-  NewLine();
 }

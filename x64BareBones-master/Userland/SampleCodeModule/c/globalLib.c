@@ -278,6 +278,13 @@ void wait(int ticks){
     return;
 }
 
+/*====== MEMORY STATE =======*/
+void printMemState(){
+    printf("Memory state: ");
+    NewLine();
+    return;
+}
+
 /*====== PROCESSES ======*/
 
 void handleGetPid(){
@@ -609,9 +616,10 @@ void handlePhylo(){
 /*====== TESTS ======*/
 
 void handleMemoryManagerTest(){
-    //TODO
-    // char * args[] = {MEMORY_SIZE};
-    // createNewProcess("Memory Test",(mainFunc)test_mm,);
+    int16_t fds[2] = {0,1};
+    //arreglar porque se consume el argv
+    char * argv[] = {"1024", 0};
+    createNewProcess("Memory Test", test_mm, argv, HIGHEST_PRIO,fds);
     return;
 }
 

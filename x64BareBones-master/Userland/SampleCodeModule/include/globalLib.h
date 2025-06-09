@@ -49,9 +49,11 @@ void wait(int ticks);
 /*================== TP2-SO ==================*/
 /*============================================*/
 
+/*====== MEMORY STATE ======*/
 
+void printMemState(void);
 
-/*====== PRINT PROCESSES ======*/
+/*====== PROCESSES ======*/
 
 void handleBlock(char * buffer);
 void handleNice(char * buffer);
