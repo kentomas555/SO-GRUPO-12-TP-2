@@ -22,7 +22,7 @@ typedef struct sem_t {
 } sem_t;
 
 //void initializeSemaphores();
-sem_t * semInit(uint32_t value);
+uint64_t semInit(uint32_t value);
 uint64_t semDestroy(int id);
 void semPost(int id);
 void semWait(int id);

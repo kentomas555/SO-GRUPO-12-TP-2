@@ -191,20 +191,20 @@ void hlt(){
 
 /*====== SEMAPHORES ======*/
 
-void * semInit(char * semName, int32_t value){
-    return (void *)syscall(SYSCALL_SEM_INIT, semName, value);
+uint64_t semInit(int32_t value){
+    return (uint64_t)syscall(SYSCALL_SEM_INIT, value);
 }
 
-void semDestroy(char * semName){
-    syscall(SYSCALL_SEM_DESTROY, semName);
+uint64_t semDestroy(int id){
+    return (uint64_t)syscall(SYSCALL_SEM_DESTROY, (uint64_t)id);
 }
 
-void semPost(char * semName){
-    syscall(SYSCALL_SEM_POST, semName);
+void semPost(int id){
+    syscall(SYSCALL_SEM_POST, (uint64_t)id);
 }
 
-void semWait(char * semName){
-    syscall(SYSCALL_SEM_WAIT, semName);
+void semWait(int id){
+    syscall(SYSCALL_SEM_WAIT, (uint64_t)id);
 }
 
 

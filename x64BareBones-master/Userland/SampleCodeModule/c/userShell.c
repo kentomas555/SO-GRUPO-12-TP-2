@@ -224,18 +224,8 @@ static void bufferInterpreter(){
     } else if (strCompare(shellBuffer, "TESTPRIO")){
         handlePriorityTest();
     } else if (strCompare(shellBuffer, "TESTSYNC")){
-        /*====TODO===*/
-        NewLine();
-        printf("Por implementar ...");
-        NewLine();
-        NewLine();
         handleSyncroTest();
     } else if (strCompare(shellBuffer, "TESTNOSYNC")){
-        /*====TODO===*/
-        NewLine();
-        printf("Por implementar ...");
-        NewLine();
-        NewLine();
         handleNoSyncroTest();
     } else {
         printf("Comando no reconocido. Use HELP para mas informacion");

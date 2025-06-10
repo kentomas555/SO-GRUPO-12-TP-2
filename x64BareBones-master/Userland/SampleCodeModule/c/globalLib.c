@@ -712,26 +712,28 @@ void handleMemoryManagerTest(){
 void handleProcessTest(){
     int16_t fds[2] = {0,1};
     char *argv[] = {"2", 0};
-    createNewProcess("Process Test",test_processes, argv, HIGHEST_PRIO,fds);
+    createNewProcess("Process Test",test_processes, argv, HIGH_PRIO,fds);
     return;
 }
 
 void handlePriorityTest(){
     int16_t fds[2] = {0,1};
     char *argv[] = {NULL};
-    createNewProcess("Priority Test",test_prio, argv, HIGHEST_PRIO,fds);
+    createNewProcess("Priority Test",test_prio, argv, HIGH_PRIO,fds);
     return;
 }
 
 void handleSyncroTest(){
-    int16_t fds[2] = {0,1};
-    char *argv[] = {NULL};
-    createNewProcess("Priority Test",test_prio, argv, HIGHEST_PRIO,fds);
+    // int16_t fds[2] = {0,1};
+    // char *argv[] = {"10", "1", 0};
+    // createNewProcess("Syncro Test",test_sync, argv, HIGH_PRIO,fds);
     return;
 }
 
 void handleNoSyncroTest(){
-    //TODO
+    // int16_t fds[2] = {0,1};
+    // char *argv[] = {"10", "0", 0};
+    // createNewProcess("No Sycnro Test",test_sync, argv, HIGH_PRIO,fds);
     return;
 }
 

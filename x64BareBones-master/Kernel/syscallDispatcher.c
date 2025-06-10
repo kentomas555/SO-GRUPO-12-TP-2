@@ -37,8 +37,8 @@ static uint64_t handleIncreasePrioritySyscall(va_list args);
 static uint64_t handleDecreasePrioritySyscall(va_list args);
 static int32_t handleNiceSyscall(va_list args);
 static processesToPrint * handleListProcesses();
-static sem_t * handleSemInitSyscall(va_list args);
-static void handleSemDestroySyscall(va_list args);
+static uint64_t handleSemInitSyscall(va_list args);
+static uint64_t handleSemDestroySyscall(va_list args);
 static void handleSemPostSyscall(va_list args);
 static void handleSemWaitSyscall(va_list args);
 static uint64_t handleExitSyscall(va_list args);
@@ -139,10 +139,10 @@ uint64_t syscallDispatcher(uint64_t id, ...) {
             _hlt();
             break;
         case SYSCALL_SEM_INIT:
-            ret = (uint64_t)handleSemInitSyscall(args);
+            ret = handleSemInitSyscall(args);
             break;
         case SYSCALL_SEM_DESTROY:
-            handleSemDestroySyscall(args);
+            ret = handleSemDestroySyscall(args);
             break;
         case SYSCALL_SEM_POST:
             handleSemPostSyscall(args);
@@ -292,16 +292,16 @@ static processesToPrint * handleListProcesses(){
     return printProcesses();
 }
 
-static sem_t * handleSemInitSyscall(va_list args){
+static uint64_t handleSemInitSyscall(va_list args){
     //char* semName = va_arg(args, char*);
     int32_t value = va_arg(args, int32_t);
     return semInit(value); // no recibe name
 }
 
-static void handleSemDestroySyscall(va_list args){
+static uint64_t handleSemDestroySyscall(va_list args){
     //char* semName = va_arg(args, char*);
     int32_t id = va_arg(args, int32_t);
-    semDestroy(id);
+    return (uint64_t)semDestroy(id);
 
 }
 

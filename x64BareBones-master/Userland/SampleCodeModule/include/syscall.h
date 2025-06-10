@@ -160,10 +160,10 @@ void hlt();
 
 /*====== SEMAPHORE SYSCALLS======*/
 
-void * semInit(char * semName, int32_t value);
-void semDestroy(char * semName);
-void semPost(char * semName);
-void semWait(char * semName);
+uint64_t semInit(int32_t value);
+uint64_t semDestroy(int id);
+void semPost(int id);
+void semWait(int id);
 
 /*====== PIPE SYSCALLS ======*/
 

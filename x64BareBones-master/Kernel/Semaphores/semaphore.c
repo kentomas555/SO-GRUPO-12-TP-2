@@ -23,10 +23,10 @@ static int getAvailableSemID(){
   return availableID++;
 }
 
-sem_t * semInit(uint32_t value){
+uint64_t semInit(uint32_t value){
 
   if(availableID >= MAX_SEM_QTY){
-    return NULL;
+    return 0;
   }
   
   sem_t * semaphore = allocMemory(sizeof(sem_t));
@@ -38,7 +38,7 @@ sem_t * semInit(uint32_t value){
 
   semaphores[semaphore->id] = semaphore;
 
-  return semaphore;
+  return semaphore->id;
 }
 
 static sem_t * getSemaphore(int id){
