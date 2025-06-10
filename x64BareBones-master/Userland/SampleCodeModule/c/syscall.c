@@ -113,8 +113,8 @@ void * allocMemoryUser(uint32_t size){
     return (void *) aux;
 }
 
-void freeMemoryUser(){
-    syscall(SYSCALL_FREE_MEMORY);
+void freeMemoryUser(void * address){
+    syscall(SYSCALL_FREE_MEMORY, address);
 }
 
 /*AGREGADO*/

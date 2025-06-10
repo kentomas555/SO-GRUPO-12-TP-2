@@ -505,7 +505,7 @@ void handlePrintMemState(){
     NewLine();
     NewLine();
     printf("-----------------------------");
-    // freeMemoryUser(memState);
+    freeMemoryUser(memState);
     NewLine();
 }
 
@@ -551,9 +551,7 @@ void printProcesses(){
         printf("");
     }
     /*AGREGADO*/
-    if(pr != NULL){
-        freeMemoryUser(pr);
-    }
+    freeMemoryUser(pr);
     /*AGREGADO END*/
     NewLine();
     NewLine();
@@ -665,16 +663,15 @@ void handlePhylo(){
 /*====== TESTS ======*/
 
 void handleMemoryManagerTest(){
-    //TODO
-    char * args[] = {"1024"};
-    // createNewProcess("Memory Test",(mainFunc)test_mm,);
-    test_mm((uint64_t)1, args);
+    int16_t fds[2] = {0,1};
+    char * argv[] = {"512", 0};
+    createNewProcess("Memory Test",(mainFunc)test_mm, argv, HIGHEST_PRIO,fds);
     return;
 }
 
 void handleProcessTest(){
     int16_t fds[2] = {0,1};
-    char *argv[] = {"2", 0}; //{NULL}
+    char *argv[] = {"2", 0};
     createNewProcess("Process Test",test_processes, argv, HIGHEST_PRIO,fds);
     return;
 }
@@ -687,7 +684,9 @@ void handlePriorityTest(){
 }
 
 void handleSyncroTest(){
-    //TODO
+    int16_t fds[2] = {0,1};
+    char *argv[] = {NULL};
+    createNewProcess("Priority Test",test_prio, argv, HIGHEST_PRIO,fds);
     return;
 }
 

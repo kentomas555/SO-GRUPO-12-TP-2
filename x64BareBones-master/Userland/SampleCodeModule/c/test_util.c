@@ -65,7 +65,7 @@ void endless_loop() {
 
 void endless_loop_print() {
   while (1) {
-    printf("Prio test Prio test Prio test Prio test");
+    printf("Priority testing");
     NewLine();
     bussy_wait(WAIT);
   }

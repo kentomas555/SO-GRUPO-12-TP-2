@@ -46,6 +46,21 @@ static void * runIdleProcess(){
 
 static Pid toCleanupPID = -1;
 
+void freePCB(PCB *pcb) {
+    if (!pcb) return;
+    if (pcb->processName)
+        freeMemory(pcb->processName);
+    if (pcb->argv) {
+        for (int i = 0; i < pcb->argc; i++) {
+            if (pcb->argv[i]) freeMemory(pcb->argv[i]);
+        }
+        freeMemory(pcb->argv);
+    }
+    if (pcb->rbp)
+        freeStack(pcb->rbp);
+    freeMemory(pcb);
+}
+
 void * schedule(void * currentRSP){
   
   if (toCleanupPID != -1) {
@@ -70,7 +85,7 @@ void * schedule(void * currentRSP){
       /*AGREGADO END*/
       removeFromQueue(scheduler->readyList, deadNode);
       freeStack(((PCB*)deadNode->info)->rbp);
-      freeMemory(deadNode->info);
+      freePCB(((PCB*)deadNode->info));
       freeMemory(deadNode);
       PCB * parentPCB = (PCB*)scheduler->processes[((PCB*)deadNode->info)->parentPID]->info;
       if(parentPCB->childrenQty > 0){
@@ -188,15 +203,7 @@ uint64_t killProcess(Pid pid){
     forceTimerTick();
     return 0;
   }
-  //////////////
-  freeMemory(pcb->processName);
-  for(int i = 0; i < pcb->argc; i++){
-    freeMemory(pcb->argv[i]);
-  }
-  freeStack(pcb->rbp);
-  freeMemory(pcb);
-  //////////////
-
+  freePCB(pcb);
   freeMemory(scheduler->processes[pid]);
   scheduler->processQty--;
   scheduler->processes[pid] = NULL;

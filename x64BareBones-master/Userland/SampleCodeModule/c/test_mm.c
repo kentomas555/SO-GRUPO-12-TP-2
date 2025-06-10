@@ -21,9 +21,6 @@ static void memset(void * address, uint32_t c, uint32_t length){
 
 char aux[20];
 
-void breakpoint(){
-  return;
-}
 
 uint64_t test_mm(uint64_t argc, char *argv[]) {
 
@@ -52,24 +49,10 @@ uint64_t test_mm(uint64_t argc, char *argv[]) {
     rq = 0;
     total = 0;
 
-    breakpoint();
-
     // Request as many blocks as we can
     while (rq < MAX_BLOCKS && total < max_memory) {
       mm_rqs[rq].size = GetUniform(max_memory - total - 1) + 1;
       mm_rqs[rq].address = allocMemoryUser(mm_rqs[rq].size);
-      uint64_t block = getCurrentBlock();
-      itoaBase(block, aux, 10);
-      NewLine();
-      printf("BLOCK: ");
-      NewLine();
-      printf(aux);
-      NewLine();      
-      printf("ALLOC SUCCESS");
-      NewLine();
-      itoaBase((uint64_t)mm_rqs[rq].address, aux,16);
-      printf(aux);
-      NewLine();
       bussy_wait(100000000);
 
       if (mm_rqs[rq].address) {
@@ -98,20 +81,7 @@ uint64_t test_mm(uint64_t argc, char *argv[]) {
     // Free
     for (i = 0; i < rq; i++)
       if (mm_rqs[i].address){
-          freeMemoryUser(mm_rqs[rq-i].address);
-          NewLine();
-          uint64_t block = getCurrentBlock();
-      itoaBase(block, aux, 10);
-      NewLine();
-      printf("BLOCK: ");
-      NewLine();
-      printf(aux);
-      NewLine(); 
-          printf("FREE");
-          NewLine();
-          itoaBase((uint64_t)mm_rqs[rq-i].address, aux,16);
-          printf(aux);
-          NewLine();
+          freeMemoryUser(mm_rqs[i].address);
           bussy_wait(100000000);
       }
   }
