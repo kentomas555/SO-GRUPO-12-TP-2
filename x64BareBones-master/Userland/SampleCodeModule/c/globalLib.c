@@ -399,6 +399,7 @@ void handleBlock(char * buffer){
         NewLine();
         printf("Cambio de estado a READY exitosamente!");
     }
+    freeMemoryUser(psList);
     NewLine();
     NewLine();
 }
@@ -479,6 +480,7 @@ void handleNice(char * buffer){
     printf(priorityList[priority]);
     NewLine();
     NewLine();
+    freeMemoryUser(psList);
 }
 
 void handlePrintMemState(){
@@ -550,9 +552,7 @@ void printProcesses(){
         printf(auxBuffer);
         printf("");
     }
-    /*AGREGADO*/
     freeMemoryUser(pr);
-    /*AGREGADO END*/
     NewLine();
     NewLine();
 }
@@ -573,9 +573,7 @@ void handleLoop(char * buffer){
 }
 
 void handleKill(char * buffer){
-    printf("EStoy en el kill");
-        NewLine();
-        NewLine();
+
     while (*buffer != ' ' && *buffer != '\0') buffer++;
     if (*buffer == '\0') {
         printf("Faltan parametros");
@@ -587,8 +585,6 @@ void handleKill(char * buffer){
     }
     buffer++;  
 
-    printf("Antes del getProcess");
-    NewLine();
     processesList * psList = getProcesses();
     if(psList == NULL){
         printf("NULL");
@@ -596,9 +592,6 @@ void handleKill(char * buffer){
         return;
     }
     int checkPID = getPIDFromBuffer(buffer);
-    printf("Despues del getProcess");
-            NewLine();
-        NewLine();
 
     if (checkPID < 0) {
         printf("Formato invalido de PID");
@@ -616,14 +609,8 @@ void handleKill(char * buffer){
         NewLine();
         return;
     }
-    printf("Antes del kill");
-            NewLine();
-        NewLine();
     Pid pid = (Pid)checkPID;
     killProcess(pid);
-    printf("Despues del kill");
-            NewLine();
-        NewLine();
 
     // Mostrar resultado
     printf("Process ");
@@ -633,6 +620,7 @@ void handleKill(char * buffer){
     printf("Fue eliminado exitosamente!");
     NewLine();
     NewLine();
+    freeMemoryUser(psList);
     return;
 }
 
