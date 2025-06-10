@@ -194,6 +194,23 @@ static int atoi(char * str){
     return result;
 }
 
+static void *memcpy(void *dest, const void *src, int n) {
+    char *d = (char *)dest;
+    const char *s = (const char *)src;
+    for (int i = 0; i < n; i++) {
+        d[i] = s[i];
+    }
+    return dest;
+}
+
+static int strlen(const char *str) {
+    int length = 0;
+    while (str[length] != '\0') {
+        length++;
+    }
+    return length;
+}
+
 /*====== PRINT TIME ======*/
 
 void printCurrentTime(){
@@ -558,19 +575,54 @@ void printProcesses(){
 }
 
 static void loopFuction(int seconds){
-    while(1){
-        if(seconds_elapsed()%seconds == 0){
+    int lastPrinted = -1;
+    int secs = seconds;
+    while (1) {
+        int current = seconds_elapsed();
+        if (current != lastPrinted && current % secs == 0) {
             printf("Hello User!! I'm still here :)");
             NewLine();
+            lastPrinted = current;
         }
     }
-}
-
-void handleLoop(char * buffer){
-    //TODO
-    // createNewProcess();
     return;
 }
+
+
+void handleLoop(char * buffer) {
+    int16_t fds[2] = {0, 1};
+
+    while (*buffer != ' ' && *buffer != '\0') buffer++;
+
+    if (*buffer == '\0') {
+        printf("Faltan parametros");
+        NewLine();
+        printf("Ejemplo de llamada: LOOP (SEGUNDOS)");
+        NewLine();
+        return;
+    }
+
+    buffer++; 
+
+    int seconds = atoi(buffer);
+    if (seconds <= 0) {
+        printf("El parámetro debe ser un número mayor que 0");
+        NewLine();
+        return;
+    }
+
+    // Reparar el paso de parametros
+    char * argv[2];
+
+    int len = strlen(buffer);
+
+    memcpy(argv[0], buffer, len);
+    argv[0][len] = '\0';
+    argv[1] = NULL;
+
+    createNewProcess("Loop Process", (mainFunc)loopFuction, argv, HIGHEST_PRIO, fds);
+}
+
 
 void handleKill(char * buffer){
 

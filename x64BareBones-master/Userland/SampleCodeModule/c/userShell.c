@@ -101,6 +101,15 @@ static void changeColor(){
     ClearScreen(newColor);
 }
 
+static void handleLoopNoParams(){
+    NewLine();
+    printf("Faltan parametros");
+    NewLine();
+    printf("Ejemplo de llamada: LOOP (SEGUNDOS)");
+    NewLine();
+    NewLine();
+}
+
 static void handleKillNoParams(){
     NewLine();
     printf("Faltan parametros");
@@ -165,12 +174,9 @@ static void bufferInterpreter(){
     } else if (strCompare(shellBuffer, "CREATEDUMMY")){
         createDummyProcess();
     } else if (strCompareFirstComand(shellBuffer, "LOOP ")){
-        /*====TODO===*/
-        NewLine();
-        printf("Por implementar ...");
-        NewLine();
-        NewLine();
         handleLoop(shellBuffer);
+    } else if (strCompare(shellBuffer, "LOOP")){
+        handleLoopNoParams();
     } else if (strCompareFirstComand(shellBuffer, "KILL ")){
         handleKill(shellBuffer);
     } else if (strCompare(shellBuffer, "KILL")){
@@ -212,17 +218,8 @@ static void bufferInterpreter(){
         NewLine();
         handlePhylo();
     } else if (strCompare(shellBuffer, "TESTMM")){
-        /*====TODO===*/
-        NewLine();
-        printf("Por implementar ...");
-        NewLine();
-        NewLine();
         handleMemoryManagerTest();
     } else if (strCompare(shellBuffer, "TESTPROCESS")){
-        NewLine();
-        printf("Por implementar ...");
-        NewLine();
-        NewLine();
         handleProcessTest();
     } else if (strCompare(shellBuffer, "TESTPRIO")){
         handlePriorityTest();
