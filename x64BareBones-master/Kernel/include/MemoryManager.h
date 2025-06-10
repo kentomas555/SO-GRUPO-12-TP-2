@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <stdint.h>
+#include "lib.h"
 
 typedef struct MemoryManagerCDT * MemoryManagerADT;
 
@@ -11,6 +12,12 @@ typedef struct memoryState{
     uint64_t reserved;
     uint64_t free;
 }memoryState;
+
+// #ifdef BUDDY_MODE 
+//     void createMemoryManagerBuddy();
+// #else
+//     void createMemoryManagerFreeList();
+// #endif
 
 void createMemoryManager();
 
