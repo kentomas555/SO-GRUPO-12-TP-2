@@ -32,10 +32,12 @@ static uint64_t handleCreateDummyProcessSyscall(void);
 static uint64_t handleBlockProcessSyscall(va_list args);
 static uint64_t handleUnblockProcessSyscall(va_list args);
 static uint64_t handleKillProcessSyscall(va_list args);
+static void handleYieldSyscall(void);
 static uint64_t handleGetPrioritySyscall(va_list args);
 static uint64_t handleIncreasePrioritySyscall(va_list args); 
 static uint64_t handleDecreasePrioritySyscall(va_list args);
 static int32_t handleNiceSyscall(va_list args);
+static uint64_t handleWaitPidSyscall(va_list args);
 static processesToPrint * handleListProcesses();
 static uint64_t handleSemInitSyscall(va_list args);
 static uint64_t handleSemDestroySyscall(va_list args);
@@ -120,6 +122,9 @@ uint64_t syscallDispatcher(uint64_t id, ...) {
         case SYSCALL_KILL_PROCESS:
             ret = handleKillProcessSyscall(args);
             break;
+        case SYSCALL_YIELD:
+            handleYieldSyscall();
+            break;
         case SYSCALL_LIST_PROCESSES:
             ret = (uint64_t)handleListProcesses();
             break;
@@ -135,11 +140,14 @@ uint64_t syscallDispatcher(uint64_t id, ...) {
         case SYSCALL_NICE:
             ret = handleNiceSyscall(args);
             break;
+        case SYSCALL_WAITPID:
+            ret = handleWaitPidSyscall(args);
+            break;
         case SYSCALL_HLT:
             _hlt();
             break;
         case SYSCALL_SEM_INIT:
-            ret = handleSemInitSyscall(args);
+            ret = (uint64_t)handleSemInitSyscall(args);
             break;
         case SYSCALL_SEM_DESTROY:
             ret = handleSemDestroySyscall(args);
@@ -267,6 +275,11 @@ static uint64_t handleKillProcessSyscall(va_list args){
     return (uint64_t) killProcess(pid);
 }
 
+static void handleYieldSyscall(void){
+    yield();
+    return;
+}
+
 static uint64_t handleGetPrioritySyscall(va_list args){
     Pid pid = va_arg(args,Pid);
     return (uint64_t) getProcessPriority(pid);
@@ -288,14 +301,20 @@ static int32_t handleNiceSyscall(va_list args){
     return (uint64_t) nice(pid, priority);
 }
 
+static uint64_t handleWaitPidSyscall(va_list args){
+    Pid pid = va_arg(args,Pid);
+    return (uint64_t) waitPID(pid);
+}
+
 static processesToPrint * handleListProcesses(){
     return printProcesses();
 }
 
 static uint64_t handleSemInitSyscall(va_list args){
     //char* semName = va_arg(args, char*);
+    int32_t id = va_arg(args, int32_t);
     int32_t value = va_arg(args, int32_t);
-    return semInit(value); // no recibe name
+    return semInit(id ,value); // no recibe name
 }
 
 static uint64_t handleSemDestroySyscall(va_list args){

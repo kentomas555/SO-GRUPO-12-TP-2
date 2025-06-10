@@ -724,9 +724,9 @@ void handlePriorityTest(){
 }
 
 void handleSyncroTest(){
-    // int16_t fds[2] = {0,1};
-    // char *argv[] = {"10", "1", 0};
-    // createNewProcess("Syncro Test",test_sync, argv, HIGH_PRIO,fds);
+    int16_t fds[2] = {0,1};
+    char *argv[] = {"10", "1", 0};
+    createNewProcess("Syncro Test",test_sync, argv, HIGH_PRIO,fds);
     return;
 }
 

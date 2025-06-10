@@ -32,18 +32,19 @@
 #define SYSCALL_BLOCK_PROCESS 21
 #define SYSCALL_UNBLOCK_PROCESS 22
 #define SYSCALL_KILL_PROCESS 23
-#define SYSCALL_LIST_PROCESSES 24
-#define SYSCALL_GET_PRIORITY 25
-#define SYSCALL_INCREASE_PRIORITY 26
-#define SYSCALL_DECREASE_PRIORITY 27
-#define SYSCALL_NICE 28
-#define SYSCALL_WAITPID 29
-#define SYSCALL_HLT 30
+#define SYSCALL_YIELD 24
+#define SYSCALL_LIST_PROCESSES 25
+#define SYSCALL_GET_PRIORITY 26
+#define SYSCALL_INCREASE_PRIORITY 27
+#define SYSCALL_DECREASE_PRIORITY 28
+#define SYSCALL_NICE 29
+#define SYSCALL_WAITPID 30
+#define SYSCALL_HLT 31
 
-#define SYSCALL_SEM_INIT 31
-#define SYSCALL_SEM_DESTROY 32
-#define SYSCALL_SEM_POST 33
-#define SYSCALL_SEM_WAIT 34
+#define SYSCALL_SEM_INIT 32
+#define SYSCALL_SEM_DESTROY 33
+#define SYSCALL_SEM_POST 34
+#define SYSCALL_SEM_WAIT 35
 
 /*====== READ SYSCALL ======*/
 
@@ -146,6 +147,7 @@ typedef struct processesList{
 
 int exitProcess();
 int killProcess(Pid pid);
+void yield();
 int blockProcess(Pid pid);
 int unblockProcess(Pid pid);
 processesList * getProcesses();
@@ -153,6 +155,7 @@ int getPriority(Pid pid);
 int increasePriority(Pid pid);
 int decreasePriority(Pid pid);
 int nice(Pid pid, Priority priority);
+int waitPID(Pid pid);
 
 /*====== HLT SYSCALL ======*/
 
@@ -160,25 +163,36 @@ void hlt();
 
 /*====== SEMAPHORE SYSCALLS======*/
 
-uint64_t semInit(int32_t value);
+typedef struct Node {
+    void * info;
+    struct Node * next;
+    struct Node * previous;
+} Node;
+
+typedef struct LinkedListCDT {
+    Node * current;
+    Node * first;
+    Node * last;
+    int size;
+} LinkedListCDT;
+
+typedef struct LinkedListCDT * LinkedListADT;
+
+typedef struct sem_t {
+  uint32_t value;
+  //char semName[MAX_SEM_CHAR];
+  int occupied;
+  uint16_t id;
+  uint8_t lock;
+  LinkedListADT blockedQueue;
+} sem_t;
+
+uint64_t semInit(int32_t id, uint32_t value);
 uint64_t semDestroy(int id);
 void semPost(int id);
 void semWait(int id);
 
 /*====== PIPE SYSCALLS ======*/
 
-
-int64_t my_getpid();
-int64_t my_create_process(char *name, uint64_t argc, char *argv[]);
-int64_t my_nice(uint64_t pid, uint64_t newPrio);
-int64_t my_kill(uint64_t pid);
-int64_t my_block(uint64_t pid);
-int64_t my_unblock(uint64_t pid);
-int64_t my_sem_open(char *sem_id, uint64_t initialValue);
-int64_t my_sem_wait(char *sem_id);
-int64_t my_sem_post(char *sem_id);
-int64_t my_sem_close(char *sem_id);
-int64_t my_yield();
-int64_t my_wait(int64_t pid);
 
 #endif

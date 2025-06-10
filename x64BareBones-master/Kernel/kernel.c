@@ -67,7 +67,7 @@ int main()
 	createMemoryManager(); // empieza en 0x700000
 	startStack(stackStartAddress); // empieza en 0x600000
 	startScheduler(); // empieza en 0x700000 (usa el memory manager, alloc)
-	//initializeSemaphores(); // en que parte de memoria inician?
+	// initializeSemaphores(); // en que parte de memoria inician?
 
 	int16_t fds[2] = {0,1};
 	char * args[] = {NULL};

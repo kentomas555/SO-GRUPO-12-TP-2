@@ -21,8 +21,8 @@ typedef struct sem_t {
   LinkedListADT blockedQueue;
 } sem_t;
 
-//void initializeSemaphores();
-uint64_t semInit(uint32_t value);
+// void initializeSemaphores();
+uint64_t semInit(int32_t id,uint32_t value);
 uint64_t semDestroy(int id);
 void semPost(int id);
 void semWait(int id);

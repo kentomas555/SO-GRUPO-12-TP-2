@@ -2,8 +2,6 @@
 
 static sem_t * semaphores[MAX_SEM_QTY] = {NULL};
 
-static int availableID = 0;
-
 // void initializeSemaphores(){
 //   for (int i = 0; i < MAX_SEM_QTY; i++){
 //     //semaphores[i] = allocMemory(sizeof(sem_t));
@@ -15,30 +13,23 @@ static int availableID = 0;
 //   return;
 // }
 
+uint64_t semInit(int32_t id,uint32_t value){
 
-static int getAvailableSemID(){
-  if(availableID >= MAX_SEM_QTY){
+  if(id > MAX_SEM_QTY || id <= 0){
     return -1;
   }
-  return availableID++;
-}
-
-uint64_t semInit(uint32_t value){
-
-  if(availableID >= MAX_SEM_QTY){
-    return 0;
-  }
   
-  sem_t * semaphore = allocMemory(sizeof(sem_t));
+  if(semaphores[id-1] == NULL){
+    sem_t * semaphore = allocMemory(sizeof(sem_t));
 
-  semaphore->value = value;
-  semaphore->blockedQueue = initializeLinkedList();
-  semaphore->lock = 1;
-  semaphore->id = getAvailableSemID();
-
-  semaphores[semaphore->id] = semaphore;
-
-  return semaphore->id;
+    semaphore->value = value;
+    semaphore->blockedQueue = initializeLinkedList();
+    semaphore->lock = 1;
+    semaphore->id = id;
+    semaphores[semaphore->id-1] = semaphore;
+    return semaphore->id;
+  }
+  return id;
 }
 
 static sem_t * getSemaphore(int id){
@@ -55,7 +46,7 @@ uint64_t semDestroy(int id){
         return -1;
     freeList(sem->blockedQueue); // hay que hacer bien free
     freeMemory(sem);
-    availableID--;
+    semaphores[id-1] = NULL;
     return 0;
 }
 

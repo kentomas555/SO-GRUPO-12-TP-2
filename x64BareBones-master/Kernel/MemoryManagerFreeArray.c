@@ -1,6 +1,5 @@
 #include "MemoryManager.h"
 #include <stdint.h>
-#include <string.h>
 
 #define BLOCK_SIZE 0x1000        // 4 KB per block
 #define BLOCK_QTY  0x1000        // 4096 blocks = 16MB total
@@ -57,7 +56,7 @@ void * allocMemory(size_t memoryToAllocate) {
             return mm->memoryArray[i].address;
         }
     }
-    return NULL; // No free block found
+    return NULL;
 }
 
 void freeMemory(void *freeAddress) {
@@ -68,13 +67,11 @@ void freeMemory(void *freeAddress) {
         MemoryBlock *block = &mm->memoryArray[i];
 
         if (block->isUsed && block->address == freeAddress) {
-            // Marcar como libre
+
             block->isUsed = 0;
 
-            // Restaurar dirección por seguridad
             block->address = (void *)((char *)heapStartAddress + i * BLOCK_SIZE);
 
-            // Actualizar stats
             mm->usedBlocks--;
             mm->usedMemory -= BLOCK_SIZE;
             mm->freeMemory += BLOCK_SIZE;

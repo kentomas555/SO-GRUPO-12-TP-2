@@ -161,6 +161,10 @@ int killProcess(Pid pid){
     return syscall(SYSCALL_KILL_PROCESS, pid);
 }
 
+void yield(){
+    syscall(SYSCALL_YIELD);
+}
+
 processesList * getProcesses(){
     return (processesList *)syscall(SYSCALL_LIST_PROCESSES);
 }
@@ -181,7 +185,9 @@ int nice(Pid pid, Priority priority){
     return syscall(SYSCALL_NICE, pid, priority);
 }
 
-//FALTA WAITPID
+int waitPID(Pid pid){
+    return (int)syscall(SYSCALL_WAITPID, pid);
+}
 
 /*====== HLT ======*/
 
@@ -191,12 +197,12 @@ void hlt(){
 
 /*====== SEMAPHORES ======*/
 
-uint64_t semInit(int32_t value){
-    return (uint64_t)syscall(SYSCALL_SEM_INIT, value);
+uint64_t semInit(int32_t id,uint32_t value){
+    return syscall(SYSCALL_SEM_INIT, id, value);
 }
 
 uint64_t semDestroy(int id){
-    return (uint64_t)syscall(SYSCALL_SEM_DESTROY, (uint64_t)id);
+    return syscall(SYSCALL_SEM_DESTROY, (uint64_t)id);
 }
 
 void semPost(int id){
