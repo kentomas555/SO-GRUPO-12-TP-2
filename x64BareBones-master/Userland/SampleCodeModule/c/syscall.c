@@ -153,8 +153,8 @@ int unblockProcess(Pid pid){
     return syscall(SYSCALL_UNBLOCK_PROCESS, pid);
 }
 
-int exitProcess(){
-    return syscall(SYSCALL_EXIT);
+int exitProcess(int retValue){
+    return syscall(SYSCALL_EXIT, retValue);
 }
 
 int killProcess(Pid pid){

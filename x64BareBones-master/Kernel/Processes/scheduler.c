@@ -73,48 +73,49 @@ void freePCB(PCB *pcb) {
 void * schedule(void * currentRSP){
   
   if (toCleanupPID != -1) {
-    Node * deadNode = scheduler->processes[toCleanupPID];
-    if (deadNode != NULL) {
+      // Node * deadNode = scheduler->processes[toCleanupPID];
+    // if (deadNode != NULL) {
 
-      //Adoption
-      if(((PCB*)deadNode->info)->childrenQty > 0){
-        for(int i=0; i<((PCB*)deadNode->info)->childrenQty; i++){
-          Pid childPid = ((PCB*)deadNode->info)->children[i];
-          PCB *child = scheduler->processes[childPid]->info;
+    //   //Adoption
+    //   if(((PCB*)deadNode->info)->childrenQty > 0){
+    //     for(int i=0; i<((PCB*)deadNode->info)->childrenQty; i++){
+    //       Pid childPid = ((PCB*)deadNode->info)->children[i];
+    //       PCB *child = scheduler->processes[childPid]->info;
 
-          if (child->status != KILLED) {
-              child->parentPID = ((PCB*)deadNode->info)->parentPID;
-          }
-          PCB *parent = scheduler->processes[child->parentPID]->info;
-          parent->children[parent->childrenQty] = child->PID;
-          parent->childrenQty++;
-        }
-      }
+    //       if (child->status != KILLED) {
+    //           child->parentPID = ((PCB*)deadNode->info)->parentPID;
+    //       }
+    //       PCB *parent = scheduler->processes[child->parentPID]->info;
+    //       parent->children[parent->childrenQty] = child->PID;
+    //       parent->childrenQty++;
+    //     }
+    //   }
 
-      Pid parentPid = ((PCB*)deadNode->info)->parentPID;
-      PCB *parentPCB = (PCB *)scheduler->processes[parentPid]->info;
+    //   Pid parentPid = ((PCB*)deadNode->info)->parentPID;
+    //   PCB *parentPCB = (PCB *)scheduler->processes[parentPid]->info;
 
-      if (parentPCB != NULL && parentPCB->waitingPID == toCleanupPID) {
-        parentPCB->retValue = ((PCB*)deadNode->info)->retValue;
-        unblockProcess(parentPid);
-        parentPCB->waitingPID = -1;
-      } else {
-        scheduler->finisheddProcesses[scheduler->finishedProcessCount].finishedPid = ((PCB*)deadNode->info)->PID;
-        scheduler->finisheddProcesses[scheduler->finishedProcessCount].retVal = ((PCB*)deadNode->info)->retValue;
-        scheduler->finishedProcessCount++;
-      }
-      freePCB(((PCB*)deadNode->info));
-      freeMemory(deadNode);
-      if(parentPCB->childrenQty > 0){
-        parentPCB->childrenQty--;
-      }
-      scheduler->processes[toCleanupPID] = NULL;
-      scheduler->processQty--;
+    //   if (parentPCB != NULL && parentPCB->waitingPID == toCleanupPID) {
+    //     parentPCB->retValue = ((PCB*)deadNode->info)->retValue;
+    //     unblockProcess(parentPid);
+    //     parentPCB->waitingPID = -1;
+    //   } else {
+    //     scheduler->finisheddProcesses[scheduler->finishedProcessCount].finishedPid = ((PCB*)deadNode->info)->PID;
+    //     scheduler->finisheddProcesses[scheduler->finishedProcessCount].retVal = ((PCB*)deadNode->info)->retValue;
+    //     scheduler->finishedProcessCount++;
+    //   }
+    //   freePCB(((PCB*)deadNode->info));
+    //   freeMemory(deadNode);
+    //   if(parentPCB->childrenQty > 0){
+    //     parentPCB->childrenQty--;
+    //   }
+    //   scheduler->processes[toCleanupPID] = NULL;
+    //   scheduler->processQty--;
 
+      killProcess(toCleanupPID);
       toCleanupPID = -1;
       Pid nextProcessPID = getNextProcess();    
       return switchContext(nextProcessPID);
-    }
+    // }
   }
 
   if(isEmpty(scheduler->readyList)){
@@ -148,30 +149,39 @@ void * schedule(void * currentRSP){
 }
 
 int waitPID(Pid pid){
-    if (pid == IDLE_PID || pid == SHELL_PID || pid >= MAX_PROCESSES)
+    // if (pid == IDLE_PID || pid == SHELL_PID || pid >= MAX_PROCESSES)
+    //     return -1;
+
+    // PCB *caller = (PCB *)scheduler->processes[scheduler->currentPID]->info;
+
+    // int isChild = 0;
+    // for (int i = 0; i < caller->childrenQty; i++) {
+    //     if (caller->children[i] == pid) {
+    //         isChild = 1;
+    //         break;
+    //     }
+    // }
+    // if (!isChild)
+    //     return -1;
+
+    // for (int i = 0; i < scheduler->finishedProcessCount; i++) {
+    //     if (scheduler->finisheddProcesses[i].finishedPid == pid) {
+    //         return scheduler->finisheddProcesses[i].retVal;
+    //     }
+    // }
+
+    // caller->waitingPID = pid;
+    // blockProcess(scheduler->currentPID);
+    // return caller->retValue;
+
+    PCB *childProcess = (PCB *)scheduler->processes[pid]->info;
+    if (childProcess->status == KILLED){
         return -1;
-
-    PCB *caller = (PCB *)scheduler->processes[scheduler->currentPID]->info;
-
-    int isChild = 0;
-    for (int i = 0; i < caller->childrenQty; i++) {
-        if (caller->children[i] == pid) {
-            isChild = 1;
-            break;
-        }
     }
-    if (!isChild)
-        return -1;
-
-    for (int i = 0; i < scheduler->finishedProcessCount; i++) {
-        if (scheduler->finisheddProcesses[i].finishedPid == pid) {
-            return scheduler->finisheddProcesses[i].retVal;
-        }
-    }
-
-    caller->waitingPID = pid;
-    blockProcess(scheduler->currentPID);
-    return caller->retValue;
+    int PPid = getCurrentPID();
+    blockProcess(PPid);
+    forceTimerTick();
+    return 0;
 }
 
 Pid getNextProcess(){
@@ -200,10 +210,11 @@ void * switchContext(Pid pid){
   return nextPCB->rsp;
 }
 
-uint64_t exitProcess(){
+uint64_t exitProcess(int retValue){
   //_cli();
   PCB * pcb = (PCB*)scheduler->processes[getCurrentPID()]->info;
   pcb->status = KILLED;
+  pcb->retValue = retValue;
   yield();
   return 1;
 }
@@ -247,10 +258,13 @@ uint64_t killProcess(Pid pid){
     forceTimerTick();
     return 0;
   }
+  
   freePCB(pcb);
   freeMemory(scheduler->processes[pid]);
   scheduler->processQty--;
   scheduler->processes[pid] = NULL;
+  unblockProcess(parentPCB->PID);
+
   return 0;
 }
 
@@ -420,6 +434,7 @@ processesToPrint * printProcesses(){
       i++;
     }
   }
+
   // psList->processQty = (uint32_t)scheduler->processQty;
   psList->cantProcess = i;
   return psList;

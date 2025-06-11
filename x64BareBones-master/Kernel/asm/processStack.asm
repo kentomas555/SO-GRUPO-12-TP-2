@@ -6,6 +6,7 @@ start:
     call rcx        ; Llama al main del programa del proceso
     ;mov rax, 0x14   ; syscall 20
     ;int 80h         ; Simula syscall exit(0)
+    mov rdi, rax
     call exitProcess ; salto directo a exitProcess()
 
 createProcessStackframe:

@@ -739,6 +739,11 @@ void handleNoSyncroTest(){
     return;
 }
 
+void printReady(){
+    
+    printf("");
+}
+
 /*====== EXCEPTIONS TRIGGER ======*/
 
 void zeroDivisionTrigger(){

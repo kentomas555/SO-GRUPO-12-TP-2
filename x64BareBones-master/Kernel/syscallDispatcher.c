@@ -337,7 +337,8 @@ static void handleSemWaitSyscall(va_list args){
 }
 
 static uint64_t handleExitSyscall(va_list args){
-    return exitProcess();
+    int retValue = (int)va_arg(args, int32_t);
+    return exitProcess(retValue);
 }
 
 // static uint64_t handleGetCurrentBlock(){

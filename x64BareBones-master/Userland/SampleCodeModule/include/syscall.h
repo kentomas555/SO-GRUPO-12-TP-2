@@ -145,7 +145,7 @@ typedef struct processesList{
     
 }processesList;
 
-int exitProcess();
+int exitProcess(int retValue);
 int killProcess(Pid pid);
 void yield();
 int blockProcess(Pid pid);
