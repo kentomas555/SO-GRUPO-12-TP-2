@@ -123,9 +123,9 @@ memoryState * getMemoryState(){
     return (memoryState *)syscall(SYSCALL_MEMORY_INFO);
 }
 
-uint64_t getCurrentBlock(){
-    return (uint64_t)syscall(SYSCALL_GETCURRENTBLOCK);
-}
+// uint64_t getCurrentBlock(){
+//     return (uint64_t)syscall(SYSCALL_GETCURRENTBLOCK);
+// }
 
 /*AGREGADO END*/
 

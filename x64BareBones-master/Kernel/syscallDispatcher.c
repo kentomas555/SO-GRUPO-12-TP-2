@@ -44,7 +44,7 @@ static uint64_t handleSemDestroySyscall(va_list args);
 static void handleSemPostSyscall(va_list args);
 static void handleSemWaitSyscall(va_list args);
 static uint64_t handleExitSyscall(va_list args);
-static uint64_t handleGetCurrentBlock();
+//static uint64_t handleGetCurrentBlock();
 
 // ========== DISPATCHER PRINCIPAL ==========
 uint64_t syscallDispatcher(uint64_t id, ...) {
@@ -158,9 +158,9 @@ uint64_t syscallDispatcher(uint64_t id, ...) {
         case SYSCALL_SEM_WAIT:
             handleSemWaitSyscall(args);
             break;
-        case SYSCALL_GETCURRENTBLOCK:
-            handleGetCurrentBlock();
-            break;
+        // case SYSCALL_GETCURRENTBLOCK:
+        //     handleGetCurrentBlock();
+        //     break;
     }
 
     va_end(args);
@@ -340,6 +340,6 @@ static uint64_t handleExitSyscall(va_list args){
     return exitProcess();
 }
 
-static uint64_t handleGetCurrentBlock(){
-    return getCurrent();
-}
+// static uint64_t handleGetCurrentBlock(){
+//     return getCurrent();
+// }
