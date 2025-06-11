@@ -1,258 +1,195 @@
-// #include "MemoryManager.h"
-// #include "videoDriver.h"
+#include "MemoryManager.h"
+#include "videoDriver.h"
+#include "nativeLibrary.h"
 
-// #define MAX_ORDER 20 //tamaño total de memoria
-// #define MIN_ORDER 5   // tamaño minimo de bloque
-// #define MIN_BLOCK_SZ (1ULL << MIN_ORDER) //tamaño minimo del bloque
-// #define CURRENT_BLOCKSIZE(order) ((1ULL << (order))*MIN_BLOCK_SZ) //calcula el tamaño correcto del block en base a su potencia
+#define MAX_ORDER 20 //tamaño total de memoria
+#define MIN_ORDER 5   // tamaño minimo de bloque
+#define RELATIVE_MAX (MAX_ORDER - MIN_ORDER + 1)  // => 20 - 5 + 1= 16 levels NO TENDRIA QUE ENTRAR AL 15, DEL 0 AL 14 ENTRA
+#define MIN_BLOCK_SZ (1ULL << MIN_ORDER) //tamaño minimo del bloque
+//#define CURRENT_BLOCKSIZE(order) (MIN_BLOCK_SZ << (order))  //calcula el tamaño correcto del block en base a su potencia
 
-// typedef struct Block{
-// 	int size;
-// 	int order;
-// 	struct Block * next;
-// }Block;
+#define CURRENT_BLOCKSIZE(order) (1ULL << order)
 
-// typedef struct MemoryManagerCDT {
-// 	Block * freeList[MAX_ORDER];
-// 	int totalBlocks;
-//     int totalSize;
-//     int usedMemory;
-//     int freeMemory;
-// } MemoryManagerCDT;
+#define ALIGN_UP(addr, align) (((addr) + ((align) - 1)) & ~((align) - 1))
 
-// //NODOS -> bloques
+typedef struct Block{
+	uint64_t size;
+	uint64_t order;
+    // void * address;
+	struct Block * next;
+}Block;
 
-// static void * const mmControlStart = (void *) 0x700000;
-// static void * const heapStartAddress = (void *) ((char *)0x700000 + sizeof(struct MemoryManagerCDT));
-// static MemoryManagerADT mm = NULL;
+typedef struct MemoryManagerCDT {
+	Block * freeList[RELATIVE_MAX]; // del 0 - 15 inclusive
+	uint64_t totalBlocks;
+    uint64_t totalSize;
+    uint64_t usedMemory;
+    uint64_t freeMemory;
+}  MemoryManagerCDT;//__attribute__((aligned(MIN_BLOCK_SZ)))
 
-// static int smallestOrder(int size){
-// 	if (size <= MIN_BLOCK_SZ){
-//         return 0;
-//     }
+//NODOS -> bloques
 
-// 	for (int i = 0; i <= MAX_ORDER - MIN_ORDER; i++){
-// 		if(CURRENT_BLOCKSIZE(i) >= size){
-// 			return i;
-// 		}
-// 	}
-// 	return -1;
-// }
+static void * const mmControlStart = (void *) 0x700000;
+static void * const heapStartAddress = (void *) ((char *)0x700000 + sizeof(struct MemoryManagerCDT));
+static MemoryManagerADT mm = NULL;
 
-// void createMemoryManager() {
-// 	mm = (MemoryManagerADT) mmControlStart;
+static char auxBuff[10];
 
-// 	for (int i = 0; i < MAX_ORDER; i++) {
-//         mm->freeList[i] = NULL;
-//     }
-// 	mm->totalBlocks = 0;  
-//     mm->totalSize = CURRENT_BLOCKSIZE(MAX_ORDER - 1);
-//     mm->usedMemory = 0;
-//     mm->freeMemory = CURRENT_BLOCKSIZE(MAX_ORDER - 1);
-// 	Block * firstBlock = (Block *)(((uintptr_t)(heapStartAddress) + (MIN_BLOCK_SZ - 1)) & ~(MIN_BLOCK_SZ - 1));
-// 	memset(firstBlock, 0, CURRENT_BLOCKSIZE(MAX_ORDER - 1));
-//     firstBlock->size = CURRENT_BLOCKSIZE(MAX_ORDER - 1);
-// 	firstBlock->order = MAX_ORDER - 1;
-// 	firstBlock->next = NULL;
-// 	mm->freeList[MAX_ORDER - 1] = (Block*)firstBlock;
-// }
+static int smallestOrder(size_t size){ // usamos indices relativos. freeList[0] <-> donde se guarda MIN_ORDER
+	if (size <= MIN_BLOCK_SZ/*2^5*/){
+        return MIN_ORDER;
+    }
 
-// void * allocMemory(size_t memoryToAllocate){
-// 	int i = smallestOrder(memoryToAllocate);
-// 	if(i == -1){
-// 		return NULL;
-// 	}
+	for (int i = MIN_ORDER; i <= MAX_ORDER/*16*/; i++){ // del 5 al 20 inclusive -> 15 potencias
+		if(CURRENT_BLOCKSIZE(i) >= size){
+			return i; // en el primer alloc retorna 5
+		}
+	}
+	return -1;
+}
 
-// 	int currentOrder = i;
+void createMemoryManager() {
+	//mm = (MemoryManagerADT) mmControlStart;
+    //mm = (MemoryManagerADT)(((uintptr_t)(mmControlStart) + (MIN_BLOCK_SZ - 1)) & ~(MIN_BLOCK_SZ - 1));
+    void * alignedMmAddr = (void *)ALIGN_UP((uintptr_t)mmControlStart, MIN_BLOCK_SZ);
+    mm = (MemoryManagerADT)alignedMmAddr;
 
-// 	while (currentOrder < MAX_ORDER - 1 && mm->freeList[currentOrder] == NULL) {
-//         currentOrder++; //no hay bloques disponibles en el orden actual, me fijo en un orden mas grande
-//     }
+    memset(mm, 0, sizeof(MemoryManagerCDT)); // setea todo en 0 en vez de basura
 
-//     if (currentOrder > MAX_ORDER - 1) {
-//         return NULL; // no hay bloques disponibles
-//     }
+	for (int i = 0; i < RELATIVE_MAX; i++) {
+        mm->freeList[i] = NULL;
+    }
+	mm->totalBlocks = 0;  
+    mm->totalSize = CURRENT_BLOCKSIZE(MAX_ORDER); //indice 20
+    mm->usedMemory = 0;
+    mm->freeMemory = mm->totalSize;/*CURRENT_BLOCKSIZE(MAX_ORDER - MIN_ORDER);*/
 
-// 	while(currentOrder > i){ // divido el bloque en dos hasta llegar al minimo orden
-// 		Block * auxBlock = mm->freeList[currentOrder];
-// 		mm->freeList[currentOrder] = auxBlock->next; // saco el bloque de la lista
-// 		currentOrder--; //me muevo un orden menor
+    uintptr_t mmEndAddr = (uintptr_t)mm + sizeof(MemoryManagerCDT);
+    Block * firstBlock = (Block *)ALIGN_UP(mmEndAddr, MIN_BLOCK_SZ);
+    //Block * firstBlock = (Block *)(((uintptr_t)(heapStartAddress) + (MIN_BLOCK_SZ - 1)) & ~(MIN_BLOCK_SZ - 1));
 
-// 		size_t size = CURRENT_BLOCKSIZE(currentOrder);
-//         Block *auxBuddy1 = auxBlock;
-//         Block *auxBuddy2 = (Block *)((char *)auxBlock + size);
+	memset(firstBlock, 0, CURRENT_BLOCKSIZE(MAX_ORDER - MIN_ORDER));
+    firstBlock->size = mm->totalSize;//CURRENT_BLOCKSIZE(MAX_ORDER - MIN_ORDER);
+	firstBlock->order = MAX_ORDER; // NO HAY QUE USARLO DE INDICE EN EL FREELIST
+	firstBlock->next = NULL;
+	mm->freeList[MAX_ORDER - MIN_ORDER] = (Block*)firstBlock;
 
-//         auxBuddy1->order = currentOrder;
-//         auxBuddy2->order = currentOrder;
+    // while(1){     //ESTO PRINTEA BIEN
+    //      itoaBase(mm->totalSize, auxBuff, 10);
+    // nativeBigPrintf("TotalSize: ", 160, 100);
+    // nativeBigPrintf(auxBuff, 300, 100);
 
-//         // Add buddy2 back to the free list
-// 		auxBuddy2->size = size;
-//         auxBuddy2->next = mm->freeList[currentOrder];
-//         mm->freeList[currentOrder] = auxBuddy2;
+    // itoaBase(mm->freeMemory, auxBuff, 10);
+    // nativeBigPrintf("FreeMem: ", 160, 120);
+    // nativeBigPrintf(auxBuff, 300, 120);
 
-//         auxBuddy1->next = mm->freeList[currentOrder];
-//         // Use buddy1 in the next iteration or as the final block
-//         mm->freeList[currentOrder] = auxBuddy1;
+    // //MAXORDER - MINORDER = 15
+    // //
 
-// 	}
+    // itoaBase(mm->freeList[MAX_ORDER - MIN_ORDER]->order, auxBuff, 10); // it prints 20
+    // nativeBigPrintf("FirstBlock: ", 160, 140);
+    // nativeBigPrintf(auxBuff, 300, 140);
+    // }
+}
 
-// 	// Remove the chosen block from the free list
-//     Block * chosen = mm->freeList[currentOrder];
-//     mm->freeList[currentOrder] = chosen->next;
+void * allocMemory(size_t memoryToAllocate){
+	int i = smallestOrder(memoryToAllocate); // retorna 5 al primer alloc
 
-//     chosen->next = NULL;
-//     chosen->order = currentOrder;
-//     chosen->size = CURRENT_BLOCKSIZE(currentOrder); // optional
+    //  itoaBase(mm->totalSize, auxBuff, 10);
+    // nativeBigPrintf("TotalSize: ", 160, 100);
+    // nativeBigPrintf(auxBuff, 300, 100);
 
-//     mm->totalBlocks++;
-//     mm->usedMemory += CURRENT_BLOCKSIZE(currentOrder);
-//     mm->freeMemory -= CURRENT_BLOCKSIZE(currentOrder);
-//     return (void *)chosen;
-// }
+    // itoaBase(mm->freeMemory, auxBuff, 10);
+    // nativeBigPrintf("FreeMem: ", 160, 120);
+    // nativeBigPrintf(auxBuff, 300, 120);
 
-// // void * allocMemory(size_t memoryToAllocate){
-// //     int i = smallestOrder(memoryToAllocate);
-// //     if(i == -1){
-// //         return NULL;
-// //     }
+    // //size_t alignedAddress = (((uintptr_t)(memoryToAllocate) + (MIN_BLOCK_SZ - 1)) & ~(MIN_BLOCK_SZ - 1));
 
-// //     int currentOrder = i;
+    // itoaBase(mm->freeList[MAX_ORDER - MIN_ORDER]->order, auxBuff, 10); // it prints 18
+    // nativeBigPrintf("FirstOrder: ", 160, 140);
+    // nativeBigPrintf(auxBuff, 300, 140);
 
-// //     while (currentOrder < MAX_ORDER - 1 && mm->freeList[currentOrder] == NULL) {
-// //         currentOrder++; // No hay bloques disponibles en el orden actual
-// //     }
+	if(i == -1){
+		return NULL;
+	}
 
-// //     if (currentOrder > MAX_ORDER - 1 || mm->freeList[currentOrder] == NULL) {
-// //         return NULL; // No hay bloques disponibles
-// //     }
+    char auxBuff[10];
 
-// //     // // Dividir bloques hasta llegar al tamaño deseado
-// //     // while (currentOrder > i) {
-// //     //     Block *auxBlock = mm->freeList[currentOrder];
-// //     //     mm->freeList[currentOrder] = auxBlock->next; // Sacar de la lista
-// //     //     currentOrder--;
+	int currentOrder = i; // en primera vuelta es 5
 
-// //     //     size_t size = CURRENT_BLOCKSIZE(currentOrder);
-// //     //     Block *auxBuddy1 = auxBlock;
-// //     //     Block *auxBuddy2 = (Block *)((char *)auxBlock + size);
+    //MAX_ORDER - MIN_ORDER = 15
+    //RELATIVE_MAX = 16
 
-// //     //     auxBuddy1->order = currentOrder;
-// //     //     auxBuddy2->order = currentOrder;
-// //     //     auxBuddy2->size = size;
+	while (currentOrder < MAX_ORDER && mm->freeList[currentOrder] == NULL) {
+        currentOrder++; //no hay bloques disponibles en el orden actual, me fijo en un orden mas grande
+    }
+    //sale del while con currentOrder = 20
+    if(MIN_ORDER > i || MAX_ORDER < i){
+        itoaBase(currentOrder, auxBuff, 10);
+        nativeBigPrintf("ERROR ALLOC", 540, 220);
+        return NULL;
+    }
+    
 
-// //     //     // Solo el buddy que **NO** vas a usar se agrega a la lista libre
-// //     //     auxBuddy2->next = mm->freeList[currentOrder];
-// //     //     mm->freeList[currentOrder] = auxBuddy2;
+    if (currentOrder > MAX_ORDER) {
+        return NULL; // no hay bloques disponibles
+    }
 
-// //     //     // auxBuddy1 se usa en la siguiente iteración (no se agrega a la lista)
-// //     // }
+    //Block *auxBuddy1 = NULL;
+    Block *block = mm->freeList[currentOrder]; // firstBlock
+    mm->freeList[currentOrder] = block->next; // nULL
 
-// //     // // Sacar el bloque final de la lista
-// //     // Block *chosen = auxBuddy1;
-// //     // mm->freeList[currentOrder] = chosen->next;
+    // Split blocks until we reach the desired size
+    while (currentOrder > i) { // en primera vuelta 20 > 5
+        currentOrder--; // 19
 
-// //     // chosen->next = NULL;
-// //     // chosen->order = currentOrder;
-// //     // chosen->size = CURRENT_BLOCKSIZE(currentOrder);
+        size_t size = CURRENT_BLOCKSIZE(currentOrder);
+        Block *buddy2 = (Block *)((char *)block + size);
 
-// //     // mm->totalBlocks++;
-// //     // mm->usedMemory += chosen->size;
-// //     // mm->freeMemory -= chosen->size;
+        buddy2->order = currentOrder;
+        buddy2->size = size;
+        buddy2->next = mm->freeList[currentOrder];
+        mm->freeList[currentOrder] = buddy2;
 
-// //     // return (void *)chosen;
+        block->order = currentOrder;
+        block->size = size;
+        // itoaBase(block->order, auxBuff, 10);
+        // nativeBigPrintf("Block order: ", 160, 340);
+        // nativeBigPrintf(auxBuff, 360, 340);
+    }
 
-// //     Block *auxBlock = NULL;
+    //salimos con block de order = 5(MIN_ORDER) y size = MIN_BLOCK_SIZE
+    //currentOrder = 5 = i
 
-// // while (currentOrder > i) {
-// //     if (!auxBlock) {
-// //         auxBlock = mm->freeList[currentOrder];
-// //         mm->freeList[currentOrder] = auxBlock->next;
-// //     }
+    block->next = NULL;
 
-// //     currentOrder--;
+	// Remove the chosen block from the free list
+    Block * chosen = block;
+    //mm->freeList[currentOrder] = chosen->next;
 
-// //     size_t size = CURRENT_BLOCKSIZE(currentOrder);
-// //     Block *auxBuddy1 = auxBlock;
-// //     Block *auxBuddy2 = (Block *)((char *)auxBlock + size);
+    chosen->next = block->next;
+    chosen->order = block->order;
+    chosen->size = block->size; // optional
 
-// //     auxBuddy1->order = currentOrder;
-// //     auxBuddy2->order = currentOrder;
-// //     auxBuddy2->size = size;
+    mm->totalBlocks++;
+    mm->usedMemory += CURRENT_BLOCKSIZE(currentOrder);
+    mm->freeMemory -= CURRENT_BLOCKSIZE(currentOrder);
 
-// //     // Push buddy2 to free list
-// //     auxBuddy2->next = mm->freeList[currentOrder];
-// //     mm->freeList[currentOrder] = auxBuddy2;
+//     itoaBase((uint64_t)chosen, auxBuff, 16);
+// nativeBigPrintf("Block ptr: ", 160, 320);
+// nativeBigPrintf(auxBuff, 360, 320);
 
-// //     auxBlock = auxBuddy1; // Continue splitting this one
-// // }
+// itoaBase(chosen->order, auxBuff, 10);
+// nativeBigPrintf("Block order: ", 160, 340);
+// nativeBigPrintf(auxBuff, 360, 340);
+    return (void *)((char *)chosen + sizeof(Block));
 
-// // // Now auxBlock is the chosen one
-// // Block *chosen = auxBlock;
-// // chosen->next = NULL;
-// // chosen->order = currentOrder;
-// // chosen->size = CURRENT_BLOCKSIZE(currentOrder);
-
-// // // Update memory stats
-// // mm->totalBlocks++;
-// // mm->usedMemory += chosen->size;
-// // mm->freeMemory -= chosen->size;
-
-// // return (void *)chosen;
-
-// // }
+}
 
 
-
-
-
-// // void freeMemory(void * freeAddress) {
-// //     nativeBigPrintf("entre al free", 300, 200);
-// // 	if(freeAddress == NULL){
-// // 		return;
-// // 	}
-	
-// // 	Block * block = (Block*)freeAddress;
-// // 	int order = block->order;
-
-// // 	while (order < MAX_ORDER) {
-// //         size_t blockSize = CURRENT_BLOCKSIZE(order);
-// //         uintptr_t buddyAddr = ((uintptr_t)block) ^ blockSize;
-// //         Block *prev = NULL;
-// //         Block *curr = mm->freeList[order];
-
-// //         // Look for buddy in the free list
-// //         while (curr != NULL) {
-// //             if ((uintptr_t)curr == buddyAddr) {
-// //                 // Found buddy — remove it from free list
-// //                 if (prev == NULL) {
-// //                     mm->freeList[order] = curr->next;
-// //                 } else {
-// //                     prev->next = curr->next;
-// //                 }
-
-// //                 // Merge block and buddy
-// //                 Block *merge = (Block *)((uintptr_t)block < (uintptr_t)curr ? block : curr);
-// //                 merge->order = order + 1;
-// //                 block = merge; // Continue with merged block
-// //                 order++;
-// //                 continue;
-// //             }
-// //             prev = curr;
-// //             curr = curr->next;
-// //         }
-
-// //         // Buddy not free — just insert block into the free list
-// //         block->next = mm->freeList[order];
-// //         mm->freeList[order] = block;
-// //         mm->totalBlocks--;
-// //         mm->usedMemory -= CURRENT_BLOCKSIZE(order);
-// //         mm->freeMemory += CURRENT_BLOCKSIZE(order);
-// //         nativeBigPrintf("sali del free", 300, 220);
-// //         return;
-// //     }
-// // }
 
 // void freeMemory(void * freeAddress) {
+//     nativeBigPrintf("entre al free", 300, 200);
 // 	if(freeAddress == NULL){
 // 		return;
 // 	}
@@ -268,7 +205,7 @@
 
 //         // Look for buddy in the free list
 //         while (curr != NULL) {
-//             if ((uintptr_t)curr == buddyAddr && curr->order == order) {
+//             if ((uintptr_t)curr == buddyAddr) {
 //                 // Found buddy — remove it from free list
 //                 if (prev == NULL) {
 //                     mm->freeList[order] = curr->next;
@@ -281,7 +218,7 @@
 //                 merge->order = order + 1;
 //                 block = merge; // Continue with merged block
 //                 order++;
-//                 goto continue_merge;
+//                 continue;
 //             }
 //             prev = curr;
 //             curr = curr->next;
@@ -293,23 +230,92 @@
 //         mm->totalBlocks--;
 //         mm->usedMemory -= CURRENT_BLOCKSIZE(order);
 //         mm->freeMemory += CURRENT_BLOCKSIZE(order);
+//         nativeBigPrintf("sali del free", 300, 220);
 //         return;
-
-// continue_merge:;
 //     }
 // }
 
+void freeMemory(void * freeAddress) {
+	if(freeAddress == NULL){
+		return;
+	} 
+    // itoaBase((uint64_t)freeAddress, auxBuff, 16);
+    // nativeBigPrintf(auxBuff, 400, 420);
+    
+    
+	
+	Block * block = (Block *)((char *)freeAddress - sizeof(Block));
+	uint64_t order = block->order;
 
-// memoryState * getMemState(){
-//     memoryState * memState = allocMemory(sizeof(memoryState));
-//     if(memState == NULL){
-//         return NULL;
-//     }
-//     memState->total = mm->totalSize;
-//     memState->reserved = mm->usedMemory;
-//     memState->free = mm->freeMemory;
-//     return memState;	
-// }
+    // itoaBase(block->order, auxBuff, 10);
+    //     nativeBigPrintf(auxBuff, 400, 400);
 
-// uint64_t getCurrent();
+    if (block->order < MIN_ORDER || block->order > MAX_ORDER) {
+        // itoaBase(block->order, auxBuff, 10);
+        // nativeBigPrintf(auxBuff, 400, 400);
+        return;
+    }
+
+    mm->totalBlocks--;
+    mm->usedMemory -= CURRENT_BLOCKSIZE(order);
+    mm->freeMemory += CURRENT_BLOCKSIZE(order);
+
+    int merged = 0;
+
+	while (order < MAX_ORDER) {
+        size_t blockSize = CURRENT_BLOCKSIZE(order);
+        uintptr_t buddyAddr = ((uintptr_t)block) ^ blockSize;
+        Block *prev = NULL;
+        Block *curr = mm->freeList[order];
+        merged = 0; //seteo en 0 para chequear el block en el nuevo order
+
+        // Look for buddy in the free list
+        while (curr != NULL) {
+            if ((uintptr_t)curr == buddyAddr && curr->order == order) {
+                // Found buddy — remove it from free list
+                if (prev == NULL) {
+                    mm->freeList[order] = curr->next;
+                } else {
+                    prev->next = curr->next;
+                }
+
+                // Merge block and buddy
+                Block *merge = (Block *)((uintptr_t)block < (uintptr_t)curr ? block : curr);
+                merge->order = order + 1;
+                block = merge; // Continue with merged block
+                merged++;
+                order++;
+                break; // buddy found, exiting the while(curr != NULL), keep searching on higher order
+            }
+
+            prev = curr;
+            curr = curr->next;
+        }
+
+        if(merged == 0){
+            break;
+        }
+    }
+
+    block->next = mm->freeList[order];
+    mm->freeList[order] = block;
+    return;
+}
+
+
+memoryState * getMemState(){
+    memoryState * memState = allocMemory(sizeof(memoryState));
+    
+    // itoaBase(mm->totalSize, auxBuff, 10);
+    // nativeBigPrintf(auxBuff, 540, 220);
+    if(memState == NULL){
+        return NULL;
+    }
+    memState->total = mm->totalSize;
+    memState->reserved = mm->usedMemory;
+    memState->free = mm->freeMemory;
+    return memState;	
+}
+
+uint64_t getCurrent();
 
