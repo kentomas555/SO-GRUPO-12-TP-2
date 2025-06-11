@@ -719,14 +719,16 @@ void handleProcessTest(){
 void handlePriorityTest(){
     int16_t fds[2] = {0,1};
     char *argv[] = {NULL};
-    createNewProcess("Priority Test",test_prio, argv, HIGH_PRIO,fds);
+    Pid pid = createNewProcess("Priority Test",test_prio, argv, HIGH_PRIO,fds);
+    waitPID(pid);
     return;
 }
 
 void handleSyncroTest(){
     int16_t fds[2] = {0,1};
     char *argv[] = {"10", "1", 0};
-    createNewProcess("Syncro Test",test_sync, argv, HIGH_PRIO,fds);
+    Pid pid = createNewProcess("Syncro Test",test_sync, argv, HIGH_PRIO,fds);
+    // waitPID(pid);
     return;
 }
 

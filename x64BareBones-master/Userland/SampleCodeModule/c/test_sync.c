@@ -64,6 +64,8 @@ uint64_t myProcessInc(uint64_t argc, char *argv[]) {
         itoaBase(getpid(), aux,10);
       printf(aux);
       NewLine();
+  printProcesses();
+  NewLine();
   return 0;
 }
 
@@ -97,14 +99,16 @@ uint64_t test_sync(uint64_t argc, char *argv[]) { //{n, use_sem, 0}
   printf("*****Processes created*****");
   NewLine();
 
-  // for (i = 0; i < TOTAL_PAIR_PROCESSES; i++) {
-  //   printf("*****Enter waitPID*****");
-  //   NewLine();
-  //   waitPID(pids[i]);
-  //   printf("*****Enter waitPID*****");
-  //   NewLine();
-  //   waitPID(pids[i + TOTAL_PAIR_PROCESSES]);
-  // }
+  for (i = 0; i < TOTAL_PAIR_PROCESSES; i++) {
+    printf("*****Enter waitPID*****");
+    NewLine();
+    NewLine();
+    waitPID(pids[i]);
+    printf("*****Enter waitPID*****");
+    NewLine();
+    NewLine();
+    waitPID(pids[i + TOTAL_PAIR_PROCESSES]);
+  }
 
   NewLine();
   printf("Destroying sem");

@@ -5,13 +5,18 @@
 #include "../include/kernel.h"
 #include "../include/nativeLibrary.h"
 
+typedef struct FinishedProcess{
+  Pid finishedPid;
+  int retVal;
+}FinishedProcess;
 
 typedef struct SchedulerCDT{
   Node * processes[MAX_PROCESSES];
   LinkedListADT readyList;
   Pid currentPID;
   Pid currentPPID;
-  //uint16_t nextPID;
+  int finishedProcessCount;
+  FinishedProcess finisheddProcesses[MAX_PROCESSES];
   uint16_t processQty;
   uint16_t foregroundPID;
 } SchedulerCDT;
@@ -35,6 +40,7 @@ void startScheduler() {
   scheduler->currentPPID = 0;
   scheduler->processQty = 0;
   scheduler->foregroundPID = 0;
+  scheduler->finishedProcessCount = 0;
   scheduler->readyList = initializeLinkedList();
 }
 
@@ -70,6 +76,7 @@ void * schedule(void * currentRSP){
     Node * deadNode = scheduler->processes[toCleanupPID];
     if (deadNode != NULL) {
 
+      //Adoption
       if(((PCB*)deadNode->info)->childrenQty > 0){
         for(int i=0; i<((PCB*)deadNode->info)->childrenQty; i++){
           Pid childPid = ((PCB*)deadNode->info)->children[i];
@@ -88,20 +95,26 @@ void * schedule(void * currentRSP){
       PCB *parentPCB = (PCB *)scheduler->processes[parentPid]->info;
 
       if (parentPCB != NULL && parentPCB->waitingPID == toCleanupPID) {
+        parentPCB->retValue = ((PCB*)deadNode->info)->retValue;
         unblockProcess(parentPid);
         parentPCB->waitingPID = -1;
+      } else {
+        scheduler->finisheddProcesses[scheduler->finishedProcessCount].finishedPid = ((PCB*)deadNode->info)->PID;
+        scheduler->finisheddProcesses[scheduler->finishedProcessCount].retVal = ((PCB*)deadNode->info)->retValue;
+        scheduler->finishedProcessCount++;
       }
-
-      removeFromQueue(scheduler->readyList, deadNode);
       freePCB(((PCB*)deadNode->info));
       freeMemory(deadNode);
       if(parentPCB->childrenQty > 0){
         parentPCB->childrenQty--;
-      } 
+      }
       scheduler->processes[toCleanupPID] = NULL;
       scheduler->processQty--;
+
+      toCleanupPID = -1;
+      Pid nextProcessPID = getNextProcess();    
+      return switchContext(nextProcessPID);
     }
-    toCleanupPID = -1;
   }
 
   if(isEmpty(scheduler->readyList)){
@@ -128,11 +141,37 @@ void * schedule(void * currentRSP){
   else if (currentRunning != NULL && ((PCB*)currentRunning->info)->status == KILLED) {
     toCleanupPID = scheduler->currentPID;
     removeFromQueue(scheduler->readyList, currentRunning);
-    queue(scheduler->readyList, currentRunning);
   }
 
   Pid nextProcessPID = getNextProcess();    
   return switchContext(nextProcessPID);
+}
+
+int waitPID(Pid pid){
+    if (pid == IDLE_PID || pid == SHELL_PID || pid >= MAX_PROCESSES)
+        return -1;
+
+    PCB *caller = (PCB *)scheduler->processes[scheduler->currentPID]->info;
+
+    int isChild = 0;
+    for (int i = 0; i < caller->childrenQty; i++) {
+        if (caller->children[i] == pid) {
+            isChild = 1;
+            break;
+        }
+    }
+    if (!isChild)
+        return -1;
+
+    for (int i = 0; i < scheduler->finishedProcessCount; i++) {
+        if (scheduler->finisheddProcesses[i].finishedPid == pid) {
+            return scheduler->finisheddProcesses[i].retVal;
+        }
+    }
+
+    caller->waitingPID = pid;
+    blockProcess(scheduler->currentPID);
+    return caller->retValue;
 }
 
 Pid getNextProcess(){
@@ -166,8 +205,7 @@ uint64_t exitProcess(){
   PCB * pcb = (PCB*)scheduler->processes[getCurrentPID()]->info;
   pcb->status = KILLED;
   yield();
-  //_sti();
-  return 0;
+  return 1;
 }
 
 uint64_t killProcess(Pid pid){
@@ -354,33 +392,7 @@ int nice(Pid pid,Priority priority){
   return 1;
 }
 
-int waitPID(Pid pid){
-    if (pid == IDLE_PID || pid == SHELL_PID || pid >= MAX_PROCESSES || scheduler->processes[scheduler->currentPID] == NULL)
-        return -1;
 
-    PCB *caller = (PCB *)scheduler->processes[scheduler->currentPID]->info;
-    int isChild = 0;
-    for (int i = 0; i < caller->childrenQty; i++) {
-        if (caller->children[i] == pid) {
-            isChild = 1;
-            break;
-        }
-    }
-
-    if (!isChild) 
-        return -1;
-
-    if (scheduler->processes[pid] == NULL) {
-        return -1;
-    }
-
-    PCB *child = (PCB *)scheduler->processes[pid]->info;
-    caller->waitingPID = pid;
-    if (child->status != KILLED) {
-        blockProcess(scheduler->currentPID);
-    }
-    return child->retValue;
-}
 
 void yield(){
   int pid = getCurrentPID();
