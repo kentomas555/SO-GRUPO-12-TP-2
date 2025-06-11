@@ -574,9 +574,9 @@ void printProcesses(){
     NewLine();
 }
 
-static void loopFuction(int seconds){
+static void loopFuction(int argc, char *argv[]){
     int lastPrinted = -1;
-    int secs = seconds;
+    int secs = satoi(argv[0]);
     while (1) {
         int current = seconds_elapsed();
         if (current != lastPrinted && current % secs == 0) {
