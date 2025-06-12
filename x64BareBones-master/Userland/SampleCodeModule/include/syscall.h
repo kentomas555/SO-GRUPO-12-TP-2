@@ -46,6 +46,8 @@
 #define SYSCALL_SEM_POST 34
 #define SYSCALL_SEM_WAIT 35
 
+#define SYSCALL_SHARED_MEM 41
+
 /*====== READ SYSCALL ======*/
 
 char getChar();
@@ -194,5 +196,7 @@ void semWait(int id);
 
 /*====== PIPE SYSCALLS ======*/
 
+
+int64_t * getSharedMemory();
 
 #endif

@@ -13,6 +13,8 @@ typedef struct memoryState{
     uint64_t free;
 }memoryState;
 
+int64_t *getSharedMemory();
+
 // #ifdef BUDDY_MODE 
 //     void createMemoryManagerBuddy();
 // #else

@@ -17,6 +17,11 @@ typedef struct MemoryManagerCDT {
     size_t usedBlocks;
 } MemoryManagerCDT;
 
+int64_t *getSharedMemory() {
+    static int64_t shared = 0;
+    return &shared;
+}
+
 #define MM_BASE_ADDRESS 0x700000
 #define MM_STRUCT_SIZE  (sizeof(MemoryManagerCDT))
 static void * const mmControlStart = (void *) MM_BASE_ADDRESS;

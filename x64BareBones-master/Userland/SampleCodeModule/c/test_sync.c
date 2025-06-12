@@ -5,7 +5,7 @@
 #define SEM_ID 1
 #define TOTAL_PAIR_PROCESSES 2
 
-int64_t global; // shared memory
+int64_t * global; // shared memory
 
 void slowInc(int64_t *p, int64_t inc) {
   uint64_t aux = *p;
@@ -16,6 +16,7 @@ void slowInc(int64_t *p, int64_t inc) {
 }
 
 uint64_t myProcessInc(uint64_t argc, char *argv[]) {
+  global = getSharedMemory();
   uint64_t n;
   int8_t inc;
   int8_t use_sem;
@@ -35,9 +36,7 @@ uint64_t myProcessInc(uint64_t argc, char *argv[]) {
 
   char aux[20];
   int mySemaphore = semInit(SEM_ID,1);
-        itoaBase(mySemaphore, aux,10);
-      printf(aux);
-      NewLine();
+
   if (use_sem)
     if (!mySemaphore) {
       printf("test_sync: ERROR opening semaphore\n");
@@ -50,11 +49,12 @@ uint64_t myProcessInc(uint64_t argc, char *argv[]) {
       return -1;
     }
 
+  char auxbuf[20];
   uint64_t i;
   for (i = 0; i < n; i++) {
     if (use_sem)
-      semWait(mySemaphore);
-    slowInc(&global, inc);
+    semWait(mySemaphore);
+    slowInc(global, inc);
     if (use_sem)
       semPost(mySemaphore);
   }
@@ -71,28 +71,18 @@ uint64_t test_sync(uint64_t argc, char *argv[]) { //{n, use_sem, 0}
   if (argc != 2)
     return -1;
 
-  char *argvDec[] = {argv[0], "-1", argv[1], NULL};
+  char *argvDec[] = {argv[0], "1", argv[1], NULL};
   char *argvInc[] = {argv[0], "1", argv[1], NULL};
 
-  global = 0;
-  printf("******Creating processes*****");
-  NewLine();
+  global = getSharedMemory();
+
+  *global = 15;
   
   uint64_t i;
   for (i = 0; i < TOTAL_PAIR_PROCESSES; i++) {
     pids[i] = createNewProcess("My Process Inc", myProcessInc, argvDec, LOW_PRIO, fd);
     pids[i + TOTAL_PAIR_PROCESSES - 1] = createNewProcess("My Process Inc", myProcessInc, argvInc, LOW_PRIO, fd);
-      char aux[20];
-    itoaBase(pids[i], aux,10);
-    printf(aux);
-    NewLine();
-    itoaBase(pids[i + TOTAL_PAIR_PROCESSES - 1], aux,10);
-    printf(aux);
-    NewLine();
   }
-
-  printf("*****Processes created*****");
-  NewLine();
 
   for (i = 0; i < TOTAL_PAIR_PROCESSES; i++) {
 
@@ -109,7 +99,7 @@ uint64_t test_sync(uint64_t argc, char *argv[]) { //{n, use_sem, 0}
   printf("Final value: ");
   nextX(13);
   char aux[20];
-  itoaBase(global, aux,10);
+  itoaBase(*global, aux,10);
   printf(aux);
   NewLine();
   NewLine();
