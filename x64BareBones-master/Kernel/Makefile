@@ -1,7 +1,7 @@
 include Makefile.inc
 
 KERNEL=kernel.elf
-SOURCES=$(wildcard *.c) $(wildcard Processes/*.c) $(wildcard Semaphores/*.c)
+SOURCES=$(wildcard *.c) $(wildcard Processes/*.c) $(wildcard Semaphores/*.c) $(wildcard MemoryManager/*.c)
 SOURCES_ASM=$(wildcard asm/*.asm)
 OBJECTS=$(SOURCES:.c=.o)
 OBJECTS_ASM=$(SOURCES_ASM:.asm=.o)
@@ -25,6 +25,6 @@ $(LOADEROBJECT):
 	$(ASM) $(ASMFLAGS) $(LOADERSRC) -o $(LOADEROBJECT)
 
 clean:
-	rm -rf asm/*.o *.o *.elf *.bin Processes/*.o Semaphores/*.o Pipes/*.o
+	rm -rf asm/*.o *.o *.elf *.bin Processes/*.o Semaphores/*.o Pipes/*.o MemoryManager/*.o
 
 .PHONY: all clean

@@ -1,6 +1,6 @@
-#include "MemoryManager.h"
-#include "videoDriver.h"
-#include "nativeLibrary.h"
+#include "../include/MemoryManager.h"
+#include "../include/videoDriver.h"
+#include "../include/nativeLibrary.h"
 
 #define MAX_ORDER 20 //tamaño total de memoria
 #define MIN_ORDER 6   // tamaño minimo de bloque
@@ -35,8 +35,6 @@ static void * const mmControlStart = (void *) 0x700000;
 static void * const heapStartAddress = (void *) ((char *)0x700000 + sizeof(struct MemoryManagerCDT));
 static MemoryManagerADT mm = NULL;
 
-static char auxBuff[100];
-
 static int smallestOrder(size_t size){ // usamos indices relativos. freeList[0] <-> donde se guarda MIN_ORDER
 	if (size <= MIN_BLOCK_SZ){
         return MIN_ORDER;
@@ -65,7 +63,7 @@ void createMemoryManager() {
     mm->freeMemory = mm->totalSize;/*CURRENT_BLOCKSIZE(MAX_ORDER - MIN_ORDER);*/
 
     uintptr_t mmEndAddr = (uintptr_t)mm + sizeof(MemoryManagerCDT);
-    Block * firstBlock = (Block *)ALIGN_UP(mmEndAddr, CURRENT_BLOCKSIZE(MAX_ORDER));
+    Block * firstBlock = (Block *)ALIGN_UP((uintptr_t)heapStartAddress, CURRENT_BLOCKSIZE(MAX_ORDER));
     //Block * firstBlock = (Block *)(((uintptr_t)(heapStartAddress) + (MIN_BLOCK_SZ - 1)) & ~(MIN_BLOCK_SZ - 1));
 
 	memset(firstBlock, 0, CURRENT_BLOCKSIZE(MAX_ORDER));
@@ -234,6 +232,11 @@ memoryState * getMemState(){
     memState->reserved = mm->usedMemory;
     memState->free = mm->freeMemory;
     return memState;	
+}
+
+int64_t *getSharedMemory() {
+    static int64_t shared = 0;
+    return &shared;
 }
 
 uint64_t getCurrent();
