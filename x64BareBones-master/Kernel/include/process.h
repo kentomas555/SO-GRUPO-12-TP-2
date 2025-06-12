@@ -25,6 +25,7 @@ typedef struct PCB{
     char **argv;
 
     int roundsLeft;
+    int pendingCleanUp;
 } PCB;
 
 

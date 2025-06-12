@@ -719,29 +719,23 @@ void handleProcessTest(){
 void handlePriorityTest(){
     int16_t fds[2] = {0,1};
     char *argv[] = {NULL};
-    Pid pid = createNewProcess("Priority Test",test_prio, argv, HIGH_PRIO,fds);
-    waitPID(pid);
+    createNewProcess("Priority Test",test_prio, argv, HIGH_PRIO,fds);
     return;
 }
 
 void handleSyncroTest(){
     int16_t fds[2] = {0,1};
     char *argv[] = {"10", "1", 0};
-    Pid pid = createNewProcess("Syncro Test",test_sync, argv, HIGH_PRIO,fds);
+    createNewProcess("Syncro Test",test_sync, argv, HIGH_PRIO,fds);
     // waitPID(pid);
     return;
 }
 
 void handleNoSyncroTest(){
-    // int16_t fds[2] = {0,1};
-    // char *argv[] = {"10", "0", 0};
-    // createNewProcess("No Sycnro Test",test_sync, argv, HIGH_PRIO,fds);
+    int16_t fds[2] = {0,1};
+    char *argv[] = {"10", "0", 0};
+    createNewProcess("No Sycnro Test",test_sync, argv, HIGH_PRIO,fds);
     return;
-}
-
-void printReady(){
-    
-    printf("");
 }
 
 /*====== EXCEPTIONS TRIGGER ======*/

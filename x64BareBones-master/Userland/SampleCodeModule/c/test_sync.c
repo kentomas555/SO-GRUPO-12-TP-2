@@ -20,7 +20,7 @@ uint64_t myProcessInc(uint64_t argc, char *argv[]) {
   int8_t inc;
   int8_t use_sem;
 
-  printf("Entered to function from Sync Test");
+  printf("Entered to Process Inc");
   NewLine();
 
   if (argc != 3)
@@ -59,12 +59,7 @@ uint64_t myProcessInc(uint64_t argc, char *argv[]) {
       semPost(mySemaphore);
   }
 
-  printf("Exit Process");
-  NewLine();
-        itoaBase(getpid(), aux,10);
-      printf(aux);
-      NewLine();
-  printProcesses();
+  printf("Exiting process Inc");
   NewLine();
   return 0;
 }
@@ -86,12 +81,12 @@ uint64_t test_sync(uint64_t argc, char *argv[]) { //{n, use_sem, 0}
   uint64_t i;
   for (i = 0; i < TOTAL_PAIR_PROCESSES; i++) {
     pids[i] = createNewProcess("My Process Inc", myProcessInc, argvDec, LOW_PRIO, fd);
-    pids[i + TOTAL_PAIR_PROCESSES] = createNewProcess("My Process Inc", myProcessInc, argvInc, LOW_PRIO, fd);
+    pids[i + TOTAL_PAIR_PROCESSES - 1] = createNewProcess("My Process Inc", myProcessInc, argvInc, LOW_PRIO, fd);
       char aux[20];
     itoaBase(pids[i], aux,10);
     printf(aux);
     NewLine();
-    itoaBase(pids[i + TOTAL_PAIR_PROCESSES], aux,10);
+    itoaBase(pids[i + TOTAL_PAIR_PROCESSES - 1], aux,10);
     printf(aux);
     NewLine();
   }
@@ -100,19 +95,16 @@ uint64_t test_sync(uint64_t argc, char *argv[]) { //{n, use_sem, 0}
   NewLine();
 
   for (i = 0; i < TOTAL_PAIR_PROCESSES; i++) {
-    printf("*****Enter waitPID*****");
-    NewLine();
-    NewLine();
-    waitPID(pids[i]);
-    printf("*****Enter waitPID*****");
-    NewLine();
-    NewLine();
+
+    waitPID(pids[0]);
     waitPID(pids[i + TOTAL_PAIR_PROCESSES]);
   }
 
   NewLine();
   printf("Destroying sem");
   semDestroy(SEM_ID);
+  NewLine();
+  NewLine();
 
   printf("Final value: ");
   nextX(13);

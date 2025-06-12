@@ -11,8 +11,10 @@ typedef struct P_rq {
 } p_rq;
 
 int64_t test_processes(uint64_t argc, char *argv[]) {
-  printf("DENTRO");
+
+  printf("Process Test Started Running");
   NewLine();
+
   uint8_t rq;
   uint8_t alive = 0;
   uint8_t action;
@@ -99,8 +101,4 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
         }
     }
   }
-  NewLine();
-  printf("PROCESSES TEST PASSED SUCCESFULLY!");
-  NewLine();
-  NewLine();
 }
