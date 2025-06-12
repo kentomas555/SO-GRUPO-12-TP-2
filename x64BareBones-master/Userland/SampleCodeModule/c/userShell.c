@@ -6,77 +6,46 @@
 char shellBuffer[48];
 int bgColorIndex = 0;
 
-static void help(){
+Command commands[] = {
+    {"HELP", help, "Imprime todos los comandos disponibles", NULL},
+    {"CLEAR", NULL, "Limpia la consola", NULL},
+    {"LARGER", NULL, "Agranda la fuente", NULL},
+    {"SMALLER", NULL, "Achica la fuente", NULL},
+    {"COLOR", NULL, "Cambia el color de la consola", NULL},
+    {"TIME", NULL, "Imprime la hora y fecha actual", NULL},
+    {"SNAKE", NULL, "Comienza el juego", NULL},
+    {"ZERODIV", NULL, "Causa una division por cero", NULL},
+    {"INVOPCODE", NULL, "Causa una instruccion invalida", NULL},
+    {"MEM", handleMemoryManagerTest, "Imprime el estado de memoria", NULL},
+    {"GETPID", handleGetPid, "Imprime el PID del proceso actual", NULL},
+    {"PS", printProcesses, "Imprime los procesos actuales", NULL},
+    {"CREATEDUMMY", createDummyProcess, "Crea un proceso dummy", NULL},
+    {"LOOP", handleLoop, "Ejecuta un loop", "LOOP <segundos>"},
+    {"KILL", handleKill, "Mata un proceso", "KILL <pid>"},
+    {"NICE", handleNice, "Cambia prioridad", "NICE <pid> <prio>"},
+    {"BLOCK", handleBlock, "Bloquea proceso", "BLOCK <pid>"},
+    {"CAT", handleCat, "Imprime stdin tal como se recibe", NULL},
+    {"WC", handleWC, "Cuenta las lineas del input", NULL},
+    {"FILTER", handleFilter, "Filtra vocales del input", NULL},
+    {"PHYLO", handlePhylo, "Proceso filosofos", NULL},
+    {"TESTMM", handleMemoryManagerTest, "Test memory manager", NULL},
+    {"TESTPROCESS", handleProcessTest, "Test de procesos", NULL},
+    {"TESTPRIO", handlePriorityTest, "Test de prioridades", NULL},
+    {"TESTSYNC", handleSyncroTest, "Test sincronizacion", NULL},
+    {"TESTNOSYNC", handleNoSyncroTest, "Test sin sincronizacion", NULL},
+    {NULL, NULL, NULL, NULL}
+};
+
+void help() {
     printf("Comandos disponibles:");
+    NewLine(); NewLine();
+    for (int i = 0; commands[i].name_id != NULL; i++) {
+        printf(commands[i].desc);
+        NewLine();
+    }
     NewLine();
+    printf("Use '&' para ejecutar en background. Ej: TESTSYNC &");
     NewLine();
-    printf("CLEAR - Limpia la consola");
-    NewLine();
-    printf("LARGER - Agranda la fuente");
-    NewLine();
-    printf("SMALLER - Achica la fuente");
-    NewLine();
-    printf("COLOR - Cambia el color de la consola");
-    NewLine();
-    printf("TIME - Imprime la hora y fecha actual");
-    NewLine();
-    printf("SNAKE - Comienza el juego");
-    NewLine();
-    printf("ZERODIV - Causa una excepcion: divide por cero");
-    NewLine();
-    printf("INVOPCODE - Causa una excepcion : invalid opcode");
-    NewLine();
-    printf("HELP - Imprime todos los comandos disponibles");
-    NewLine();
-    NewLine();
-    printf("Comandos para TP2 SO 1C2025:");
-    NewLine();
-    NewLine();
-    printf("MEM - Imprime el estado de memoria");
-    NewLine();
-    printf("GETPID - Imprime el PID del proceso corriendo");
-    NewLine();
-    printf("PS - Imprime los procesos");
-    NewLine();
-    printf("CREATEDUMMY - Crea un proceso DUMMY para testear");
-    NewLine();
-    printf("LOOP - Imprime su ID con un saludo cada n segundos.");
-    NewLine();
-    printf("KILL - Mata un proceso dado su ID");
-    NewLine();
-    printf("    uso: KILL (process pid)");
-    NewLine();
-    printf("NICE - Cambia la prioridad de un proceso");
-    NewLine();
-    printf("    uso: NICE (process pid) (new priority)");
-    NewLine();
-    printf("BLOCK - Cambia el estado de un proceso entre bloqueado y listo");
-    NewLine();
-    printf("    uso: BLOCK (process pid)");
-    NewLine();
-    printf("CAT - Imprime el stdin tal como lo recibe");
-    NewLine();
-    printf("WC - Cuenta la cantidad de líneas del input");
-    NewLine();
-    printf("FILTER - Filtra las vocales del input");
-    NewLine();
-    printf("PHYLO - Comienza el proceso de Filosofos comensales");
-    NewLine();
-    printf("TESTMM - Test del Memory Manager");
-    NewLine();
-    printf("TESTPROCESS - Test de procesos");
-    NewLine();
-    printf("TESTPRIO - Test para prioridades");
-    NewLine();
-    printf("TESTSYNC - Test para synchro");
-    NewLine();
-    printf("TESTNOSYNC - TEST para no synchro");
-    NewLine();
-    NewLine();
-    printf("Para ver el valor de los registros, presione TAB");
-    NewLine();
-    NewLine();
-    
 }
 
 static void changeColor(){

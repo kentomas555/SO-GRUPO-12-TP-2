@@ -88,4 +88,11 @@ void invalidOpcodeTrigger();
 void throw_zero_division();
 void throw_invalid_opcode();
 
+typedef struct Command {
+    char* name_id;
+    void (*func)(char *);
+    char* desc;
+    char* usage;
+} Command;
+
 #endif // GLOBAL_LIB_H
