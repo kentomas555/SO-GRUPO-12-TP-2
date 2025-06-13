@@ -215,6 +215,22 @@ void semWait(int id){
 
 /*====== PIPES ======*/
 
+int64_t createPipeUser(int pipeID, int *fds[]){
+    return syscall(SYSCALL_CREATE_PIPE, pipeID, fds);
+}
+
+void destroyPipeUser(int pipeID){
+    syscall(SYSCALL_DESTROY_PIPE, pipeID);
+}
+
+uint64_t writePipeUser(int pipeID, const char * source){
+    return syscall(SYSCALL_WRITE_PIPE, pipeID, source);
+}
+
+uint64_t readPipeUser(int pipeID, char * destination){
+    return syscall(SYSCALL_READ_PIPE, pipeID, destination);
+}
+
 int64_t * getSharedMemory(){
     return (int64_t *)syscall(SYSCALL_SHARED_MEM);
 }

@@ -2,6 +2,7 @@
 #include <globalLib.h>
 #include <syscall.h>
 #include <tests.h>
+#include <phylo.h>
 
 uint64_t bgColor = 0x00;
 
@@ -711,6 +712,7 @@ void handleKill(int argc, char **args){
 
 /*====== INPUT CONTROLLER ======*/
 //MANEJAR CON PIPES
+
 void handleCat(int argc, char **args){
     char c;
     while ((c = getChar()) != 0 && c != '\n' && c != 13) {
@@ -750,7 +752,11 @@ int isVowel(char c) {
 }
 
 void handleFilter(int argc, char **args){
+    int *fds[2];
     char c;
+    //READ PIPE si es para pipe
+    //READ por shell
+
     while ((c = getChar()) != 0 && c != '\n' && c != 13) {
         if (!isVowel(c)) {
             char buf[2] = {c, 0};
@@ -765,6 +771,9 @@ void handleFilter(int argc, char **args){
 /*====== PHYLO ======*/
 
 void handlePhylo(int argc, char **args){
+    // int16_t fds[2] = {0,1};
+    // char * argv[] = {NULL};
+    // createNewProcess("Phylo Process",(mainFunc)startPhylo, argv, HIGHEST_PRIO,fds);
     return;
 }
 
@@ -816,8 +825,6 @@ void invalidOpcodeTrigger(int argc, char **args){
     throw_invalid_opcode(argc, args);
 }
 
-
-//void executeUser(char * name, mainFunc function, char *args[], int16_t *fds[], int8_t processFlag){
 void executeUser(Command command, char *args[], int16_t fds[]){
     int argc = countArguments((void*)args);
     if(command.isProcess){
@@ -826,13 +833,4 @@ void executeUser(Command command, char *args[], int16_t fds[]){
     else{
         command.func(argc, args);
     }
-    // else if(argc == 0){
-    //     command.func();
-    // }
-    // else if(argc == 1){
-    //     command.func(args[0]);
-    // }
-    // else if(argc == 2){
-    //     command.func(args[0], args[1]);
-    // }
 }

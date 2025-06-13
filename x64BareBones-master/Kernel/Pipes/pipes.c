@@ -1,8 +1,8 @@
 #include "../include/pipes.h"
 
-#define READ_SEMAPHORE_ID 13
-#define WRITE_SEMAPHORE_ID 14
-#define MUTEX_SEMAPHORE_ID 15
+#define READ_SEMAPHORE_ID 1
+#define WRITE_SEMAPHORE_ID 2
+#define MUTEX_SEMAPHORE_ID 3
 
 typedef struct PipeCDT {
     char buffer[PIPE_BUFFER_SIZE];
@@ -11,8 +11,8 @@ typedef struct PipeCDT {
     int writePos;
     Pid writerPID;
     Pid readerPID;
-    int readFD;
-    int writeFD;
+    int16_t readFD;
+    int16_t writeFD;
     int semRead;
     int semWrite;
     int mutex;
@@ -22,13 +22,17 @@ typedef struct PipeCDT {
 static PipeCDT * pipeArray[MAX_PIPES] = {NULL};
 
 static int existPipe(int pipeID){
-    if(pipeArray[pipeID-1] != NULL){
+    if(pipeArray[pipeID-3] != NULL){
         return 1;
     }
     return 0;
 }
 
-int64_t createPipe(int pipeID, int fd[2]){
+int64_t createPipe(int pipeID, int16_t fd[2]){
+    if(pipeID < 2){
+        return -1;
+    }
+
     if(existPipe(pipeID)){
         return pipeID;
     }
@@ -46,11 +50,11 @@ int64_t createPipe(int pipeID, int fd[2]){
     pipe->readerPID = -1;
     pipe->readFD = fd[0];
     pipe->writeFD = fd[1];
-    pipe->semRead = semInit(READ_SEMAPHORE_ID, 1);
-    pipe->semWrite = semInit(WRITE_SEMAPHORE_ID, 1);
-    pipe->mutex = semInit(MUTEX_SEMAPHORE_ID, 1);
+    pipe->semRead = semInit(READ_SEMAPHORE_ID + (pipeID - 3) * 3, 1);
+    pipe->semWrite = semInit(WRITE_SEMAPHORE_ID + (pipeID - 3) * 3, 1);
+    pipe->mutex = semInit(MUTEX_SEMAPHORE_ID + (pipeID - 3) * 3, 1);
 
-    pipeArray[pipeID-1] = pipe;
+    pipeArray[pipeID-3] = pipe;
     return pipe->pipeID;
 }
 
@@ -58,8 +62,8 @@ void destroyPipe(int pipeID){
     if(!existPipe(pipeID)){
         return;
     }
-    freeMemory((void *)pipeArray[pipeID-1]);
-    pipeArray[pipeID-1] = NULL;
+    freeMemory((void *)pipeArray[pipeID-3]);
+    pipeArray[pipeID-3] = NULL;
 }
 
 uint64_t writePipe(int pipeID, const char * source){
@@ -67,12 +71,12 @@ uint64_t writePipe(int pipeID, const char * source){
         return 0;
     } 
 
-    PipeCDT *pipe = pipeArray[pipeID - 1];
+    PipeCDT *pipe = pipeArray[pipeID - 3];
     uint64_t written = 0;
 
     for (int i = 0; source[i] != '\0'; i++) {
-        semWait(pipe->semWrite);  // espera espacio libre
-        semWait(pipe->mutex);     // entra a la región crítica
+        semWait(pipe->semWrite);
+        semWait(pipe->mutex);
 
         pipe->buffer[pipe->writePos] = source[i];
         pipe->writePos = (pipe->writePos + 1) % PIPE_BUFFER_SIZE;
@@ -89,7 +93,7 @@ uint64_t readPipe(int pipeID, char * destination){
     if(!existPipe(pipeID) || destination == NULL){
         return 0;
     }
-    PipeCDT *pipe = pipeArray[pipeID - 1];
+    PipeCDT *pipe = pipeArray[pipeID - 3];
     uint64_t read = 0;
     char c;
 

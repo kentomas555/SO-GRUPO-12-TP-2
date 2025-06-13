@@ -46,6 +46,11 @@
 #define SYSCALL_SEM_POST 34
 #define SYSCALL_SEM_WAIT 35
 
+#define SYSCALL_CREATE_PIPE 36
+#define SYSCALL_DESTROY_PIPE 37
+#define SYSCALL_WRITE_PIPE 38
+#define SYSCALL_READ_PIPE 39
+
 #define SYSCALL_SHARED_MEM 41
 
 /*====== READ SYSCALL ======*/
@@ -196,6 +201,10 @@ void semWait(int id);
 
 /*====== PIPE SYSCALLS ======*/
 
+int64_t createPipeUser(int pipeID, int *fds[]);
+void destroyPipeUser(int pipeID);
+uint64_t writePipeUser(int pipeID, const char * source);
+uint64_t readPipeUser(int pipeID, char * destination);
 
 int64_t * getSharedMemory();
 

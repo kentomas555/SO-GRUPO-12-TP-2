@@ -15,6 +15,7 @@
 #include <scheduler.h>
 #include <stack.h>
 #include <semaphore.h>
+#include "../include/pipes.h"
 
 static uint64_t handleReadSyscall(void);
 static void handleWriteSyscall(va_list args);
@@ -45,6 +46,12 @@ static int64_t * handleGetSharedMemorySyscall();
 static void handleSemPostSyscall(va_list args);
 static void handleSemWaitSyscall(va_list args);
 static uint64_t handleExitSyscall(va_list args);
+
+static int64_t handleCreatePipeSyscall(va_list args);
+static void handleDestroyPipeSyscall(va_list args);
+static uint64_t handleWritePipeSyscall(va_list args);
+static uint64_t handleReadPipeSyscall(va_list args);
+
 //static uint64_t handleGetCurrentBlock();
 
 // ========== DISPATCHER PRINCIPAL ==========
@@ -161,6 +168,18 @@ uint64_t syscallDispatcher(uint64_t id, ...) {
             break;
         case SYSCALL_SHARED_MEM:
             ret = (uint64_t)handleGetSharedMemorySyscall();
+            break;
+        case SYSCALL_CREATE_PIPE:
+            ret = (uint64_t)handleCreatePipeSyscall(args);
+            break;
+        case SYSCALL_DESTROY_PIPE:
+            handleDestroyPipeSyscall(args);
+            break;
+        case SYSCALL_WRITE_PIPE:
+            ret = (uint64_t)handleWritePipeSyscall(args);
+            break;   
+        case SYSCALL_READ_PIPE:
+            ret = (uint64_t)handleReadPipeSyscall(args);
             break;
     }
 
@@ -312,29 +331,48 @@ static processesToPrint * handleListProcesses(){
 }
 
 static uint64_t handleSemInitSyscall(va_list args){
-    //char* semName = va_arg(args, char*);
     int32_t id = va_arg(args, int32_t);
     int32_t value = va_arg(args, int32_t);
-    return semInit(id ,value); // no recibe name
+    return semInit(id ,value); 
 }
 
 static uint64_t handleSemDestroySyscall(va_list args){
-    //char* semName = va_arg(args, char*);
     int32_t id = va_arg(args, int32_t);
     return (uint64_t)semDestroy(id);
 
 }
 
 static void handleSemPostSyscall(va_list args){
-    //char* semName = va_arg(args, char*);
     int32_t id = va_arg(args, int32_t);
     semPost(id);
 }
 
 static void handleSemWaitSyscall(va_list args){
-    //char* semName = va_arg(args, char*);
     int32_t id = va_arg(args, int32_t);
     semWait(id);
+}
+
+static int64_t handleCreatePipeSyscall(va_list args){
+    int32_t pipeID = va_arg(args, int32_t);
+    int16_t* fd = va_arg(args, int16_t*);
+    return createPipe(pipeID, fd);
+}
+
+static void handleDestroyPipeSyscall(va_list args){
+    int32_t pipeID = va_arg(args, int32_t);
+    return destroyPipe(pipeID);
+}
+
+static uint64_t handleWritePipeSyscall(va_list args){
+    int32_t pipeID = va_arg(args, int32_t);
+    char * source = va_arg(args, char *);
+    return writePipe(pipeID, source);
+}
+
+static uint64_t handleReadPipeSyscall(va_list args){
+    int32_t pipeID = va_arg(args, int32_t);
+    char * destination = va_arg(args, char *);
+    return readPipe(pipeID, destination);
 }
 
 static uint64_t handleExitSyscall(va_list args){

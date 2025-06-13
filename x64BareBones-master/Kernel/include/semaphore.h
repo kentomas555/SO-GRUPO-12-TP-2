@@ -10,7 +10,7 @@
 
 #define MAX_SEM_CHAR 20
 
-#define MAX_SEM_QTY 15
+#define MAX_SEM_QTY 40
 
 typedef struct sem_t {
   uint32_t value;
