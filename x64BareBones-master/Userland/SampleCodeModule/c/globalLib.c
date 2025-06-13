@@ -710,19 +710,55 @@ void handleKill(int argc, char **args){
 
 
 /*====== INPUT CONTROLLER ======*/
-
-void handleCat(char * buffer){
-    //TODO
+//MANEJAR CON PIPES
+void handleCat(int argc, char **args){
+    char c;
+    while ((c = getChar()) != 0 && c != '\n' && c != 13) {
+        if (c == 8) { 
+            prevX(1);
+            charDelete(getCurrentX(), getCurrentY(), getFontSize());
+        } else {
+            char buf[2] = {c, 0};
+            printf(buf);
+            nextX(1);
+        }
+    }
+    NewLine();
     return;
 }
 
-void handleWC(char * buffer){
-    //TODO
+void handleWC(int argc, char **args){
+    char c;
+    int lines = 0;
+    while ((c = getChar()) != 0 && c != 4) {
+        if (c == '\n' || c == 13) {
+            lines++;
+        }
+    }
+    char buffer[10];
+    itoaBase(lines, buffer, 10);
+    printf("Cantidad de lineas: ");
+    nextX(20);
+    printf(buffer);
+    NewLine();
     return;
 }
 
-void handleFilter(char * buffer){
-    //TODO
+int isVowel(char c) {
+    c |= 32; 
+    return c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u';
+}
+
+void handleFilter(int argc, char **args){
+    char c;
+    while ((c = getChar()) != 0 && c != '\n' && c != 13) {
+        if (!isVowel(c)) {
+            char buf[2] = {c, 0};
+            printf(buf);
+            nextX(1);
+        }
+    }
+    NewLine();
     return;
 }
 

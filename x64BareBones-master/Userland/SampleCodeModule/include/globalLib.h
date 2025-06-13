@@ -82,9 +82,9 @@ void handleLoop(int argc, char **args);
 
 /*====== INPUT CONTROLLER ======*/
 
-void handleCat(char * buffer);
-void handleWC(char * buffer);
-void handleFilter(char * buffer);
+void handleCat(int argc, char **args);
+void handleWC(int argc, char **args);
+void handleFilter(int argc, char **args);
 
 /*======  ======*/
 void handlePhylo(int argc, char **args);
