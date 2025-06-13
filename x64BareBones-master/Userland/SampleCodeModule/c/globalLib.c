@@ -630,40 +630,27 @@ static void loopFuction(int argc, char *argv[]){
 
 
 void handleLoop(int argc, char **args) {
-    char * buffer = args[0];
-    int16_t fds[2] = {0, 1};
-
-    while (*buffer != ' ' && *buffer != '\0') buffer++;
-
-    if (*buffer == '\0') {
-        printf("Faltan parametros");
+    if (argc < 1 || args[0] == NULL) {
+        printf("Faltan parámetros");
         NewLine();
         printf("Ejemplo de llamada: LOOP (SEGUNDOS)");
         NewLine();
         return;
     }
 
-    buffer++; 
-
-    int seconds = atoi(buffer);
+    int seconds = satoi(args[0]);
     if (seconds <= 0) {
         printf("El parámetro debe ser un número mayor que 0");
         NewLine();
         return;
     }
 
-    // Reparar el paso de parametros
-    char * argv[2];
+    int16_t fds[2] = {0, 1};
 
-    int len = strlen(buffer);
+    char * argv[] = { args[0], NULL };
 
-    memcpy(argv[0], buffer, len);
-    argv[0][len] = '\0';
-    argv[1] = NULL;
-
-    createNewProcess("Loop Process", (mainFunc)loopFuction, argv, HIGHEST_PRIO, fds);
+    createNewProcess("Loop Process", (mainFunc)loopFuction, argv, AVERAGE_PRIORITY, fds);
 }
-
 
 void handleKill(int argc, char **args){
     char * buffer = args[0];
