@@ -69,7 +69,7 @@ int main()
 	startScheduler(); // empieza en 0x700000 (usa el memory manager, alloc)
 	// initializeSemaphores(); // en que parte de memoria inician?
 
-	int16_t fds[2] = {0,1};
+	int16_t fds[2] = {STDIN,STDOUT};
 	char * args[] = {NULL};
 	onCreateProcess("idle", (mainFunc)idleKernel, args, LOWEST_PRIORITY, fds);
 	onCreateProcess("shell", sampleCodeModuleAddress, args, HIGHEST_PRIORITY, fds);

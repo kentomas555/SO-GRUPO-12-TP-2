@@ -203,7 +203,7 @@ static void *memcpy(void *dest, const void *src, int n) {
     return dest;
 }
 
-static int strlen(const char *str) {
+int strlen(const char *str) {
     int length = 0;
     while (str[length] != '\0') {
         length++;

@@ -49,7 +49,7 @@ uint64_t myProcessInc(uint64_t argc, char *argv[]) {
       return -1;
     }
 
-  char auxbuf[20];
+  //char auxbuf[20];
   uint64_t i;
   for (i = 0; i < n; i++) {
     if (use_sem)
@@ -103,5 +103,9 @@ uint64_t test_sync(uint64_t argc, char *argv[]) { //{n, use_sem, 0}
   printf(aux);
   NewLine();
   NewLine();
+  printf("$");
+  nextX(1);
+  printf(">");
+  nextX(1);
   return 0;
 }

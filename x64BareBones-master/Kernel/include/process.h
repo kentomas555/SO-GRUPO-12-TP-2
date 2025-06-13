@@ -26,6 +26,7 @@ typedef struct PCB{
 
     int roundsLeft;
     int pendingCleanUp;
+    int isForeground;
 } PCB;
 
 

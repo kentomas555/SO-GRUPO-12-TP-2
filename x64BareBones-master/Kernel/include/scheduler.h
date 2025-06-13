@@ -2,6 +2,7 @@
 #define SCHEDULER_H
 
 #include <stdint.h>
+#include <fileDescriptors.h>
 
 
 #define QUANTUM 5 
@@ -12,6 +13,8 @@
 
 #define SHELL_PID 1
 #define IDLE_PID 0
+#define BACKGROUND 0
+#define FOREGROUND 1
 
 typedef int (*mainFunc)(int argc, char **args);
 

@@ -202,6 +202,10 @@ void * switchContext(Pid pid){
   nextPCB->status = RUNNING;
   scheduler->currentPID = pid;
   scheduler->currentPPID = nextPCB->parentPID;
+
+  if(nextPCB->isForeground){
+    scheduler->foregroundPID = nextPCB->PID;
+  }
   
   return nextPCB->rsp;
 }
@@ -221,11 +225,18 @@ uint64_t exitProcess(int retValue){
 
   PCB *parent = (PCB*)scheduler->processes[pcb->parentPID]->info;
 
-  if (parent->waitingPID == pcb->PID) {
-    parent->retValue = pcb->retValue;
-
-    unblockProcess(parent->PID);
+  if(parent != NULL){
+    if (parent->waitingPID == pcb->PID) {
+      if(pcb->isForeground){
+        //parent->isForeground = FOREGROUND;
+        //parent->fds[0] = STDIN;
+        parent->waitingPID = -1;
+      }
+      parent->retValue = pcb->retValue;
+      unblockProcess(parent->PID);
+    }
   }
+  
   yield();
   return 1;
 }
@@ -280,7 +291,6 @@ uint64_t killProcess(Pid pid){
 
 
   if (parentPCB != NULL && parentPCB->status == BLOCKED) {
-    
     unblockProcess(parentPCB->PID);
   }
 
@@ -336,6 +346,18 @@ uint64_t onCreateProcess(char * processName, mainFunc processProgram, char** arg
   }
   myNewProcess->PID = availablePidValue;
 
+  if((PCB*)(scheduler->processes[myNewProcess->parentPID]) != NULL){
+
+    PCB * parentPCB = (PCB*)(scheduler->processes[myNewProcess->parentPID]->info);
+    if(myNewProcess->fds[0] == STDIN){
+      if (parentPCB->PID == scheduler->foregroundPID) {
+        parentPCB->waitingPID = myNewProcess->PID;
+        setToblock(parentPCB->PID);
+      }
+      scheduler->foregroundPID = myNewProcess->PID;
+    }
+  }
+
   Node * node = allocMemory(sizeof(Node));
   if(node == NULL){
     return -1;
@@ -363,13 +385,16 @@ uint64_t createDummyProcess(){
 }
 
 int blockProcess(Pid pid){
+
   Node * processToBeBlocked = scheduler->processes[pid];
   PCB * pcb = (PCB*)scheduler->processes[pid]->info;
   
-  if(pcb->status == BLOCKED || pcb->status == KILLED || pcb == NULL || pid == SHELL_PID || pid == IDLE_PID){
+  if(/*pcb->status == BLOCKED ||*/ pcb->status == KILLED || pcb == NULL || pid == SHELL_PID || pid == IDLE_PID){
     return -1;
   }
-  removeFromQueue(scheduler->readyList, processToBeBlocked);
+  if(pcb->status != BLOCKED){
+    removeFromQueue(scheduler->readyList, processToBeBlocked);
+  }  
   pcb->status = BLOCKED;
   
   return 1;

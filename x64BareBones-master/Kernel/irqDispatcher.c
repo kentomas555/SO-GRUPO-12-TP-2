@@ -30,8 +30,22 @@ void irs80Dispatcher(uint64_t irc80Mode){
 }
 
 void int_21(){
+
+	uint8_t keycode = getKey();
+    // Handle Shift key state
+    if (keycode == 0x2A || keycode == 0x36) {
+        shiftPressed();  // Left or right Shift pressed
+        return;
+    } else if (keycode == 0xAA || keycode == 0xB6) {
+        shiftNotPressed();  // Left or right Shift released
+        return;
+    }
+
 	if(getKey() <= 0x58 ){
 		keyBuffer = getCharASCII(getKey());
+		if(keyBuffer){
+
+		}
 		keyAvailable = 1; 
 	}
 }

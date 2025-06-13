@@ -33,8 +33,14 @@ PCB * createProcess(char * processName, mainFunc processProgram, char** args, Pr
   newPCB->processName[nameLength] = '\0';
   
   //TODO: fds VER PARA SEMAPHORES
-  newPCB->fds[0] = 0;
-  newPCB->fds[1] = 1;
+  if(fds[0] == STDIN){
+    newPCB->isForeground = FOREGROUND;
+  }
+  else{
+    newPCB->isForeground = BACKGROUND;
+  }
+  newPCB->fds[0] = fds[0]; // newPCB->fds[0] = fds[0];
+  newPCB->fds[1] = fds[1]; // newPCB->fds[1] = fds[1];
 
   //Arg configs
   newPCB->argc = countArguments((void **)args);

@@ -32,6 +32,7 @@ void itoaBase(uint64_t value, char * buffer, uint32_t base);
 int strCompare(char *str1, char *str2);
 int strCompareFirstComand(char *str1, char *str2);
 void nextX(int i);
+int strlen(const char *str);
 
 /*====== PRINT TIME ======*/
 
@@ -89,7 +90,7 @@ void throw_zero_division();
 void throw_invalid_opcode();
 
 typedef struct Command {
-    char* name_id;
+    char* name;
     void (*func)(char *);
     char* desc;
     char* usage;

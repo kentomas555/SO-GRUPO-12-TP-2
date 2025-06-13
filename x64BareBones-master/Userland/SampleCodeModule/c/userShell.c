@@ -6,20 +6,29 @@
 char shellBuffer[48];
 int bgColorIndex = 0;
 
+//void handleCommand(shellBuffer, backgroundFD);
+
+void help();
+void clearScreenCommand();
+void changeColor();
+
+int foregroundFD[] = {0, 1};
+int backgroundFD[] = {-1, -1};
+
 Command commands[] = {
     {"HELP", help, "Imprime todos los comandos disponibles", NULL},
-    {"CLEAR", NULL, "Limpia la consola", NULL},
-    {"LARGER", NULL, "Agranda la fuente", NULL},
-    {"SMALLER", NULL, "Achica la fuente", NULL},
-    {"COLOR", NULL, "Cambia el color de la consola", NULL},
-    {"TIME", NULL, "Imprime la hora y fecha actual", NULL},
-    {"SNAKE", NULL, "Comienza el juego", NULL},
-    {"ZERODIV", NULL, "Causa una division por cero", NULL},
-    {"INVOPCODE", NULL, "Causa una instruccion invalida", NULL},
+    {"CLEAR", clearScreenCommand, "Limpia la consola", NULL},
+    {"LARGER", largerFontSize, "Agranda la fuente", NULL},
+    {"SMALLER", smallerFontSize, "Achica la fuente", NULL},
+    {"COLOR", changeColor, "Cambia el color de la consola", NULL},
+    {"TIME", printCurrentTime, "Imprime la hora y fecha actual", NULL}, 
+    {"SNAKE", startGame, "Comienza el juego", NULL},
+    {"ZERODIV", zeroDivisionTrigger, "Causa una division por cero", NULL},
+    {"INVOPCODE", invalidOpcodeTrigger, "Causa una instruccion invalida", NULL},
     {"MEM", handleMemoryManagerTest, "Imprime el estado de memoria", NULL},
     {"GETPID", handleGetPid, "Imprime el PID del proceso actual", NULL},
     {"PS", printProcesses, "Imprime los procesos actuales", NULL},
-    {"CREATEDUMMY", createDummyProcess, "Crea un proceso dummy", NULL},
+    {"CREATEDUMMY", (void (*)(char *))createDummyProcess, "Crea un proceso dummy", NULL},
     {"LOOP", handleLoop, "Ejecuta un loop", "LOOP <segundos>"},
     {"KILL", handleKill, "Mata un proceso", "KILL <pid>"},
     {"NICE", handleNice, "Cambia prioridad", "NICE <pid> <prio>"},
@@ -39,16 +48,24 @@ Command commands[] = {
 void help() {
     printf("Comandos disponibles:");
     NewLine(); NewLine();
-    for (int i = 0; commands[i].name_id != NULL; i++) {
+    for (int i = 0; commands[i].name != NULL; i++) {
+        printf(commands[i].name);
+        setCurrentX(getFontSize()*100);    
         printf(commands[i].desc);
         NewLine();
+        if(commands[i].usage != NULL){
+            printf(commands[i].usage);
+            NewLine();
+        }
     }
     NewLine();
     printf("Use '&' para ejecutar en background. Ej: TESTSYNC &");
     NewLine();
 }
 
-static void changeColor(){
+
+
+void changeColor(){
     if (bgColorIndex >= 3){
         bgColorIndex = 0;
     } else {
@@ -70,40 +87,16 @@ static void changeColor(){
     ClearScreen(newColor);
 }
 
-static void handleLoopNoParams(){
-    NewLine();
-    printf("Faltan parametros");
-    NewLine();
-    printf("Ejemplo de llamada: LOOP (SEGUNDOS)");
-    NewLine();
-    NewLine();
-}
-
-static void handleKillNoParams(){
-    NewLine();
-    printf("Faltan parametros");
-    NewLine();
-    printf("Ejemplo de llamada: KILL (PID)");
-    NewLine();
-    NewLine();
-}
-
-static void handleNiceNoParams(){
-    NewLine();
-    printf("Faltan parametros");
-    NewLine();
-    printf("Ejemplo de llamada: NICE (PID) (PRIORITY)");
-    NewLine();
-    NewLine();
-}
-
-static void handleBlockNoParams(){
-    NewLine();
-    printf("Faltan parametros");
-    NewLine();
-    printf("Ejemplo de llamada: BLOCK (PID)");
-    NewLine();
-    NewLine();
+void clearScreenCommand() {
+    if(bgColorIndex == 0){
+        ClearScreen(0x000000FF);
+    } else if (bgColorIndex == 1){
+        ClearScreen(0x00000000);
+    } else if (bgColorIndex == 2){
+        ClearScreen(0x00FF0000);
+    } else {
+        ClearScreen(0x0000FF00);
+    }
 }
 
 static void bufferInterpreter(){
@@ -144,21 +137,21 @@ static void bufferInterpreter(){
         createDummyProcess();
     } else if (strCompareFirstComand(shellBuffer, "LOOP ")){
         handleLoop(shellBuffer);
-    } else if (strCompare(shellBuffer, "LOOP")){
-        handleLoopNoParams();
-    } else if (strCompareFirstComand(shellBuffer, "KILL ")){
+    } /* else if (strCompare(shellBuffer, "LOOP")){
+         handleLoopNoParams();
+    } */else if (strCompareFirstComand(shellBuffer, "KILL ")){
         handleKill(shellBuffer);
-    } else if (strCompare(shellBuffer, "KILL")){
+    } /*else if (strCompare(shellBuffer, "KILL")){
         handleKillNoParams();
-    } else if (strCompareFirstComand(shellBuffer, "NICE ")){
+    }*/ else if (strCompareFirstComand(shellBuffer, "NICE ")){
         handleNice(shellBuffer);
-    } else if (strCompare(shellBuffer, "NICE")){
-        handleNiceNoParams();
-    } else if (strCompareFirstComand(shellBuffer, "BLOCK ")){
+    } /*else if (strCompare(shellBuffer, "NICE")){
+         handleNiceNoParams();
+    }*/ else if (strCompareFirstComand(shellBuffer, "BLOCK ")){
         handleBlock(shellBuffer);
-    } else if (strCompare(shellBuffer, "BLOCK")){
+    } /*else if (strCompare(shellBuffer, "BLOCK")){
         handleBlockNoParams();
-    } else if (strCompareFirstComand(shellBuffer, "CAT ")){
+    }*/else if (strCompareFirstComand(shellBuffer, "CAT ")){
         /*====TODO===*/
         NewLine();
         printf("Por implementar ...");
@@ -201,7 +194,87 @@ static void bufferInterpreter(){
         NewLine();
         NewLine();
     }
+    NewLine();
+
+    // int runInBackground = 0;
+    // int len = strLen(input);
+    // if (input[len - 1] == '&') {
+    //     runInBackground = 1;
+    //     input[len - 1] = 0;
+    //     input[len - 2] = 0;
+    //     handleCommand(shellBuffer, foregroundFD);
+    // }
+    // handleCommand(shellBuffer, backgroundFD);
+    return;
 }
+
+// void execCommand(char * commandName, int * fd){
+//     for(commands[i].name != NULL){
+//         if (strCompare(commandName, commands[i].name)){
+//             (commands[i].func)((void *)fd);
+//             return;
+//         }
+//     }
+//     printf("Comando no reconocido. Use HELP para mas informacion");
+//     NewLine();
+// }
+
+// void handleCommand(char * buffer, int * fd){
+//     // Separar nombre y argumentos
+//     char * firstCommand;
+//     char * secondCommand = NULL;
+//     char * commandArgs[] = {0};
+
+//     //Checkear y si encuentra un " " o " | " terminar
+//     //EJ " " -> KILL 2 entonces KILL = firstCommand
+//     //Si help | cat -> help = firstCommand y cat = secondCommand
+
+//     //FOR como el que esta abajo, y en fds de createProcess, se deberia llamarlo con fd
+
+//     if (strcmp(str, "")==0) {
+//         return;
+//     }
+//     argC = parse_command_arg(str, arguments);
+//     char * cmd = arguments[0];
+//     if (argC > 1) {
+//         if(strcmp(arguments[1], "b") == 0){
+//             foreground = FALSE;
+//             str = cmd;
+//         }
+//         if (strcmp(arguments[1], "|") == 0){
+//             pipe = TRUE;
+//             processWithPipeExec(arguments, argC);
+//             return;
+//         }
+//     }
+//     if(pipe == FALSE){
+//         int fd[2] = {0, 1};
+//         execute_command(cmd, fd);
+//     }
+
+//     //agregado (de un tp)
+
+// void pipe_impl(char * args[], int argC) {
+
+//     int fds[2];
+//     // if(usys_open_pipe(fds) == -1){
+//     //     print_error("Error al crear el pipe.\n");
+//     //     return;
+//     // }
+//     int writerProcess[2];
+//     writerProcess[0] = 0;
+//     writerProcess[1] = fds[1];
+
+//     int readerProcess[2];
+//     readerProcess[0] = fds[0];
+//     readerProcess[1] = 1;
+
+//     execCommand(args[0], writerProcess);
+//     execCommand(args[2], readerProcess);
+// }
+//     //agregado end
+
+// }
 
 static void shellEngine(){
     while (1) {
