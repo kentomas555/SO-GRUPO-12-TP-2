@@ -1,14 +1,3 @@
-cd root/
-ls
-clear
-make clean all
-make clean all
-make clean all
-clear
-cd root/
-make clean all
-clear
-cd root/
 make clean all
 cd root/
 make clean all
@@ -463,3 +452,49 @@ make clean
 make all
 make clean
 exit
+ls
+cd
+ls
+make clean
+cd Toolchain/
+make clean
+make all
+cd ..
+make clean
+make all
+make clean
+make all
+make cla
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make all
+make clean
+make clean
+make clean
+make all

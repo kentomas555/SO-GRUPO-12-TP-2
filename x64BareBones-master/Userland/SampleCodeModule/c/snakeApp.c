@@ -495,7 +495,7 @@ void gameOverMenu(){
     clearGrid();
 
     if (inputAux == 32){
-        startGame(NULL, NULL);
+        startGame(0, NULL);
     }else{
         smallerFontSize();
         ClearScreen(0x000000FF);

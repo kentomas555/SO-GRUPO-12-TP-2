@@ -55,7 +55,7 @@ void test_prio() {
   for (i = 0; i < TOTAL_PROCESSES; i++)
   killProcess(pids[i]);
 
-  printProcesses(NULL, NULL);
+  printProcesses(0, NULL);
 
   NewLine();
   printf("TEST PASSED SUCCESFULLY!");

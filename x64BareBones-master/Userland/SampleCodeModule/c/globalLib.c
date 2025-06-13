@@ -394,31 +394,6 @@ static int getIndex(processesList * psList, int checkPID){
     return -1;
 }
 
-static int getPriorityFromBuffer(char * buffer) {
-    
-    char priority[MAX_PRIORITY_LENGTH + 1];
-    int i = 0;
-
-    while (i < MAX_PRIORITY_LENGTH && *buffer != ' ' && *buffer != '\0') {
-        priority[i++] = *buffer++;
-    }
-    priority[i] = '\0';
-
-    if (strCompare(priority, "HIGHEST")) {
-        return HIGHEST_PRIO;
-    } else if (strCompare(priority, "LOWEST")) {
-        return LOWEST_PRIO;
-    } else if (strCompare(priority, "AVERAGE")) {
-        return AVERAGE_PRIO;
-    } else if (strCompare(priority, "HIGH")) {
-        return HIGH_PRIO;
-    } else if (strCompare(priority, "LOW")) {
-        return LOW_PRIO;
-    } else {
-        return -1;
-    }
-}
-
 static int validPriority(int priority){
     
     if(priority >= 0 && priority < 5){
@@ -534,7 +509,7 @@ void handleNice(int argc, char **args){
     }
     //buffer++;  
 
-    int checkPriority = args[1]; /*getPriorityFromBuffer(buffer)*/;
+    int checkPriority = atoi(args[1]); 
     if (!validPriority(checkPriority)) {
         printf("La prioridad es invalida.");
         NewLine();
@@ -820,7 +795,7 @@ void invalidOpcodeTrigger(int argc, char **args){
 
 
 //void executeUser(char * name, mainFunc function, char *args[], int16_t *fds[], int8_t processFlag){
-void executeUser(Command command, char *args[], int16_t *fds[]){
+void executeUser(Command command, char *args[], int16_t fds[]){
     int argc = countArguments((void*)args);
     if(command.isProcess){
         createNewProcess(command.name, command.func, args, AVERAGE_PRIORITY, fds);

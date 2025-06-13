@@ -25,7 +25,7 @@ typedef int (*mainFunc)(int argc, char **args);
 #ifndef COMMAND_H
 typedef struct Command {
     char* name;
-    mainFunc func;
+    void (*func) (int argc, char **args); /*mainFunc*/
     char* desc;
     char* usage;
     int8_t isProcess;
@@ -89,7 +89,7 @@ void handleFilter(char * buffer);
 /*======  ======*/
 void handlePhylo(int argc, char **args);
 //void executeUser(char * name, mainFunc func, char *args[], int16_t *fds[], int8_t processFlag);
-void executeUser(Command command,char *args[], int16_t *fds[]);
+void executeUser(Command command,char *args[], int16_t fds[]);
 
 
 
