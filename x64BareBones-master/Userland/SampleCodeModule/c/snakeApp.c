@@ -52,7 +52,7 @@ int randIndex = 1;
 char gameMode;
 int i = 0;
 
-void startGame(){
+void startGame(int argc, char **args){
     
     char charAux = 0;
     initializationScreen();
@@ -495,7 +495,7 @@ void gameOverMenu(){
     clearGrid();
 
     if (inputAux == 32){
-        startGame();
+        startGame(NULL, NULL);
     }else{
         smallerFontSize();
         ClearScreen(0x000000FF);

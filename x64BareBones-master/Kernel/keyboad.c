@@ -116,9 +116,6 @@ char getCharASCII(uint8_t Key){
     // }
        for (int i = 0; i < sizeof(key_table) / sizeof(key_table[0]); i++) {
         if (key_table[i].scancode == Key) {
-            if(shift_pressed){
-                nativeBigPrintf("sfsdfdfasdfa", 300, 300);
-            }
             if (shift_pressed) {
                 return key_table[i].shifted_key;  // ASCII 124
             }

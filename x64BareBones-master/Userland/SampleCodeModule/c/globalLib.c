@@ -211,9 +211,68 @@ int strlen(const char *str) {
     return length;
 }
 
+char * strchr(char *string, char toFind){
+    //int len = 0;
+    while(*string){
+        if(*string == toFind){
+            return string;
+        }
+        string++;
+    }
+    return NULL;
+}
+
+char * strtok(char *str, char *delim) {
+    static char *posicion = NULL;  // Guarda la posición entre llamadas
+    if (str != NULL) {
+        posicion = str;
+    }
+
+    if (posicion == NULL) {
+        return NULL;
+    }
+
+    // Saltar caracteres delimitadores al inicio
+    while (*posicion && strchr(delim, *posicion)) {
+        posicion++;
+    }
+
+    if (*posicion == '\0') {
+        return NULL;
+    }
+
+    char *inicio = posicion;
+
+    // Buscar el siguiente delimitador
+    while (*posicion && !strchr(delim, *posicion)) {
+        posicion++;
+    }
+
+    // Si encontramos un delimitador, lo reemplazamos por '\0' y avanzamos
+    if (*posicion) {
+        *posicion = '\0';
+        posicion++;
+    } else {
+        posicion = NULL;
+    }
+
+    return inicio;
+}
+
+int countArguments(void **argc){
+	int toReturn = 0;
+	if(argc == NULL){
+		return 0;
+	}
+	while(argc[toReturn] != NULL){
+		toReturn++;
+	}
+	return toReturn;
+}
+
 /*====== PRINT TIME ======*/
 
-void printCurrentTime(){
+void printCurrentTime(int argc, char **args){
     int xAux = getCurrentX();
     char timeBuffer[10]; 
 
@@ -297,7 +356,7 @@ void wait(int ticks){
 
 /*====== PROCESSES ======*/
 
-void handleGetPid(){
+void handleGetPid(int argc, char **args){
     NewLine();
     char auxBuffer[20];
     itoaBase((uint64_t)getpid(), auxBuffer, 10);
@@ -306,6 +365,7 @@ void handleGetPid(){
 }
 
 static int getPIDFromBuffer(char * buffer) {
+    //char * buffer = args[0];
     char pid[MAX_PID_LENGTH + 1];
     int i = 0;
 
@@ -335,6 +395,7 @@ static int getIndex(processesList * psList, int checkPID){
 }
 
 static int getPriorityFromBuffer(char * buffer) {
+    
     char priority[MAX_PRIORITY_LENGTH + 1];
     int i = 0;
 
@@ -359,14 +420,17 @@ static int getPriorityFromBuffer(char * buffer) {
 }
 
 static int validPriority(int priority){
+    
     if(priority >= 0 && priority < 5){
         return 1;
     }
     return 0;
 }
 
-void handleBlock(char * buffer){
-    while (*buffer != ' ' && *buffer != '\0') buffer++;
+void handleBlock(int argc, char **args){
+    char * buffer = args[0];
+
+    //while (*buffer != ' ' && *buffer != '\0') buffer++;
     if (*buffer == '\0') {
         printf("Faltan parametros");
         NewLine();
@@ -375,10 +439,10 @@ void handleBlock(char * buffer){
         NewLine();
         return;
     }
-    buffer++;
+    //buffer++;
 
     processesList * psList = getProcesses();
-    int checkPID = getPIDFromBuffer(buffer);
+    int checkPID = atoi(buffer);/*getPIDFromBuffer(buffer);*/
 
     if (checkPID < 0) {
         printf("Formato invalido de PID");
@@ -421,10 +485,11 @@ void handleBlock(char * buffer){
     NewLine();
 }
 
-void handleNice(char * buffer){
+void handleNice(int argc, char **args){
     char* priorityList[5] = {"LOWEST", "LOW", "AVERAGE", "HIGH", "HIGHEST"};
+    char * buffer = args[0];
 
-    while (*buffer != ' ' && *buffer != '\0') buffer++;
+    //while (*buffer != ' ' && *buffer != '\0') buffer++;
     if (*buffer == '\0') {
         printf("Faltan parametros");
         NewLine();
@@ -433,7 +498,7 @@ void handleNice(char * buffer){
         NewLine();
         return;
     }
-    buffer++;  
+    //buffer++;  
 
     processesList * psList = getProcesses();
     int checkPID = getPIDFromBuffer(buffer);
@@ -455,8 +520,8 @@ void handleNice(char * buffer){
         return;
     }
 
-    while (*buffer != ' ' && *buffer != '\0') buffer++;
-    if (*buffer == '\0') {
+    //while (*buffer != ' ' && *buffer != '\0') buffer++;
+    if (*buffer + 1 == '\0') {
         printf("Falta parametro de prioridad");
         NewLine();
         NewLine();
@@ -467,9 +532,9 @@ void handleNice(char * buffer){
         NewLine();
         return;
     }
-    buffer++;  
+    //buffer++;  
 
-    int checkPriority = getPriorityFromBuffer(buffer);
+    int checkPriority = args[1]; /*getPriorityFromBuffer(buffer)*/;
     if (!validPriority(checkPriority)) {
         printf("La prioridad es invalida.");
         NewLine();
@@ -500,7 +565,7 @@ void handleNice(char * buffer){
     freeMemoryUser(psList);
 }
 
-void handlePrintMemState(){
+void handlePrintMemState(int argc, char **args){
     memoryState * memState = getMemoryState();
     char aux[20];
     NewLine();
@@ -528,7 +593,7 @@ void handlePrintMemState(){
     NewLine();
 }
 
-void printProcesses(){
+void printProcesses(int argc, char **args){
     // printf("EStoy en  printProcess");
     //     NewLine();
     //     NewLine();
@@ -589,7 +654,8 @@ static void loopFuction(int argc, char *argv[]){
 }
 
 
-void handleLoop(char * buffer) {
+void handleLoop(int argc, char **args) {
+    char * buffer = args[0];
     int16_t fds[2] = {0, 1};
 
     while (*buffer != ' ' && *buffer != '\0') buffer++;
@@ -624,18 +690,19 @@ void handleLoop(char * buffer) {
 }
 
 
-void handleKill(char * buffer){
+void handleKill(int argc, char **args){
+    char * buffer = args[0];
 
-    while (*buffer != ' ' && *buffer != '\0') buffer++;
+    
     if (*buffer == '\0') {
-        printf("Faltan parametros");
+        //printf("Faltan parametros");
         NewLine();
-        printf("Ejemplo de llamada: KILL (PID)");
+        //printf("Ejemplo de llamada: KILL (PID)");
         NewLine();
         NewLine();
         return;
     }
-    buffer++;  
+    //buffer++;  
 
     processesList * psList = getProcesses();
     if(psList == NULL){
@@ -643,7 +710,10 @@ void handleKill(char * buffer){
         NewLine();
         return;
     }
-    int checkPID = getPIDFromBuffer(buffer);
+    
+    NewLine();
+    int checkPID = atoi(buffer);
+    
 
     if (checkPID < 0) {
         printf("Formato invalido de PID");
@@ -696,34 +766,34 @@ void handleFilter(char * buffer){
 
 /*====== PHYLO ======*/
 
-void handlePhylo(){
+void handlePhylo(int argc, char **args){
     return;
 }
 
 /*====== TESTS ======*/
 
-void handleMemoryManagerTest(){
+void handleMemoryManagerTest(int argc, char **args){
     int16_t fds[2] = {0,1};
     char * argv[] = {"512", 0};
     createNewProcess("Memory Test",(mainFunc)test_mm, argv, HIGHEST_PRIO,fds);
     return;
 }
 
-void handleProcessTest(){
+void handleProcessTest(int argc, char **args){
     int16_t fds[2] = {0,1};
     char *argv[] = {"2", 0};
     createNewProcess("Process Test",test_processes, argv, HIGH_PRIO,fds);
     return;
 }
 
-void handlePriorityTest(){
+void handlePriorityTest(int argc, char **args){
     int16_t fds[2] = {0,1};
     char *argv[] = {NULL};
     createNewProcess("Priority Test",test_prio, argv, HIGH_PRIO,fds);
     return;
 }
 
-void handleSyncroTest(){
+void handleSyncroTest(int argc, char **args){
     int16_t fds[2] = {0,1};
     char *argv[] = {"10", "1", 0};
     createNewProcess("Syncro Test",test_sync, argv, HIGH_PRIO,fds);
@@ -731,7 +801,7 @@ void handleSyncroTest(){
     return;
 }
 
-void handleNoSyncroTest(){
+void handleNoSyncroTest(int argc, char **args){
     int16_t fds[2] = {0,1};
     char *argv[] = {"10", "0", 0};
     createNewProcess("No Sycnro Test",test_sync, argv, HIGH_PRIO,fds);
@@ -740,10 +810,31 @@ void handleNoSyncroTest(){
 
 /*====== EXCEPTIONS TRIGGER ======*/
 
-void zeroDivisionTrigger(){
-    throw_zero_division();
+void zeroDivisionTrigger(int argc, char **args){
+    throw_zero_division(argc, args);
 }
 
-void invalidOpcodeTrigger(){
-    throw_invalid_opcode();
+void invalidOpcodeTrigger(int argc, char **args){
+    throw_invalid_opcode(argc, args);
+}
+
+
+//void executeUser(char * name, mainFunc function, char *args[], int16_t *fds[], int8_t processFlag){
+void executeUser(Command command, char *args[], int16_t *fds[]){
+    int argc = countArguments((void*)args);
+    if(command.isProcess){
+        createNewProcess(command.name, command.func, args, AVERAGE_PRIORITY, fds);
+    }
+    else{
+        command.func(argc, args);
+    }
+    // else if(argc == 0){
+    //     command.func();
+    // }
+    // else if(argc == 1){
+    //     command.func(args[0]);
+    // }
+    // else if(argc == 2){
+    //     command.func(args[0], args[1]);
+    // }
 }

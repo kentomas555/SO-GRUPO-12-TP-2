@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <globalLib.h>
 
-void startGame();
+void startGame(int argc, char **args);
 
 void gameEngine();
 void gameEngine2P();
