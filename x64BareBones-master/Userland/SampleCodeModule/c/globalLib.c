@@ -825,9 +825,9 @@ void handleFilter(int argc, char **args){
 /*====== PHYLO ======*/
 
 void handlePhylo(int argc, char **args){
-    // int16_t fds[2] = {0,1};
-    // char * argv[] = {NULL};
-    // createNewProcess("Phylo Process",(mainFunc)startPhylo, argv, HIGHEST_PRIO,fds);
+    int16_t fds[2] = {0,1};
+    char * argv[] = {NULL};
+    createNewProcess("Phylo Process",(mainFunc)startPhylo, argv, HIGHEST_PRIO,fds);
     return;
 }
 
@@ -866,6 +866,53 @@ void handleNoSyncroTest(int argc, char **args){
     int16_t fds[2] = {0,1};
     char *argv[] = {"10", "0", 0};
     createNewProcess("No Sycnro Test",test_sync, argv, HIGH_PRIO,fds);
+    return;
+}
+
+uint64_t pipeReaderTest(uint64_t argc, char *argv[]){
+    if (argc < 1)
+        return -1;
+
+    int n = satoi(argv[0]);
+    char ch;
+
+    for (int i = 0; i < n * 2; i++) {
+        if (readPipeUser(getReadFD(getpid()), &ch) > 0) {
+            char str[2] = {ch, 0};
+            printf(str);
+        }
+    }
+    return 0;
+}
+
+uint64_t pipeWriterTest(uint64_t argc, char *argv[]){
+    if (argc < 1)
+    return -1;
+
+    int n = satoi(argv[0]);
+    char buffer[64];
+    itoaBase(getpid(), buffer, 10);
+
+    for (int i = 0; i < n; i++) {
+        writePipeUser(getWriteFD(getpid()), buffer);
+        writePipeUser(getWriteFD(getpid()), "\n"); // para separar
+        yield(); // Para ceder tiempo al reader
+    }
+
+    return 0;
+}
+
+void handlePipeTest(int argc, char **args){
+    int16_t fds[2] = {0, 1};    
+    char *argv[] = {"10", "0", 0};
+    int64_t pipe = createPipeUser(25, fds);
+    int16_t readerFd[2] = {25,1};
+    int16_t writerFd[2] = {0,25};
+    Pid pid1 = createNewProcess("Pipe reader test",pipeReaderTest, argv, HIGH_PRIO, readerFd);
+    Pid pid2 = createNewProcess("Pipe writer test",pipeWriterTest, argv, HIGH_PRIO, writerFd);
+    waitPID(pid1);
+    waitPID(pid2);
+    destroyPipeUser(pipe);
     return;
 }
 

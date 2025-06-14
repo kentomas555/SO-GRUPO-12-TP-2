@@ -229,7 +229,7 @@ void semWait(int id){
 
 /*====== PIPES ======*/
 
-int64_t createPipeUser(int pipeID, int *fds[]){
+int64_t createPipeUser(int pipeID, int16_t fds[]){
     return syscall(SYSCALL_CREATE_PIPE, pipeID, fds);
 }
 

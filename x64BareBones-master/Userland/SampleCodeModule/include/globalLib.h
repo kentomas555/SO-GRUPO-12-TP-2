@@ -101,6 +101,7 @@ void handlePriorityTest(int argc, char **args);
 void handleSyncroTest(int argc, char **args);
 void handleNoSyncroTest(int argc, char **args);
 
+void handlePipeTest(int argc, char **args);
 
 /*====== EXCEPTION TRIGGERS ======*/
 

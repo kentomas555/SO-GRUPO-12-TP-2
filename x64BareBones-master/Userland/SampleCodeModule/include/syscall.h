@@ -204,7 +204,7 @@ void semWait(int id);
 
 /*====== PIPE SYSCALLS ======*/
 
-int64_t createPipeUser(int pipeID, int *fds[]);
+int64_t createPipeUser(int pipeID, int16_t fds[]);
 void destroyPipeUser(int pipeID);
 uint64_t writePipeUser(int pipeID, const char * source);
 uint64_t readPipeUser(int pipeID, char * destination);

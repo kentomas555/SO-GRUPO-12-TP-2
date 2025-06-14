@@ -43,12 +43,13 @@ Command commands[] = {
     {"CAT", (void (*)(int,  char **))handleCat, "Imprime stdin tal como se recibe", NULL, PROCESS},
     {"WC", (void (*)(int,  char **))handleWC, "Cuenta las lineas del input", NULL, PROCESS},
     {"FILTER", (void (*)(int,  char **))handleFilter, "Filtra vocales del input", NULL, PROCESS},
-    {"PHYLO", (void (*)(int,  char **))handlePhylo, "Proceso filosofos", NULL, PROCESS},
+    {"PHYLO", (void (*)(int,  char **))startPhylo, "Proceso filosofos", NULL, NOT_PROCESS},
     {"TESTMM", (void (*)(int,  char **))handleMemoryManagerTest, "Test memory manager", NULL, NOT_PROCESS},
     {"TESTPROCESS", (void (*)(int,  char **))handleProcessTest, "Test de procesos", NULL, PROCESS},
     {"TESTPRIO", (void (*)(int,  char **))handlePriorityTest, "Test de prioridades", NULL, PROCESS},
     {"TESTSYNC", (void (*)(int,  char **))handleSyncroTest, "Test sincronizacion", NULL, NOT_PROCESS},
     {"TESTNOSYNC", (void (*)(int,  char **))handleNoSyncroTest, "Test sin sincronizacion", NULL, NOT_PROCESS},
+    {"TESTPIPE", (void (*)(int,  char **))handlePipeTest, "Test de prioridades", NULL, PROCESS},
     {NULL, NULL, NULL, NULL}
 };
 
@@ -156,11 +157,10 @@ void bufferInterpreter(){
         }
 
          // Create pipe (replace with your syscall if needed)
-        int fds[2];
-        int *fdsArr[] = {fds, NULL};
+        int16_t fds[2] = {0, 1};
         printf("Pipe Created");
         NewLine();
-        int pipeID = createPipeUser(PROCESS_PIPE_ID, fdsArr);
+        int pipeID = createPipeUser(PROCESS_PIPE_ID, fds);
 
         if (pipeID <= 2) {
             printf("Error creando pipe");
@@ -181,7 +181,7 @@ void bufferInterpreter(){
         //createNewProcess(commands[rightIdx].name, (mainFunc)commands[rightIdx].func, rightArgArr, AVERAGE_PRIORITY, rightFds);
         executeUser(commands[rightIdx], rightArgArr, rightFds);
         // Close pipe fds in parent
-        destroyPipeUser(pipeID);
+        // destroyPipeUser(pipeID);
         printf("Pipe destroyed");
         return;
     }
