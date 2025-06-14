@@ -32,7 +32,7 @@ void irs80Dispatcher(uint64_t irc80Mode){
 void int_21(){
 
 	uint8_t keycode = getKey();
-    // Handle Shift key state
+    
     if (keycode == 0x2A || keycode == 0x36) {
         shiftPressed();  // Left or right Shift pressed
         return;
@@ -41,10 +41,22 @@ void int_21(){
         return;
     }
 
+	if (keycode == 0x1D) {
+        ctrlPressed(); 
+        return;
+    } else if (keycode == 0x9D) {
+        ctrlNotPressed();
+        return;
+    }
+
+	
 	if(getKey() <= 0x58 ){
 		keyBuffer = getCharASCII(getKey());
-		if(keyBuffer){
-
+		if(keyBuffer == 0x04){
+			nativePrintf("CTRL + D", 300, 300);
+		}
+		if(keyBuffer == 0x03){
+			nativePrintf("CTRL + C", 300, 320);
 		}
 		keyAvailable = 1; 
 	}

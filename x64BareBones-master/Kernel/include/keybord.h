@@ -11,3 +11,5 @@ char* getCharName(uint8_t Key);
 char getCharASCII(uint8_t Key);
 void shiftPressed();
 void shiftNotPressed();
+void ctrlPressed();
+void ctrlNotPressed();

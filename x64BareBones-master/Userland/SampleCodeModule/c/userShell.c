@@ -6,6 +6,7 @@
 #include <phylo.h>
 
 #define PROCESS_PIPE_ID 5
+#define MAX_ARGS 2
 char shellBuffer[48];
 int bgColorIndex = 0;
 
@@ -53,7 +54,8 @@ Command commands[] = {
 
 void help(int argc, char **args) {
     printf("Comandos disponibles:");
-    NewLine(); NewLine();
+    NewLine(); 
+    NewLine();
     for (int i = 0; commands[i].name != NULL; i++) {
         printf(commands[i].name);
         setCurrentX(getFontSize()*100);    
@@ -181,10 +183,10 @@ void bufferInterpreter(){
     // No pipe: regular command execution
     char *commandName = shellBuffer;
     char *commandArgs = NULL;
+    char *argv[MAX_ARGS];
     char *space = strchr(shellBuffer, ' ');
     if (space != NULL) {
         *space = '\0';
-        setCurrentY(getCurrentY() + 20);
         commandArgs = space + 1;
         while (*commandArgs == ' ') {
             commandArgs++;
@@ -193,6 +195,16 @@ void bufferInterpreter(){
             commandArgs = NULL;
         }
     }
+
+    int argc = 0;
+    if (commandArgs != NULL) {
+        char *token = strtok(commandArgs, " ");
+        while (token != NULL && argc < MAX_ARGS) {
+            argv[argc++] = token;
+            token = strtok(NULL, " ");
+        }
+    }
+    argv[argc] = NULL;
 
 
     int16_t fds[] = {-1, 1};
@@ -212,13 +224,11 @@ void bufferInterpreter(){
         return;
     }
 
-    char *args[] = {commandArgs, NULL};
+    char *args[] = {argv[0], argv[1]};
     
 
     for (int i = 0; commands[i].name != NULL; i++) {
         if (strCompare(commandName, commands[i].name)) {
-            //printf(args[0]);
-            //executeUser(commands[i].name, (mainFunc)commands[i].func, args, fds, (int8_t)commands[i].isProcess);
             executeUser(commands[i], args, fds);
            
             return;

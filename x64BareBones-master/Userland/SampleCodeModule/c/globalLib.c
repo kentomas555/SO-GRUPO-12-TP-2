@@ -395,6 +395,30 @@ static int getIndex(processesList * psList, int checkPID){
     return -1;
 }
 
+static int getPriorityFromBuffer(char * buffer) {
+    char priority[MAX_PRIORITY_LENGTH + 1];
+    int i = 0;
+
+    while (i < MAX_PRIORITY_LENGTH && *buffer != ' ' && *buffer != '\0') {
+        priority[i++] = *buffer++;
+    }
+    priority[i] = '\0';
+
+    if (strCompare(priority, "HIGHEST")) {
+        return HIGHEST_PRIO;
+    } else if (strCompare(priority, "LOWEST")) {
+        return LOWEST_PRIO;
+    } else if (strCompare(priority, "AVERAGE")) {
+        return AVERAGE_PRIO;
+    } else if (strCompare(priority, "HIGH")) {
+        return HIGH_PRIO;
+    } else if (strCompare(priority, "LOW")) {
+        return LOW_PRIO;
+    } else {
+        return -1;
+    }
+}
+
 static int validPriority(int priority){
     
     if(priority >= 0 && priority < 5){
@@ -497,7 +521,8 @@ void handleNice(int argc, char **args){
     }
 
     //while (*buffer != ' ' && *buffer != '\0') buffer++;
-    if (*buffer + 1 == '\0') {
+    //if (*buffer + 1 == '\0') {
+    if (args[1] == '\0') {
         printf("Falta parametro de prioridad");
         NewLine();
         NewLine();
@@ -510,7 +535,9 @@ void handleNice(int argc, char **args){
     }
     //buffer++;  
 
-    int checkPriority = atoi(args[1]); 
+ 
+
+    int checkPriority = getPriorityFromBuffer(args[1]);
     if (!validPriority(checkPriority)) {
         printf("La prioridad es invalida.");
         NewLine();
