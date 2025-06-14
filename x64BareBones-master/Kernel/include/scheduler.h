@@ -67,4 +67,8 @@ extern void _cli(void);
 extern void _sti(void);
 extern void forceTimerTick(void);
 
+//AGREGADO
+int getReadFD();
+int getWriteFD();
+
 #endif

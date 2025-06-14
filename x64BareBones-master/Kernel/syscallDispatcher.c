@@ -190,30 +190,42 @@ uint64_t syscallDispatcher(uint64_t id, ...) {
 // ========== IMPLEMENTACIONES DE HANDLERS ==========
 
 static uint64_t handleReadSyscall(void) {
-    uint64_t ret = getKeyBuffer();
-    if (ret == 9) {
-        initializeDisplay(0x000000FF);
-        printf("REGISTERS:", 0, 0, 3);
-        nativeShowAllRegisters();
-        printf("PRESS KEY TO CONTINUE", 0, 16 + 21 * 16, 3);
-        char aux = -1;
-        resetKeyBuffer();
-        _sti();    
-        while (aux == -1) {
-            aux = getKeyBuffer();
+    int fd = getReadFD();
+    uint64_t ret = 0;
+    if(fd == STDIN){
+        uint64_t ret = getKeyBuffer();
+        if (ret == 9) {
+            initializeDisplay(0x000000FF);
+            printf("REGISTERS:", 0, 0, 3);
+            nativeShowAllRegisters();
+            printf("PRESS KEY TO CONTINUE", 0, 16 + 21 * 16, 3);
+            char aux = -1;
+            resetKeyBuffer();
+            _sti();    
+            while (aux == -1) {
+                aux = getKeyBuffer();
+            }
+            initializeDisplay(0x000000FF);
         }
-        initializeDisplay(0x000000FF);
-    }
     resetKeyBuffer();
     return ret;
+    } else {
+        readPipe(fd, (char *)ret);
+        return ret;
+    }
 }
 
 static void handleWriteSyscall(va_list args) {
+    int fd = 1;//getWriteFD();
     int x = va_arg(args, int);
     int y = va_arg(args, int);
     char size = va_arg(args, int);
     char* string = va_arg(args, char*);
-    printf(string, x, y, size);
+    if(fd == STDOUT){
+        printf(string, x, y, size);
+    } else {
+        writePipe(fd, string);
+    }
 }
 
 static void handleInitDisplaySyscall(va_list args) {

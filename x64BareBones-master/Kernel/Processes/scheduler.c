@@ -369,7 +369,7 @@ uint64_t onCreateProcess(char * processName, mainFunc processProgram, char** arg
 
   if(myNewProcess->PID != IDLE_PID){
     queue(scheduler->readyList, node);
-  }  
+  }
 
   return myNewProcess->PID;
 }
@@ -478,4 +478,15 @@ processesToPrint * printProcesses(){
   // psList->processQty = (uint32_t)scheduler->processQty;
   psList->cantProcess = i;
   return psList;
+}
+
+//Agregado
+int getReadFD(){
+  Pid pid = getCurrentPID();
+  return ((PCB*)scheduler->processes[pid]->info)->fds[0];
+}
+
+int getWriteFD(){
+  Pid pid = getCurrentPID();
+  return ((PCB*)scheduler->processes[pid]->info)->fds[1];
 }
