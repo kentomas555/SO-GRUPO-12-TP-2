@@ -52,6 +52,9 @@ static void handleDestroyPipeSyscall(va_list args);
 static uint64_t handleWritePipeSyscall(va_list args);
 static uint64_t handleReadPipeSyscall(va_list args);
 
+static uint64_t handleGetReadFD(va_list args);
+static uint64_t handleGetWriteFD(va_list args);
+
 //static uint64_t handleGetCurrentBlock();
 
 // ========== DISPATCHER PRINCIPAL ==========
@@ -181,7 +184,13 @@ uint64_t syscallDispatcher(uint64_t id, ...) {
         case SYSCALL_READ_PIPE:
             ret = (uint64_t)handleReadPipeSyscall(args);
             break;
-    }
+        case SYSCALL_GET_R_FD:
+            ret = (uint64_t)handleGetReadFD(args);
+            break;
+        case SYSCALL_GET_W_FD:
+            ret = (uint64_t)handleGetWriteFD(args);
+            break;
+        }
 
     va_end(args);
     return ret;
@@ -190,9 +199,6 @@ uint64_t syscallDispatcher(uint64_t id, ...) {
 // ========== IMPLEMENTACIONES DE HANDLERS ==========
 
 static uint64_t handleReadSyscall(void) {
-    int fd = getReadFD();
-    uint64_t ret = 0;
-    if(fd == STDIN){
         uint64_t ret = getKeyBuffer();
         if (ret == 9) {
             initializeDisplay(0x000000FF);
@@ -209,23 +215,15 @@ static uint64_t handleReadSyscall(void) {
         }
     resetKeyBuffer();
     return ret;
-    } else {
-        readPipe(fd, (char *)ret);
-        return ret;
-    }
 }
 
+
 static void handleWriteSyscall(va_list args) {
-    int fd = 1;//getWriteFD();
     int x = va_arg(args, int);
     int y = va_arg(args, int);
     char size = va_arg(args, int);
     char* string = va_arg(args, char*);
-    if(fd == STDOUT){
-        printf(string, x, y, size);
-    } else {
-        writePipe(fd, string);
-    }
+    printf(string, x, y, size);
 }
 
 static void handleInitDisplaySyscall(va_list args) {
@@ -394,6 +392,16 @@ static uint64_t handleExitSyscall(va_list args){
 
 static int64_t * handleGetSharedMemorySyscall(){
     return getSharedMemory();
+}
+
+static uint64_t handleGetReadFD(va_list args){
+    Pid pid = va_arg(args,Pid);
+    return getReadFD(pid);
+}
+
+static uint64_t handleGetWriteFD(va_list args){
+    Pid pid = va_arg(args,Pid);
+    return getWriteFD(pid);
 }
 
 // static uint64_t handleGetCurrentBlock(){

@@ -47,6 +47,9 @@
 #define SYSCALL_GETCURRENTBLOCK 40
 #define SYSCALL_SHARED_MEM 41
 
+#define SYSCALL_GET_R_FD 42
+#define SYSCALL_GET_W_FD 43
+
 #define SYSCALL_
 
 uint64_t syscallDispatcher(uint64_t id, ...);

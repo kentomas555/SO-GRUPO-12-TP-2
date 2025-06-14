@@ -7,7 +7,7 @@ typedef struct {
     int scancode;     // Scancode en hexadecimal
     int ascii;        // Código ASCII (o -1 si no aplica)
     int shifted_key;  // Valor de tecla con Shift
-    int ctrl_key 
+    int ctrl_key;
 } KeyMapping;
 
 static int shift_pressed = 0;

@@ -520,9 +520,10 @@ void handleNice(int argc, char **args){
         return;
     }
 
+    buffer = args[1];
     //while (*buffer != ' ' && *buffer != '\0') buffer++;
     //if (*buffer + 1 == '\0') {
-    if (args[1] == '\0') {
+    if (*buffer == '\0') {
         printf("Falta parametro de prioridad");
         NewLine();
         NewLine();
@@ -594,6 +595,12 @@ void handlePrintMemState(int argc, char **args){
     printf("-----------------------------");
     freeMemoryUser(memState);
     NewLine();
+    /*TESTING*/
+    char auxbuf[20];
+    itoaBase(getWriteFD(getpid()),auxbuf,10 );
+    printf(auxbuf);
+    NewLine();
+    /*END TESTING*/
 }
 
 void printProcesses(int argc, char **args){
@@ -640,6 +647,12 @@ void printProcesses(int argc, char **args){
     freeMemoryUser(pr);
     NewLine();
     NewLine();
+    /*TESTING*/
+    char auxbuf[20];
+    itoaBase(getWriteFD(getpid()),auxbuf,10 );
+    printf(auxbuf);
+    NewLine();
+    /*END TESTING*/
 }
 
 static void loopFuction(int argc, char *argv[]){
@@ -753,6 +766,12 @@ void handleCat(int argc, char **args){
         }
     }
     NewLine();
+    /*TESTING*/
+    char auxbuf[20];
+    itoaBase(getReadFD(getpid()),auxbuf,10 );
+    printf(auxbuf);
+    NewLine();
+    /*END TESTING*/
     return;
 }
 
@@ -771,6 +790,12 @@ void handleWC(int argc, char **args){
     printf(buffer);
     NewLine();
     return;
+    /*TESTING*/
+    char auxbuf[20];
+    itoaBase(getReadFD(getpid()),auxbuf,10 );
+    printf(auxbuf);
+    NewLine();
+    /*END TESTING*/
 }
 
 int isVowel(char c) {
@@ -779,12 +804,9 @@ int isVowel(char c) {
 }
 
 void handleFilter(int argc, char **args){
-    int *fds[2];
-    char c;
-    //READ PIPE si es para pipe
-    //READ por shell
 
-    while ((c = getChar()) != 0 && c != '\n' && c != 13) {
+    char c;
+    while ((c = getChar()) != 0 && c != 4) {
         if (!isVowel(c)) {
             char buf[2] = {c, 0};
             printf(buf);
@@ -792,7 +814,12 @@ void handleFilter(int argc, char **args){
         }
     }
     NewLine();
-    return;
+    /*TESTING*/
+    char auxbuf[20];
+    itoaBase(getReadFD(getpid()),auxbuf,10 );
+    printf(auxbuf);
+    NewLine();
+    /*END TESTING*/
 }
 
 /*====== PHYLO ======*/

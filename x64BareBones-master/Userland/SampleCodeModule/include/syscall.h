@@ -53,6 +53,9 @@
 
 #define SYSCALL_SHARED_MEM 41
 
+#define SYSCALL_GET_R_FD 42
+#define SYSCALL_GET_W_FD 43
+
 /*====== READ SYSCALL ======*/
 
 char getChar();
@@ -207,5 +210,9 @@ uint64_t writePipeUser(int pipeID, const char * source);
 uint64_t readPipeUser(int pipeID, char * destination);
 
 int64_t * getSharedMemory();
+
+/*====== FILE DESCRIPTORS ======*/
+uint64_t getReadFD(Pid pid);
+uint64_t getWriteFD(Pid pid);
 
 #endif

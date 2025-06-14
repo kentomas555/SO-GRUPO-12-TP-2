@@ -78,9 +78,6 @@ void freePCB(PCB *pcb) {
 
 
 void * schedule(void * currentRSP){
-
-  
-
   while(scheduler->waitBlockedProcesses != 0 && getCurrentPID() != scheduler->waitBlockProcessPID[scheduler->waitBlockedProcesses-1]){
     blockProcess(scheduler->waitBlockProcessPID[scheduler->waitBlockedProcesses-1]);
     scheduler->waitBlockedProcesses--;
@@ -339,11 +336,13 @@ uint64_t onCreateProcess(char * processName, mainFunc processProgram, char** arg
   if(myNewProcess == NULL){
     return -1;
   }
+
   Pid currentPID = getCurrentPID();
   myNewProcess->parentPID = currentPID;
   if(availablePidValue != SHELL_PID && availablePidValue != IDLE_PID && !addChildren(currentPID)){
     return -1;
   }
+
   myNewProcess->PID = availablePidValue;
 
   if((PCB*)(scheduler->processes[myNewProcess->parentPID]) != NULL){
@@ -481,12 +480,10 @@ processesToPrint * printProcesses(){
 }
 
 //Agregado
-int getReadFD(){
-  Pid pid = getCurrentPID();
+int getReadFD(Pid pid){
   return ((PCB*)scheduler->processes[pid]->info)->fds[0];
 }
 
-int getWriteFD(){
-  Pid pid = getCurrentPID();
+int getWriteFD(Pid pid){
   return ((PCB*)scheduler->processes[pid]->info)->fds[1];
 }

@@ -23,18 +23,18 @@ int backgroundFD[] = {-1, -1};
 static int runInBackground = 0;
 
 Command commands[] = {
-    {"HELP", (void (*)(int,  char **))help, "Imprime todos los comandos disponibles", NULL, NOT_PROCESS},
+    {"HELP", (void (*)(int,  char **))help, "Imprime todos los comandos disponibles", NULL, PROCESS},
     {"CLEAR", (void (*)(int,  char **))clearScreenCommand, "Limpia la consola", NULL, NOT_PROCESS},
     {"LARGER", (void (*)(int,  char **))largerFontSize, "Agranda la fuente", NULL, NOT_PROCESS},
     {"SMALLER", (void (*)(int,  char **))smallerFontSize, "Achica la fuente", NULL, NOT_PROCESS},
     {"COLOR", (void (*)(int,  char **))changeColor, "Cambia el color de la consola", NULL, NOT_PROCESS},
-    {"TIME", (void (*)(int,  char **))printCurrentTime, "Imprime la hora y fecha actual", NULL, NOT_PROCESS}, 
+    {"TIME", (void (*)(int,  char **))printCurrentTime, "Imprime la hora y fecha actual", NULL, PROCESS}, 
     {"SNAKE", (void (*)(int,  char **))startGame, "Comienza el juego", NULL, NOT_PROCESS},
     {"ZERODIV", (void (*)(int,  char **))zeroDivisionTrigger, "Causa una division por cero", NULL, NOT_PROCESS},
     {"INVOPCODE", (void (*)(int,  char **))invalidOpcodeTrigger, "Causa una instruccion invalida", NULL, NOT_PROCESS},
-    {"MEM", (void (*)(int,  char **))handlePrintMemState, "Imprime el estado de memoria", NULL, NOT_PROCESS},
-    {"GETPID", (void (*)(int,  char **))handleGetPid, "Imprime el PID del proceso actual", NULL, NOT_PROCESS},
-    {"PS", (void (*)(int,  char **))printProcesses, "Imprime los procesos actuales", NULL, NOT_PROCESS},
+    {"MEM", (void (*)(int,  char **))handlePrintMemState, "Imprime el estado de memoria", NULL, PROCESS},
+    {"GETPID", (void (*)(int,  char **))handleGetPid, "Imprime el PID del proceso actual", NULL, PROCESS},
+    {"PS", (void (*)(int,  char **))printProcesses, "Imprime los procesos actuales", NULL, PROCESS},
     {"CREATEDUMMY", (void (*)(int,  char **))createDummyProcess, "Crea un proceso dummy", NULL, NOT_PROCESS},
     {"LOOP", (void (*)(int,  char **))handleLoop, "Ejecuta un loop", "LOOP <segundos>", PROCESS},
     {"KILL", (void (*)(int,  char **))handleKill, "Mata un proceso", "KILL <pid>", NOT_PROCESS},
@@ -45,8 +45,8 @@ Command commands[] = {
     {"FILTER", (void (*)(int,  char **))handleFilter, "Filtra vocales del input", NULL, PROCESS},
     {"PHYLO", (void (*)(int,  char **))handlePhylo, "Proceso filosofos", NULL, PROCESS},
     {"TESTMM", (void (*)(int,  char **))handleMemoryManagerTest, "Test memory manager", NULL, NOT_PROCESS},
-    {"TESTPROCESS", (void (*)(int,  char **))handleProcessTest, "Test de procesos", NULL, NOT_PROCESS},
-    {"TESTPRIO", (void (*)(int,  char **))handlePriorityTest, "Test de prioridades", NULL, NOT_PROCESS},
+    {"TESTPROCESS", (void (*)(int,  char **))handleProcessTest, "Test de procesos", NULL, PROCESS},
+    {"TESTPRIO", (void (*)(int,  char **))handlePriorityTest, "Test de prioridades", NULL, PROCESS},
     {"TESTSYNC", (void (*)(int,  char **))handleSyncroTest, "Test sincronizacion", NULL, NOT_PROCESS},
     {"TESTNOSYNC", (void (*)(int,  char **))handleNoSyncroTest, "Test sin sincronizacion", NULL, NOT_PROCESS},
     {NULL, NULL, NULL, NULL}
@@ -69,7 +69,12 @@ void help(int argc, char **args) {
     NewLine();
     printf("Use '&' para ejecutar en background. Ej: TESTSYNC &");
     NewLine();
-    
+    /*TESTING*/
+    char auxbuf[20];
+    itoaBase(getWriteFD(getpid()),auxbuf,10 );
+    printf(auxbuf);
+    NewLine();
+    /*END TESTING*/
 }
 
 
@@ -153,6 +158,8 @@ void bufferInterpreter(){
          // Create pipe (replace with your syscall if needed)
         int fds[2];
         int *fdsArr[] = {fds, NULL};
+        printf("Pipe Created");
+        NewLine();
         int pipeID = createPipeUser(PROCESS_PIPE_ID, fdsArr);
 
         if (pipeID <= 2) {
@@ -173,11 +180,10 @@ void bufferInterpreter(){
         int16_t rightFds[] = {pipeID, 1};
         //createNewProcess(commands[rightIdx].name, (mainFunc)commands[rightIdx].func, rightArgArr, AVERAGE_PRIORITY, rightFds);
         executeUser(commands[rightIdx], rightArgArr, rightFds);
-
         // Close pipe fds in parent
         destroyPipeUser(pipeID);
+        printf("Pipe destroyed");
         return;
-       
     }
 
     // No pipe: regular command execution

@@ -10,11 +10,20 @@ char fontSize = 2;
 /*====== READ ======*/
 
 char getChar(){
-  char ret = syscall(SYSCALL_READ);
-  while (ret == -1){
-    ret = syscall(SYSCALL_READ);
-  }
-  return ret;
+    char ret;
+    int fd = getReadFD(getpid());
+    if(fd == 0){
+        ret = syscall(SYSCALL_READ);
+        while (ret == -1){
+            ret = syscall(SYSCALL_READ);
+        }
+    } else {
+        char buf[2] = {0};
+        readPipeUser(fd, buf);
+        ret = buf[0];
+    }
+    return ret;
+
 }
 
 char getKeyDown(){
@@ -53,7 +62,12 @@ void decreaseFontSize(){
 }
 
 void printf(char *string){
-    syscall(SYSCALL_WRITE, currentX, currentY, fontSize, string);
+    int fd = getWriteFD(getpid());
+    if (fd == 1) {
+        syscall(SYSCALL_WRITE, currentX, currentY, fontSize, string);
+    } else {
+        writePipeUser(fd, string);
+    }
 }
 
 void printfPos(char *string, int x, int y, char fontSizePos ){
@@ -233,4 +247,14 @@ uint64_t readPipeUser(int pipeID, char * destination){
 
 int64_t * getSharedMemory(){
     return (int64_t *)syscall(SYSCALL_SHARED_MEM);
+}
+
+/*====== FILE DESCRIPTORS ======*/
+
+uint64_t getReadFD(Pid pid){
+    return (int64_t)syscall(SYSCALL_GET_R_FD, pid);
+}
+
+uint64_t getWriteFD(Pid pid){
+    return (int64_t)syscall(SYSCALL_GET_W_FD, pid);
 }
