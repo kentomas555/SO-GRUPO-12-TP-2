@@ -51,6 +51,7 @@ static int64_t handleCreatePipeSyscall(va_list args);
 static void handleDestroyPipeSyscall(va_list args);
 static uint64_t handleWritePipeSyscall(va_list args);
 static uint64_t handleReadPipeSyscall(va_list args);
+static void handleClosePipeSyscall(va_list args);
 
 static uint64_t handleGetReadFD(va_list args);
 static uint64_t handleGetWriteFD(va_list args);
@@ -183,6 +184,9 @@ uint64_t syscallDispatcher(uint64_t id, ...) {
             break;   
         case SYSCALL_READ_PIPE:
             ret = (uint64_t)handleReadPipeSyscall(args);
+            break;
+        case SYSCALL_CLOSE_PIPE:
+            handleClosePipeSyscall(args);
             break;
         case SYSCALL_GET_R_FD:
             ret = (uint64_t)handleGetReadFD(args);
@@ -383,6 +387,12 @@ static uint64_t handleReadPipeSyscall(va_list args){
     int32_t pipeID = va_arg(args, int32_t);
     char * destination = va_arg(args, char *);
     return readPipe(pipeID, destination);
+}
+
+static void handleClosePipeSyscall(va_list args){
+    int32_t pipeID = va_arg(args, int32_t);
+    int32_t isReader = va_arg(args, int32_t);
+    return closePipeEnd(pipeID, isReader);
 }
 
 static uint64_t handleExitSyscall(va_list args){

@@ -10,22 +10,39 @@ char fontSize = 2;
 /*====== READ ======*/
 
 char getChar(){
+    // char ret;
+    // int fd = getReadFD(getpid());
+    // if(fd == 0){
+    //     ret = syscall(SYSCALL_READ);
+    //     while (ret == -1){
+    //         ret = syscall(SYSCALL_READ);
+    //     }
+    // } else {
+    //     char buf[2] = {0};
+    //     //printf(buf[0]);
+    //     readPipeUser(fd, buf);
+    //     ret = buf[0];
+    //     //ret = "a";
+    // }
+    // return ret;
     char ret;
     int fd = getReadFD(getpid());
-    if(fd == 0){
+    if (fd == 0) {
         ret = syscall(SYSCALL_READ);
-        while (ret == -1){
+        while (ret == -1) {
             ret = syscall(SYSCALL_READ);
         }
     } else {
         char buf[2] = {0};
-        //printf(buf[0]);
-        readPipeUser(fd, buf);
+        if (readPipeUser(fd, buf) == 0) {
+            return -1; // Pipe invalid or error
+        }
         ret = buf[0];
-        //ret = "a";
+        if (ret == '\0') {
+            return -1; // Interpret null terminator as EOF
+        }
     }
     return ret;
-
 }
 
 char getKeyDown(){
@@ -245,6 +262,10 @@ uint64_t writePipeUser(int pipeID, const char * source){
 
 uint64_t readPipeUser(int pipeID, char * destination){
     return syscall(SYSCALL_READ_PIPE, pipeID, destination);
+}
+
+uint64_t closePipeUser(int pipeID, int isReader){
+    return syscall(SYSCALL_CLOSE_PIPE, pipeID, isReader);
 }
 
 int64_t * getSharedMemory(){

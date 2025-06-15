@@ -86,7 +86,7 @@ void handleFilter(int argc, char **args);
 /*======  ======*/
 void handlePhylo(int argc, char **args);
 //void executeUser(char * name, mainFunc func, char *args[], int16_t *fds[], int8_t processFlag);
-void executeUser(Command command,char *args[], int16_t fds[]);
+int32_t executeUser(Command command,char *args[], int16_t fds[]);
 
 
 

@@ -6,7 +6,8 @@
 #define MUTEX_SEMAPHORE_ID 3
 
 static char bufferAux[30];
-static int y = 200;
+//static int y = 200;
+static int y = 300;
 
 static int lengthAux = 0;
 
@@ -52,8 +53,8 @@ int64_t createPipe(int pipeID, int16_t fd[2]){
     pipe->pipeID = pipeID;
     pipe->readPos = 0;
     pipe->writePos = 0;
-    pipe->writerPID = -1;
-    pipe->readerPID = -1;
+    pipe->writerPID = 1;
+    pipe->readerPID = 1;
     pipe->readFD = fd[0];
     pipe->writeFD = fd[1];
     pipe->semRead = semInit(READ_SEMAPHORE_ID + (pipeID - 3) * 3, 0);
@@ -66,12 +67,16 @@ int64_t createPipe(int pipeID, int16_t fd[2]){
 }
 
 void destroyPipe(int pipeID){
+    nativeBigPrintf("ENTRE AL DESTROY", 300, y);
+    y += 20;
     if(!existPipe(pipeID)){
         return;
     }
     semDestroy(pipeArray[pipeID - 3]->semRead);
     semDestroy(pipeArray[pipeID - 3]->semWrite);
     semDestroy(pipeArray[pipeID - 3]->mutex);
+    pipeArray[pipeID - 3]->readPos = 0;
+    pipeArray[pipeID - 3]->writePos = 0;
     memset(pipeArray[pipeID - 3]->buffer, 0, PIPE_BUFFER_SIZE);
     
     freeMemory((void *)pipeArray[pipeID-3]);
@@ -250,6 +255,35 @@ uint64_t readPipe(int pipeID, char * destination){
     //y += 20;
     return 1;
 }
+
+
+
+void closePipeEnd(int pipeID, int isReader) {
+    nativeBigPrintf("dentro del closePIPE", 300, y);
+    y+=20;
+
+    if (!existPipe(pipeID)) {
+        nativeBigPrintf("dentro del !existPipe", 300, y);
+    y+=20;
+        return;
+    }    
+
+    PipeCDT *pipe = pipeArray[pipeID - 3];
+    if (isReader) {
+        nativeBigPrintf("CLOSED READER", 300, y);
+        y+=20;
+        pipe->readerPID = -1;
+    } else {
+        nativeBigPrintf("CLOSED WRITER", 300, y);
+        y+=20;
+        pipe->writerPID = -1;
+    }
+
+    if (pipe->readerPID == -1 && pipe->writerPID == -1) {
+        destroyPipe(pipeID);  // Only destroy when both ends are closed
+    }
+}
+
 
 
 

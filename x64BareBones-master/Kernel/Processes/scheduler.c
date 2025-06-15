@@ -169,7 +169,7 @@ int waitPID(Pid pid){
 
   setToblock(caller->PID);
   forceTimerTick();
-  yield();
+  //yield();
   caller->waitingPID = -1;
 
   return caller->retValue;
@@ -350,6 +350,7 @@ uint64_t onCreateProcess(char * processName, mainFunc processProgram, char** arg
     PCB * parentPCB = (PCB*)(scheduler->processes[myNewProcess->parentPID]->info);
     if(myNewProcess->fds[0] == STDIN){
       if (parentPCB->PID == scheduler->foregroundPID) {
+        //nativeBigPrintf("FDS[0] = 0", 300, 300);
         parentPCB->waitingPID = myNewProcess->PID;
         setToblock(parentPCB->PID);
       }

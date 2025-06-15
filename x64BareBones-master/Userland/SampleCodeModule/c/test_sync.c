@@ -2,7 +2,7 @@
 
 #include "../include/test_util.h"
 
-#define SEM_ID 1
+#define SEM_ID 5
 #define TOTAL_PAIR_PROCESSES 2
 
 int64_t * global; // shared memory

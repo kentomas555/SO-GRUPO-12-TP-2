@@ -50,6 +50,7 @@
 #define SYSCALL_DESTROY_PIPE 37
 #define SYSCALL_WRITE_PIPE 38
 #define SYSCALL_READ_PIPE 39
+#define SYSCALL_CLOSE_PIPE 50
 
 #define SYSCALL_SHARED_MEM 41
 
@@ -208,6 +209,7 @@ int64_t createPipeUser(int pipeID, int16_t fds[]);
 void destroyPipeUser(int pipeID);
 uint64_t writePipeUser(int pipeID, const char * source);
 uint64_t readPipeUser(int pipeID, char * destination);
+uint64_t closePipeUser(int pipeID, int isReader);
 
 int64_t * getSharedMemory();
 

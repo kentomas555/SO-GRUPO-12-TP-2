@@ -653,10 +653,25 @@ void printProcesses(int argc, char **args){
         printf(auxBuffer);
         //printf("");
     }
+    // NewLine();
+    // char aux[10];
+    // itoaBase(getWriteFD(getpid()), aux, 10);
+    // printf(aux);
+    // NewLine();
+    // if(getWriteFD(getpid()) == PROCESS_PIPE_ID){
+    //     NewLine();
+    //     printf("HOOOOOOOOOO");
+    //     printCurrentTime(argc, args);
+    //     closePipeUser(PROCESS_PIPE_ID, 0);
+    // }
+
+
+    //closePipeUser(PROCESS_PIPE_ID, 0);
+    
     freeMemoryUser(pr);
     NewLine();
     NewLine();
-    // /*TESTING*/
+    // /*TESTING*/    
     // char auxbuf[20];
     // itoaBase(getWriteFD(getpid()),auxbuf,10 );
     // printf(auxbuf);
@@ -836,25 +851,26 @@ int isVowel(char c) {
 }
 
 void handleFilter(int argc, char **args){
-    if(argc != 1){
-        return;
-    }
+    // if(argc != 1){
+    //     return;
+    // }
 
-    int16_t fd[2] = {0,1};
-    int pipeID = createPipeUser(PROCESS_PIPE_ID, fd);
+    // int16_t fd[2] = {0,1};
+    // int pipeID = createPipeUser(PROCESS_PIPE_ID, fd);
 
-    if (pipeID <= 2) {
-            printf("Error creando pipe");
-            NewLine(); 
-            NewLine();
-            return;
-    }
+    // if (pipeID <= 2) {
+    //         printf("Error creando pipe");
+    //         NewLine(); 
+    //         NewLine();
+    //         return;
+    // }
 
-    int16_t filterFD[2] = {-1, PROCESS_PIPE_ID};
-    char * argv[] = {0};
-    int leftIdx = satoi(args[0]);
-    Command command = getCommand(leftIdx);
-    Pid pid = createNewProcess(command.name, command.func, argv, AVERAGE_PRIO, filterFD);
+    // int16_t filterFD[2] = {0, PROCESS_PIPE_ID};
+    // char * argv[] = {0};
+    // int leftIdx = satoi(args[0]);
+    // Command command = getCommand(leftIdx);
+    // Pid rightPID = getpid();
+    // Pid pid = createNewProcess(command.name, command.func, argv, AVERAGE_PRIO, filterFD);
     char c;
 
     // printProcesses(argc, args);
@@ -871,11 +887,14 @@ void handleFilter(int argc, char **args){
     }   
     NewLine();
     
-
+    //closePipeUser(PROCESS_PIPE_ID, 1);
     //waitPID(pid);
     
-    destroyPipeUser(PROCESS_PIPE_ID);
-    printf("destroy");
+    //destroyPipeUser(PROCESS_PIPE_ID);
+    printf("sali del filter");
+    NewLine();
+    
+    //exitProcess(rightPID);
     return;
 }
 
@@ -983,12 +1002,15 @@ void invalidOpcodeTrigger(int argc, char **args){
     throw_invalid_opcode(argc, args);
 }
 
-void executeUser(Command command, char *args[], int16_t fds[]){
+int32_t executeUser(Command command, char *args[], int16_t fds[]){
     int argc = countArguments((void*)args);
     if(command.isProcess){
-        createNewProcess(command.name, command.func, args, AVERAGE_PRIORITY, fds);
+        //printProcesses(argc, args);
+        return createNewProcess(command.name, command.func, args, AVERAGE_PRIORITY, fds);
+        
     }
     else{
         command.func(argc, args);
+        return -1;
     }
 }

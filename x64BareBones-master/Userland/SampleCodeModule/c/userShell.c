@@ -47,7 +47,7 @@ Command commands[] = {
     {"TESTMM", (void (*)(int,  char **))handleMemoryManagerTest, "Test memory manager", NULL, NOT_PROCESS},
     {"TESTPROCESS", (void (*)(int,  char **))handleProcessTest, "Test de procesos", NULL, PROCESS},
     {"TESTPRIO", (void (*)(int,  char **))handlePriorityTest, "Test de prioridades", NULL, PROCESS},
-    {"TESTSYNC", (void (*)(int,  char **))handleSyncroTest, "Test sincronizacion", NULL, NOT_PROCESS},
+    {"TESTSYNC", (void (*)(int,  char **))handleSyncroTest, "Test sincronizacion", NULL, PROCESS},
     {"TESTNOSYNC", (void (*)(int,  char **))handleNoSyncroTest, "Test sin sincronizacion", NULL, NOT_PROCESS},
     {"TESTPIPE", (void (*)(int,  char **))handlePipeTest, "Test de prioridades", NULL, PROCESS},
     {NULL, NULL, NULL, NULL}
@@ -160,16 +160,33 @@ void bufferInterpreter(){
             return;
         }
 
-        char leftI[5];
-        itoaBase(leftIdx, leftI, 10);
+        // char leftI[5];
+        // itoaBase(leftIdx, leftI, 10);
 
+         int16_t fds[2] = {0, 1};
+        printf("Pipe Created");
+        NewLine();
+        int pipeID = createPipeUser(PROCESS_PIPE_ID, fds);
+
+        if (pipeID <= 2) {
+            printf("Error creando pipe");
+            NewLine(); 
+            NewLine();
+            return;
+        }
+
+
+        char *leftArgArr[] = {leftArgs, NULL};
+        int16_t leftFds[] = {0, PROCESS_PIPE_ID};
+        //createNewProcess(commands[leftIdx].name, (mainFunc)commands[leftIdx].func, leftArgArr, AVERAGE_PRIORITY, leftFds);
+        Pid leftPID = executeUser(commands[leftIdx], leftArgArr, leftFds);
 
         // Launch right command (stdin <- pipe read)
         //char *rightArgArr[] = {rightArgs, NULL};
-        char *rightArgArr[] = {leftI ,rightArgs};
+        char *rightArgArr[] = {rightArgs, NULL};
         int16_t rightFds[] = {PROCESS_PIPE_ID, 1};
         //createNewProcess(commands[rightIdx].name, (mainFunc)commands[rightIdx].func, rightArgArr, AVERAGE_PRIORITY, rightFds);
-        executeUser(commands[rightIdx], rightArgArr, rightFds);
+        Pid rightPID = executeUser(commands[rightIdx], rightArgArr, rightFds);
 
 
         // ESTO DENTRO DE FILTER, CAT, ... ------------------------------------------
@@ -201,8 +218,24 @@ void bufferInterpreter(){
         // //createNewProcess(commands[rightIdx].name, (mainFunc)commands[rightIdx].func, rightArgArr, AVERAGE_PRIORITY, rightFds);
         // executeUser(commands[rightIdx], rightArgArr, rightFds);
 
+        if(leftPID > 1){
+            printf("LEFTPID");
+            NewLine();
+            waitPID(leftPID);
+            closePipeUser(PROCESS_PIPE_ID, 0);
+        }
+
+        if(rightPID > 1){
+            printf("RIGHTPID");
+            NewLine();
+            waitPID(rightPID);
+            closePipeUser(PROCESS_PIPE_ID, 1); // aca se elimina el pipe
+            printProcesses(rightArgArr, fds);
+            //destroyPipeUser(pipeID);
+        }
+      
         // Close pipe fds in parent
-        //destroyPipeUser(pipeID);
+        
         //printf("Pipe destroyed");
         NewLine();
         return;
@@ -249,7 +282,7 @@ void bufferInterpreter(){
     }
     else{
         runInBackground = 0;
-        fds[0] = 1;
+        fds[0] = 0;
     }
 
     if (commandName == NULL) {
