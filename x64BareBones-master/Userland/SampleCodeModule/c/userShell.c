@@ -181,10 +181,17 @@ void bufferInterpreter(){
         //createNewProcess(commands[rightIdx].name, (mainFunc)commands[rightIdx].func, rightArgArr, AVERAGE_PRIORITY, rightFds);
         executeUser(commands[rightIdx], rightArgArr, rightFds);
         // Close pipe fds in parent
-        // destroyPipeUser(pipeID);
+        //destroyPipeUser(pipeID);
         printf("Pipe destroyed");
+        NewLine();
         return;
     }
+
+    // char *ownString = strchr(shellBuffer, '\"');
+    // if(ownString != NULL){
+    //     printf("hola");
+    //     return;
+    // }
 
     // No pipe: regular command execution
     char *commandName = shellBuffer;

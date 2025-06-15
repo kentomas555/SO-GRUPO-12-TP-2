@@ -604,9 +604,6 @@ void handlePrintMemState(int argc, char **args){
 }
 
 void printProcesses(int argc, char **args){
-    // printf("EStoy en  printProcess");
-    //     NewLine();
-    //     NewLine();
     
     processesList * pr = getProcesses();
     char* state[4] = {"READY", "RUNNING", "BLOCKED", "KILLED"};
@@ -619,7 +616,7 @@ void printProcesses(int argc, char **args){
         
         char auxBuffer[10];
 
-        printf("");
+        //printf("");
         NewLine();
         setX(1);
         printf(pr->names[i]);
@@ -642,17 +639,17 @@ void printProcesses(int argc, char **args){
         setX(58);
         itoaBase((uint64_t)pr->rbpList[i], auxBuffer, 16);
         printf(auxBuffer);
-        printf("");
+        //printf("");
     }
     freeMemoryUser(pr);
     NewLine();
     NewLine();
-    /*TESTING*/
-    char auxbuf[20];
-    itoaBase(getWriteFD(getpid()),auxbuf,10 );
-    printf(auxbuf);
-    NewLine();
-    /*END TESTING*/
+    // /*TESTING*/
+    // char auxbuf[20];
+    // itoaBase(getWriteFD(getpid()),auxbuf,10 );
+    // printf(auxbuf);
+    // NewLine();
+    // /*END TESTING*/
 }
 
 static void loopFuction(int argc, char *argv[]){
@@ -790,12 +787,12 @@ void handleWC(int argc, char **args){
     printf(buffer);
     NewLine();
     return;
-    /*TESTING*/
-    char auxbuf[20];
-    itoaBase(getReadFD(getpid()),auxbuf,10 );
-    printf(auxbuf);
-    NewLine();
-    /*END TESTING*/
+    // /*TESTING*/
+    // char auxbuf[20];
+    // itoaBase(getReadFD(getpid()),auxbuf,10 );
+    // printf(auxbuf);
+    // NewLine();
+    // /*END TESTING*/
 }
 
 int isVowel(char c) {

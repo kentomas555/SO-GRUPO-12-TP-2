@@ -62,7 +62,7 @@ void decreaseFontSize(){
 }
 
 void printf(char *string){
-    int fd = getWriteFD(getpid());
+    int fd = getWriteFD(getpid());    
     if (fd == 1) {
         syscall(SYSCALL_WRITE, currentX, currentY, fontSize, string);
     } else {
