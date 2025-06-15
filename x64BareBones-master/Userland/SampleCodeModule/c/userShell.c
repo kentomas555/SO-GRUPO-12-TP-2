@@ -5,7 +5,7 @@
 #include <snakeApp.h>
 #include <phylo.h>
 
-#define PROCESS_PIPE_ID 5
+
 #define MAX_ARGS 2
 char shellBuffer[48];
 int bgColorIndex = 0;
@@ -114,6 +114,10 @@ void clearScreenCommand(int argc, char **args) {
     }
 }
 
+Command getCommand(int index){
+    return commands[index];
+}
+
 void bufferInterpreter(){
     NewLine();
 
@@ -156,33 +160,50 @@ void bufferInterpreter(){
             return;
         }
 
-         // Create pipe (replace with your syscall if needed)
-        int16_t fds[2] = {0, 1};
-        printf("Pipe Created");
-        NewLine();
-        int pipeID = createPipeUser(PROCESS_PIPE_ID, fds);
+        char leftI[5];
+        itoaBase(leftIdx, leftI, 10);
 
-        if (pipeID <= 2) {
-            printf("Error creando pipe");
-            NewLine(); 
-            NewLine();
-            return;
-        }
-
-        // Launch left command (stdout -> pipe write)
-        char *leftArgArr[] = {leftArgs, NULL};
-        int16_t leftFds[] = {0, pipeID};
-        //createNewProcess(commands[leftIdx].name, (mainFunc)commands[leftIdx].func, leftArgArr, AVERAGE_PRIORITY, leftFds);
-        executeUser(commands[leftIdx], leftArgArr, leftFds);
 
         // Launch right command (stdin <- pipe read)
-        char *rightArgArr[] = {rightArgs, NULL};
-        int16_t rightFds[] = {pipeID, 1};
+        //char *rightArgArr[] = {rightArgs, NULL};
+        char *rightArgArr[] = {leftI ,rightArgs};
+        int16_t rightFds[] = {PROCESS_PIPE_ID, 1};
         //createNewProcess(commands[rightIdx].name, (mainFunc)commands[rightIdx].func, rightArgArr, AVERAGE_PRIORITY, rightFds);
         executeUser(commands[rightIdx], rightArgArr, rightFds);
+
+
+        // ESTO DENTRO DE FILTER, CAT, ... ------------------------------------------
+
+        
+        // int16_t fds[2] = {0, 1};
+        // printf("Pipe Created");
+        // NewLine();
+        // int pipeID = createPipeUser(PROCESS_PIPE_ID, fds);
+
+        // if (pipeID <= 2) {
+        //     printf("Error creando pipe");
+        //     NewLine(); 
+        //     NewLine();
+        //     return;
+        // }
+
+        
+        // char *leftArgArr[] = {leftArgs, NULL};
+        // int16_t leftFds[] = {0, pipeID};
+        // //createNewProcess(commands[leftIdx].name, (mainFunc)commands[leftIdx].func, leftArgArr, AVERAGE_PRIORITY, leftFds);
+        // executeUser(commands[leftIdx], leftArgArr, leftFds);
+
+        // ESTO DENTRO DE FILTER, CAT, ... ------------------------------------------
+
+        // // Launch right command (stdin <- pipe read)
+        // char *rightArgArr[] = {rightArgs, NULL};
+        // int16_t rightFds[] = {pipeID, 1};
+        // //createNewProcess(commands[rightIdx].name, (mainFunc)commands[rightIdx].func, rightArgArr, AVERAGE_PRIORITY, rightFds);
+        // executeUser(commands[rightIdx], rightArgArr, rightFds);
+
         // Close pipe fds in parent
         //destroyPipeUser(pipeID);
-        printf("Pipe destroyed");
+        //printf("Pipe destroyed");
         NewLine();
         return;
     }
@@ -286,4 +307,8 @@ void startShell(){
     shellEngine();
 
 }
+
+
+
+
 

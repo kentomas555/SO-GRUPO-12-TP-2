@@ -19,8 +19,10 @@ char getChar(){
         }
     } else {
         char buf[2] = {0};
+        //printf(buf[0]);
         readPipeUser(fd, buf);
         ret = buf[0];
+        //ret = "a";
     }
     return ret;
 

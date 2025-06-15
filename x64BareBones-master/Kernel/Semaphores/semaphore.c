@@ -89,6 +89,10 @@ void semPost(int id){
   if (sem == NULL){
     nativeBigPrintf("semPost: sem is NULL", 300, y);
     y += 20;
+    char aux[10];
+    itoaBase(id, aux, 10);
+    nativeBigPrintf(aux, 300, y);
+    y += 20;
     return;
   }
 
@@ -111,7 +115,7 @@ void semPost(int id){
     // nativeBigPrintf("semPost: blockedQueue not empty", 300, y);
     // y += 20;
     //Node * auxNode = (Node *)dequeue(sem->blockedQueue); //////////////////// DEVOLVIA INFO, NO NODE *
-    Pid pid = dequeue(sem->blockedQueue);
+    Pid pid = (Pid)dequeue(sem->blockedQueue);
     // nativeBigPrintf("semPost: dequeued node", 300, y);
     // y += 20;
     
@@ -171,12 +175,14 @@ void semWait(int id){
 // nativeBigPrintf(aux, 300, y);
 // y += 20;
 
-      push(semaphores[sem->id]->blockedQueue, node);
+      push(sem->blockedQueue, node);
       release(&(sem->lock));
 
       
       
-      blockProcess(pid);
+      //blockProcess(pid);
+      setToblock(pid);
+      
      
       // nativeBigPrintf("bloquee al proceso en semWait antes del yield", 300, y);
       // y += 20;

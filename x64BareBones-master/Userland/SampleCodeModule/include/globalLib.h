@@ -3,12 +3,15 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include "../include/test_util.h"
+#include "test_util.h"
+#include "userShell.h"
 
 #define MEMORY_SIZE
 
 #define MAX_PID_LENGTH 3
 #define MAX_PRIORITY_LENGTH 8
+
+#define MAX_BUFFER_LENGTH 128
 
 #define HIGHEST_PRIO 4
 #define HIGH_PRIO 3
@@ -19,18 +22,12 @@
 #define PROCESS 1
 #define NOT_PROCESS 0
 
+#define EOF -1
+
 typedef int (*mainFunc)(int argc, char **args);
 
 
-#ifndef COMMAND_H
-typedef struct Command {
-    char* name;
-    void (*func) (int argc, char **args); /*mainFunc*/
-    char* desc;
-    char* usage;
-    int8_t isProcess;
-} Command;
-#endif
+
 
 /*====== SCREEN FUNCTIONS ======*/
 

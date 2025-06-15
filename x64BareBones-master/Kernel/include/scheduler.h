@@ -45,6 +45,7 @@ int getCurrentPPID();
 int getProcessQty();
 int blockProcess(Pid pid);
 int unblockProcess(Pid pid);
+void setToblock(Pid pid);
 
 void * schedule(void * currentRSP);
 Pid getNextProcess();

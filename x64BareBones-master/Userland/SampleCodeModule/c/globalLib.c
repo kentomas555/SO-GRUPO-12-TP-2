@@ -3,6 +3,7 @@
 #include <syscall.h>
 #include <tests.h>
 #include <phylo.h>
+#include <userShell.h>
 
 uint64_t bgColor = 0x00;
 
@@ -17,6 +18,17 @@ static int HorizontalOffset(char fontSize){
     } else {
         return 8;
     } 
+}
+
+static void * memset(void * destination, int32_t c, uint64_t length)
+{
+	uint8_t chr = (uint8_t)c;
+	char * dst = (char*)destination;
+
+	while(length--)
+		dst[length] = chr;
+
+	return destination;
 }
 
 void nextX(int i){
@@ -751,28 +763,51 @@ void handleKill(int argc, char **args){
 //MANEJAR CON PIPES
 
 void handleCat(int argc, char **args){
-    char c;
-    while ((c = getChar()) != 0 && c != '\n' && c != 13) {
-        if (c == 8) { 
-            prevX(1);
-            charDelete(getCurrentX(), getCurrentY(), getFontSize());
-        } else {
-            char buf[2] = {c, 0};
-            printf(buf);
-            nextX(1);
-        }
+    //char c;
+    // printProcesses(argc, args);
+    // printf("IN CAT");
+
+    // char buffer[1024] = {0};
+    // int fd = getReadFD(getpid());
+
+    char buffer[128] = {0};
+    int fd = getReadFD(getpid());
+
+    while (1) {
+        memset(buffer, 0, sizeof(buffer));
+        int result = readPipeUser(fd, buffer);  // Read a chunk
+        if (result <= 0 || buffer[0] == 0) break;
+
+        printf(buffer);
+        NewLine();
     }
+        
+    // while ((c = getChar()) != 0 && c != '\n' && c != 13) {
+    //     if (c == 8) { 
+    //         prevX(1);
+    //         charDelete(getCurrentX(), getCurrentY(), getFontSize());
+    //     } else {
+    //         char buf[2] = {c, 0};
+    //         printProcesses(argc, args);
+    // printf("IN CAT");
+    //         printf(buf);
+            
+    //         nextX(1);
+    //     }
+    // }
     NewLine();
     /*TESTING*/
-    char auxbuf[20];
-    itoaBase(getReadFD(getpid()),auxbuf,10 );
-    printf(auxbuf);
-    NewLine();
+    // char auxbuf[20];
+    // itoaBase(getReadFD(getpid()),auxbuf,10 );
+    // printf(auxbuf);
+    // NewLine();
     /*END TESTING*/
+    
     return;
 }
 
 void handleWC(int argc, char **args){
+
     char c;
     int lines = 0;
     while ((c = getChar()) != 0 && c != 4) {
@@ -801,22 +836,47 @@ int isVowel(char c) {
 }
 
 void handleFilter(int argc, char **args){
+    if(argc != 1){
+        return;
+    }
 
+    int16_t fd[2] = {0,1};
+    int pipeID = createPipeUser(PROCESS_PIPE_ID, fd);
+
+    if (pipeID <= 2) {
+            printf("Error creando pipe");
+            NewLine(); 
+            NewLine();
+            return;
+    }
+
+    int16_t filterFD[2] = {-1, PROCESS_PIPE_ID};
+    char * argv[] = {0};
+    int leftIdx = satoi(args[0]);
+    Command command = getCommand(leftIdx);
+    Pid pid = createNewProcess(command.name, command.func, argv, AVERAGE_PRIO, filterFD);
     char c;
-    while ((c = getChar()) != 0 && c != 4) {
+
+    // printProcesses(argc, args);
+    //     NewLine();
+
+    while ((c = getChar()) != 0 && c != EOF) {
+        // printProcesses(argc, args);
+        // NewLine();
         if (!isVowel(c)) {
             char buf[2] = {c, 0};
             printf(buf);
             nextX(1);
         }
-    }
+    }   
     NewLine();
-    /*TESTING*/
-    char auxbuf[20];
-    itoaBase(getReadFD(getpid()),auxbuf,10 );
-    printf(auxbuf);
-    NewLine();
-    /*END TESTING*/
+    
+
+    //waitPID(pid);
+    
+    destroyPipeUser(PROCESS_PIPE_ID);
+    printf("destroy");
+    return;
 }
 
 /*====== PHYLO ======*/

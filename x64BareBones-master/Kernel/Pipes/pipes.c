@@ -69,6 +69,11 @@ void destroyPipe(int pipeID){
     if(!existPipe(pipeID)){
         return;
     }
+    semDestroy(pipeArray[pipeID - 3]->semRead);
+    semDestroy(pipeArray[pipeID - 3]->semWrite);
+    semDestroy(pipeArray[pipeID - 3]->mutex);
+    memset(pipeArray[pipeID - 3]->buffer, 0, PIPE_BUFFER_SIZE);
+    
     freeMemory((void *)pipeArray[pipeID-3]);
     pipeArray[pipeID-3] = NULL;
 }
@@ -176,13 +181,12 @@ uint64_t readPipe(int pipeID, char * destination){
     }
 
     PipeCDT *pipe = pipeArray[pipeID - 3];
-    uint64_t read = 0;
     char c;
 
     //nativeBigPrintf("antes del do", 300, y);
     //y += 20;
     //nativeBigPrintf("entreee", 300, 420);
-    do {
+    // do {
         semWait(pipe->semRead);   // espera a que haya algo para leer
         semWait(pipe->mutex);     // entra a la región crítica
 
@@ -199,7 +203,7 @@ uint64_t readPipe(int pipeID, char * destination){
         pipe->readPos = (pipe->readPos + 1) % PIPE_BUFFER_SIZE;
         
         
-        destination[read++] = c;
+        *destination = c;
 
 
 //         nativeBigPrintf("before semPost(mutex)", 300, y);
@@ -221,7 +225,7 @@ uint64_t readPipe(int pipeID, char * destination){
         //nativeBigPrintf("dps del semPost en el do", 0, y);
         //y += 20;
         
-    } while (c != '\0');
+    // } while (c != '\0');
 
     // for(int i = 0; i < pipe->writePos; i++){
     //     semWait(pipe->semRead);   // espera a que haya algo para leer
@@ -242,9 +246,9 @@ uint64_t readPipe(int pipeID, char * destination){
     
         
     //nativeBigPrintf(destination, 0, 200);
-    nativePrintf(destination, 0, y);
-    y += 20;
-    return read;
+    //nativePrintf(destination, 0, y);
+    //y += 20;
+    return 1;
 }
 
 
