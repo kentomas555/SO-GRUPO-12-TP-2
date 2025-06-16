@@ -6,7 +6,7 @@
 #include <phylo.h>
 
 
-#define MAX_ARGS 2
+#define MAX_ARGS 3
 char shellBuffer[48];
 int bgColorIndex = 0;
 
@@ -47,7 +47,7 @@ Command commands[] = {
     {"TESTMM", (void (*)(int,  char **))handleMemoryManagerTest, "Test memory manager", NULL, NOT_PROCESS},
     {"TESTPROCESS", (void (*)(int,  char **))handleProcessTest, "Test de procesos", NULL, PROCESS},
     {"TESTPRIO", (void (*)(int,  char **))handlePriorityTest, "Test de prioridades", NULL, PROCESS},
-    {"TESTSYNC", (void (*)(int,  char **))handleSyncroTest, "Test sincronizacion", NULL, PROCESS},
+    {"TESTSYNC", (void (*)(int,  char **))handleSyncroTest, "Test sincronizacion", NULL, NOT_PROCESS},
     {"TESTNOSYNC", (void (*)(int,  char **))handleNoSyncroTest, "Test sin sincronizacion", NULL, NOT_PROCESS},
     {"TESTPIPE", (void (*)(int,  char **))handlePipeTest, "Test de prioridades", NULL, PROCESS},
     {NULL, NULL, NULL, NULL}
@@ -218,25 +218,35 @@ void bufferInterpreter(){
         // //createNewProcess(commands[rightIdx].name, (mainFunc)commands[rightIdx].func, rightArgArr, AVERAGE_PRIORITY, rightFds);
         // executeUser(commands[rightIdx], rightArgArr, rightFds);
 
-        if(leftPID > 1){
-            printf("LEFTPID");
-            NewLine();
+        if((leftPID > 1) && (rightPID > 1)){
+            //printf("LEFTPID");
+            //NewLine();
             waitPID(leftPID);
+            //printProcesses(0, leftArgs);
+            // waitPID(rightPID);
+            //yield();
+            
+
             closePipeUser(PROCESS_PIPE_ID, 0);
+            yield();
+            
+        //     closePipeUser(PROCESS_PIPE_ID, 1);
+        //     //printf("TERMINO PS");
+        //     //NewLine();
         }
 
         if(rightPID > 1){
-            printf("RIGHTPID");
-            NewLine();
+            //printf("RIGHTPID");
+            //NewLine();
             waitPID(rightPID);
             closePipeUser(PROCESS_PIPE_ID, 1); // aca se elimina el pipe
-            printProcesses(rightArgArr, fds);
+            //printProcesses(rightArgArr, fds);
             //destroyPipeUser(pipeID);
         }
       
         // Close pipe fds in parent
         
-        //printf("Pipe destroyed");
+        printf("Pipe destroyed");
         NewLine();
         return;
     }
@@ -293,11 +303,9 @@ void bufferInterpreter(){
 
     char *args[] = {argv[0], argv[1]};
     
-
     for (int i = 0; commands[i].name != NULL; i++) {
         if (strCompare(commandName, commands[i].name)) {
-            executeUser(commands[i], args, fds);
-           
+            executeUser(commands[i], argv, fds);
             return;
         }
     }

@@ -17,18 +17,19 @@ uint64_t semInit(int32_t id,uint32_t value){
     sem_t * semaphore = allocMemory(sizeof(sem_t));
 
     semaphore->value = value;
-    semaphore->blockedQueue = initializeLinkedList();
+    semaphore->blockedQueue = initializeLinkedList(); 
     semaphore->lock = 1;
     semaphore->id = id;
     semaphores[semaphore->id-1] = semaphore;
     return semaphore->id;
   }
+  // semaphore->refCount++;
   return id;
 }
 
 static sem_t * getSemaphore(int id){
 
-  if(id >= MAX_SEM_QTY - 1){
+  if(id <= 0 || id > MAX_SEM_QTY){
     // nativeBigPrintf("id es mayor a MAXSEMQTY", 300, y);
     // y += 20;
     // itoaBase(id, aux, 10);
@@ -49,8 +50,8 @@ uint64_t semDestroy(int id){
     if (sem == NULL)
         return -1;
     freeList(sem->blockedQueue);
-    freeMemory(sem);
-    semaphores[id-1] = NULL;
+    //freeMemory(sem);
+    //semaphores[id-1] = NULL;
     return 0;
 }
 
@@ -118,7 +119,6 @@ void semPost(int id){
     Pid pid = (Pid)dequeue(sem->blockedQueue);
     // nativeBigPrintf("semPost: dequeued node", 300, y);
     // y += 20;
-    
     // nativeBigPrintf("semPost: about to unblock process", 300, y);
     // y += 20;
     // itoaBase(pid, aux, 10);
@@ -168,8 +168,8 @@ void semWait(int id){
       //node->info = (void*)(uint64_t)pid; // chequear si realmente es asi, deberia
       //node->info = (void *)(uint64_t)(uintptr_t)pid;  // semWait
       node->info = (void *)(uintptr_t)pid;
-
-//       itoaBase(node->info, aux, 10);
+    
+// itoaBase(node->info, aux, 10);
 // nativeBigPrintf("PID to block:", 300, y);
 // y += 20;
 // nativeBigPrintf(aux, 300, y);
@@ -177,13 +177,9 @@ void semWait(int id){
 
       push(sem->blockedQueue, node);
       release(&(sem->lock));
-
-      
-      
       //blockProcess(pid);
       setToblock(pid);
       
-     
       // nativeBigPrintf("bloquee al proceso en semWait antes del yield", 300, y);
       // y += 20;
       yield();

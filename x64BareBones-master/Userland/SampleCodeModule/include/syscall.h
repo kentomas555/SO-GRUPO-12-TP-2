@@ -73,6 +73,7 @@ void increaseFontSize();
 void decreaseFontSize();
 
 void printf(char *string);
+void putChar(char c);
 void printfPos(char *string, int x, int y , char fontSizePos);
 
 /*====== INIT DYSPLAY SYSCALL ======*/

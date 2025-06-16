@@ -851,26 +851,7 @@ int isVowel(char c) {
 }
 
 void handleFilter(int argc, char **args){
-    // if(argc != 1){
-    //     return;
-    // }
-
-    // int16_t fd[2] = {0,1};
-    // int pipeID = createPipeUser(PROCESS_PIPE_ID, fd);
-
-    // if (pipeID <= 2) {
-    //         printf("Error creando pipe");
-    //         NewLine(); 
-    //         NewLine();
-    //         return;
-    // }
-
-    // int16_t filterFD[2] = {0, PROCESS_PIPE_ID};
-    // char * argv[] = {0};
-    // int leftIdx = satoi(args[0]);
-    // Command command = getCommand(leftIdx);
-    // Pid rightPID = getpid();
-    // Pid pid = createNewProcess(command.name, command.func, argv, AVERAGE_PRIO, filterFD);
+   
     char c;
 
     // printProcesses(argc, args);
@@ -880,8 +861,10 @@ void handleFilter(int argc, char **args){
         // printProcesses(argc, args);
         // NewLine();
         if (!isVowel(c)) {
-            char buf[2] = {c, 0};
-            printf(buf);
+            //char buf[2] = {c, 0};
+            //printf(buf);
+            //NewLine();
+            putChar(c);
             nextX(1);
         }
     }   
@@ -891,10 +874,8 @@ void handleFilter(int argc, char **args){
     //waitPID(pid);
     
     //destroyPipeUser(PROCESS_PIPE_ID);
-    printf("sali del filter");
-    NewLine();
-    
-    //exitProcess(rightPID);
+    //printf("sali del filter");
+    //NewLine();
     return;
 }
 
@@ -933,7 +914,7 @@ void handlePriorityTest(int argc, char **args){
 void handleSyncroTest(int argc, char **args){
     int16_t fds[2] = {0,1};
     char *argv[] = {"10", "1", 0};
-    createNewProcess("Syncro Test",test_sync, argv, HIGH_PRIO,fds);
+    createNewProcess("Syncro Test",test_sync, argv, HIGHEST_PRIO,fds);
     // waitPID(pid);
     return;
 }
@@ -986,9 +967,11 @@ void handlePipeTest(int argc, char **args){
     int16_t writerFd[2] = {0,25};
     Pid pid1 = createNewProcess("Pipe reader test",pipeReaderTest, argv, HIGH_PRIO, readerFd);
     Pid pid2 = createNewProcess("Pipe writer test",pipeWriterTest, argv, HIGH_PRIO, writerFd);
-    waitPID(pid1);
     waitPID(pid2);
-    destroyPipeUser(pipe);
+    closePipeUser(25, 0);
+    waitPID(pid1);
+    closePipeUser(25, 1);
+    //destroyPipeUser(pipe);
     return;
 }
 
@@ -1011,6 +994,6 @@ int32_t executeUser(Command command, char *args[], int16_t fds[]){
     }
     else{
         command.func(argc, args);
-        return -1;
+        //return -1;
     }
 }

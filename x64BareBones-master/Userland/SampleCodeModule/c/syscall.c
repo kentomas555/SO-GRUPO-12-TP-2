@@ -32,15 +32,16 @@ char getChar(){
         while (ret == -1) {
             ret = syscall(SYSCALL_READ);
         }
-    } else {
+    } 
+    else {
         char buf[2] = {0};
         if (readPipeUser(fd, buf) == 0) {
             return -1; // Pipe invalid or error
         }
         ret = buf[0];
-        if (ret == '\0') {
-            return -1; // Interpret null terminator as EOF
-        }
+        // if (ret == '\0') {
+        //     return -1; // Interpret null terminator as EOF
+        // }
     }
     return ret;
 }
@@ -81,11 +82,22 @@ void decreaseFontSize(){
 }
 
 void printf(char *string){
+    //char letter[2] = 
     int fd = getWriteFD(getpid());    
     if (fd == 1) {
         syscall(SYSCALL_WRITE, currentX, currentY, fontSize, string);
     } else {
         writePipeUser(fd, string);
+    }
+}
+
+void putChar(char c){
+    int fd = getWriteFD(getpid());    
+    if (fd == 1) {
+        char buf[2] = {c, '\0'};
+        syscall(SYSCALL_WRITE, currentX, currentY, fontSize, buf);
+    } else {
+        writePipeUser(fd, &c);
     }
 }
 

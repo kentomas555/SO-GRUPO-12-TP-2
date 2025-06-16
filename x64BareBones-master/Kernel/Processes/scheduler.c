@@ -148,8 +148,9 @@ int waitPID(Pid pid){
     if (caller->children[i] == pid) {
       isChild = 1;
       break;
-      }
     }
+  }
+
   if (!isChild){
     return -1;
   }
@@ -169,7 +170,7 @@ int waitPID(Pid pid){
 
   setToblock(caller->PID);
   forceTimerTick();
-  //yield();
+  yield();
   caller->waitingPID = -1;
 
   return caller->retValue;
@@ -221,6 +222,12 @@ uint64_t exitProcess(int retValue){
   scheduler->finishedProcessCount++;
 
   PCB *parent = (PCB*)scheduler->processes[pcb->parentPID]->info;
+
+  char aux[10];
+  static int g = 0;
+  //itoaBase(pcb->n, aux, 10);
+  nativeBigPrintf(pcb->processName, 300, g);
+  g += 20;
 
   if(parent != NULL){
     if (parent->waitingPID == pcb->PID) {

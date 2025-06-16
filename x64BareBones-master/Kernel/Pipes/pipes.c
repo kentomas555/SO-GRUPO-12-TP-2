@@ -106,6 +106,10 @@ uint64_t writePipe(int pipeID, const char * source){ // WRITE ANDA BIEN, HAY QUE
     // END TESTING
 
     PipeCDT *pipe = pipeArray[pipeID - 3]; // PIPE ESTA BIEN
+
+    if (pipe->readerPID == -1) {
+        return 0; // Reader closed, avoid blocking forever
+    }
     // itoaBase(pipe->pipeID, bufferAux, y);
     // y += 20;
     // nativeBigPrintf(bufferAux, 300, y);
@@ -175,11 +179,10 @@ uint64_t readPipe(int pipeID, char * destination){
     //nativeBigPrintf("entre al readPipe", 300, y);
     //y += 20;
 
-//     itoaBase(lengthAux, bufferAux, 10);
-// nativeBigPrintf("lengthAux=", 300, y);
-// nativeBigPrintf(bufferAux, 500, y);
-// y += 20;
-
+    // itoaBase(lengthAux, bufferAux, 10);
+    // nativeBigPrintf("lengthAux=", 300, y);
+    // nativeBigPrintf(bufferAux, 500, y);
+    // y += 20;
 
     if(!existPipe(pipeID) || destination == NULL){
         return 0;
@@ -187,6 +190,12 @@ uint64_t readPipe(int pipeID, char * destination){
 
     PipeCDT *pipe = pipeArray[pipeID - 3];
     char c;
+
+    if (pipe->writerPID == -1 && pipe->readPos == pipe->writePos) {
+        //semPost(pipe->mutex);
+        //semPost(pipe->semWrite);  // habilita escritura
+        return 0;  // EOF, nothing to read, writer closed
+    }
 
     //nativeBigPrintf("antes del do", 300, y);
     //y += 20;
@@ -207,9 +216,7 @@ uint64_t readPipe(int pipeID, char * destination){
         c = pipe->buffer[pipe->readPos];
         pipe->readPos = (pipe->readPos + 1) % PIPE_BUFFER_SIZE;
         
-        
         *destination = c;
-
 
 //         nativeBigPrintf("before semPost(mutex)", 300, y);
 // y += 20;
@@ -222,7 +229,6 @@ uint64_t readPipe(int pipeID, char * destination){
 // semPost(pipe->semWrite);
 // nativeBigPrintf("after semPost(semWrite)", 300, y);
 // y += 20;
-
 
         semPost(pipe->mutex);     // sale de la región crítica
         semPost(pipe->semWrite);  // habilita escritura
@@ -249,10 +255,9 @@ uint64_t readPipe(int pipeID, char * destination){
     // nativeBigPrintf("antes del print dest", 0, y);
     // y += 20;
     
-        
-    //nativeBigPrintf(destination, 0, 200);
-    //nativePrintf(destination, 0, y);
-    //y += 20;
+    // //nativeBigPrintf(destination, 0, 200);
+    // nativeBigPrintf(destination, y, 0);
+    // y += 20;
     return 1;
 }
 
@@ -283,9 +288,5 @@ void closePipeEnd(int pipeID, int isReader) {
         destroyPipe(pipeID);  // Only destroy when both ends are closed
     }
 }
-
-
-
-
 
 
