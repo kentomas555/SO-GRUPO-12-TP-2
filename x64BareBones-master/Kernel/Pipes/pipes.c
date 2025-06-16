@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "../include/pipes.h"
 #include "../include/videoDriver.h"
 
@@ -31,7 +33,7 @@ static int existPipe(int pipeID){
 }
 
 int64_t createPipe(int pipeID, int16_t fd[2]){
-    if(pipeID < 2){
+    if(pipeID < 3){
         return -1;
     }
 
@@ -94,16 +96,16 @@ uint64_t writePipe(int pipeID, const char * source){
 
     for (int i = 0; source[i] != '\0'; i++) {
         
-        if (pipe->readerPID == -1) {
-            break; 
-        }
+        // if (pipe->readerPID == -1) {
+        //     break; 
+        // }
 
         semWait(pipe->semWrite);
  
-        if (pipe->readerPID == -1) {
-            semPost(pipe->semWrite);  // clean up before exiting
-            break;
-        }
+        // if (pipe->readerPID == -1) {
+        //     semPost(pipe->semWrite);  // clean up before exiting
+        //     break;
+        // }
 
         semWait(pipe->mutex);
     
@@ -118,14 +120,14 @@ uint64_t writePipe(int pipeID, const char * source){
 
 
 
-    if (pipe->readerPID != -1) {
+    //if (pipe->readerPID != -1) {
         semWait(pipe->semWrite);
         semWait(pipe->mutex);
         pipe->buffer[pipe->writePos] = '\0';
         pipe->writePos = (pipe->writePos + 1) % PIPE_BUFFER_SIZE;
         semPost(pipe->mutex);
         semPost(pipe->semRead);
-    }
+    //}
 
   
     return written;

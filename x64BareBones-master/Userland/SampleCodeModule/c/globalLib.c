@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <libasm.h>
 #include <globalLib.h>
 #include <syscall.h>
@@ -531,7 +533,7 @@ void handleNice(int argc, char **args){
  
 
     int checkPriority = getPriorityFromBuffer(args[1]);
-    if (!validPriority(checkPriority)) {
+    if (!validPriority(checkPriority) || checkPriority < 0) {
         printf("La prioridad es invalida.");
         NewLine();
         NewLine();
@@ -555,7 +557,7 @@ void handleNice(int argc, char **args){
     NewLine();
     printf("New priority: ");
     setX(14);
-    printf(priorityList[priority]);
+    printf(priorityList[priority]); 
     NewLine();
     NewLine();
     freeMemoryUser(psList);
@@ -654,8 +656,8 @@ void handleFilter(int argc, char **args){
    
     char c;   
     static int auxY = 0;
-
-    while ((c = getChar()) != EOF ) {
+    
+    while ((int)(c = getChar()) != EOF) {
         if (!isVowel(c)) {
             char buf[2] = {c, 0};
             printf(buf);
@@ -774,25 +776,21 @@ void handleCat(int argc, char **args){
 
    
     static int auxY = 0;
-    char c;   
+    int c;   
 
-        while ((c = getChar()) != EOF) {
-            char buf[2] = {c, 0};
-            printf(buf);
-            nextX(1);
-            auxY += 10;
-            if(auxY == 550){
-                auxY = 0;
-                NewLine();
-            }
-        }   
-        auxY = 0;
-        return;
+    while ((c = getChar()) != EOF) {
+        char buf[2] = {c, 0};
+        printf(buf);
+        nextX(1);
+        auxY += 10;
+        if(auxY == 550){
+            auxY = 0;
+            NewLine();
+        }
+    }   
   
     NewLine();
     auxY = 0;
- 
-    
     return;
 }
 

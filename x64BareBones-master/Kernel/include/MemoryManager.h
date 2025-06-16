@@ -15,12 +15,6 @@ typedef struct memoryState{
 
 int64_t *getSharedMemory();
 
-// #ifdef BUDDY_MODE 
-//     void createMemoryManagerBuddy();
-// #else
-//     void createMemoryManagerFreeList();
-// #endif
-
 void createMemoryManager();
 
 void * allocMemory(size_t memoryToAllocate);

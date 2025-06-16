@@ -9,8 +9,10 @@
         "sounddriver.h": "c",
         "videodriver.h": "c",
         "clocktime.h": "c",
-        "memorymanager.h": "c",
-        "nativelibrary.h": "c"
+        "Memorymanager.h": "c",
+        "nativelibrary.h": "c",
+        "process.h": "c",
+        "libasm.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

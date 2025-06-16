@@ -1,8 +1,9 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <stdarg.h>
 #include <stdint.h>
 #include <globalLib.h>
 #include <syscall.h>
-#include <snakeApp.h>
 #include <phylo.h>
 
 
@@ -27,7 +28,6 @@ Command commands[] = {
     {"SMALLER", (void (*)(int,  char **))smallerFontSize, "Achica la fuente", NULL, NOT_PROCESS},
     {"COLOR", (void (*)(int,  char **))changeColor, "Cambia el color de la consola", NULL, NOT_PROCESS},
     {"TIME", (void (*)(int,  char **))printCurrentTime, "Imprime la hora y fecha actual", NULL, PROCESS}, 
-    {"SNAKE", (void (*)(int,  char **))startGame, "Comienza el juego", NULL, NOT_PROCESS},
     {"ZERODIV", (void (*)(int,  char **))zeroDivisionTrigger, "Causa una division por cero", NULL, NOT_PROCESS},
     {"INVOPCODE", (void (*)(int,  char **))invalidOpcodeTrigger, "Causa una instruccion invalida", NULL, NOT_PROCESS},
     {"MEM", (void (*)(int,  char **))handlePrintMemState, "Imprime el estado de memoria", NULL, PROCESS},
@@ -219,7 +219,16 @@ void bufferInterpreter(){
     }
 
     int argc = 0;
+    int16_t fds[] = {-1, 1};
     if (commandArgs != NULL) {
+        if(strchr(commandArgs, '&')){  
+            runInBackground = 1;
+            NewLine();
+        }
+        else{
+            runInBackground = 0;
+            fds[0] = 0;
+        }
         char *token = strtok(commandArgs, " ");
         while (token != NULL && argc < MAX_ARGS) {
             argv[argc++] = token;
@@ -229,25 +238,18 @@ void bufferInterpreter(){
     argv[argc] = NULL;
 
 
-    int16_t fds[] = {-1, 1};
     
-    if(strchr(commandArgs, '&')){
-        
-        runInBackground = 1;
-        fds[0] = -1;
-        NewLine();
-    }
-    else{
-        runInBackground = 0;
-        fds[0] = 0;
-    }
-
-    if (commandName == NULL) {
-        printf("No command entered.");
-        NewLine();
-        return;
-    }
-
+    
+    // if(commandArgs != NULL)
+    // if(strchr(commandArgs, '&')){  
+    //     runInBackground = 1;
+    //     fds[0] = -1;
+    //     NewLine();
+    // }
+    // else{
+    //     runInBackground = 0;
+    //     fds[0] = 0;
+    // }
  
     
     for (int i = 0; commands[i].name != NULL; i++) {

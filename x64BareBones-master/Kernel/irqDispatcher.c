@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <clockTime.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -9,7 +11,7 @@
 static uint64_t int_20(uint64_t rsp);
 static void int_21();
 
-char * v = (char*)0xB8000;
+char * variable = (char*)0xB8000;
 char keyAvailable = 0;
 char keyBuffer = -1;
 
@@ -92,6 +94,6 @@ uint64_t int_20(uint64_t rsp) {
 }
 
 void insertChar(char c){
-	*v = c;
-	*(v+1) = 0x0F;
+	*variable = c;
+	*(variable+1) = 0x0F;
 }

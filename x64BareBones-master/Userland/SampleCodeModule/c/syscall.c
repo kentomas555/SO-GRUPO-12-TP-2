@@ -1,4 +1,5 @@
-
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <syscall.h>
 
 int currentX = 0;
@@ -10,21 +11,6 @@ char fontSize = 2;
 /*====== READ ======*/
 
 char getChar(){
-    // char ret;
-    // int fd = getReadFD(getpid());
-    // if(fd == 0){
-    //     ret = syscall(SYSCALL_READ);
-    //     while (ret == -1){
-    //         ret = syscall(SYSCALL_READ);
-    //     }
-    // } else {
-    //     char buf[2] = {0};
-    //     //printf(buf[0]);
-    //     readPipeUser(fd, buf);
-    //     ret = buf[0];
-    //     //ret = "a";
-    // }
-    // return ret;
     char ret;
     int fd = getReadFD(getpid());
     if (fd == 0) {
@@ -36,7 +22,7 @@ char getChar(){
     else {
         char buf[2] = {0};
         if (readPipeUser(fd, buf) == 0) {
-            return -1; // Pipe invalid or error
+            return -1; 
         }
         ret = buf[0];
     }

@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "../include/MemoryManager.h"
 #include <stdint.h>
 
@@ -27,49 +29,49 @@ int64_t *getSharedMemory() {
 static void * const mmControlStart = (void *) MM_BASE_ADDRESS;
 static void * const heapStartAddress = (void *) (MM_BASE_ADDRESS + MM_STRUCT_SIZE);
 
-static MemoryManagerADT mm = NULL;
+static MemoryManagerADT mManager = NULL;
 
 void createMemoryManager() {
-    if (mm != NULL) return; // Avoid reinitialization
+    if (mManager != NULL) return; // Avoid reinitialization
 
-    mm = (MemoryManagerADT) mmControlStart;
-    memset(mm, 0, sizeof(MemoryManagerCDT));   // Clear struct for safety
+    mManager = (MemoryManagerADT) mmControlStart;
+    memset(mManager, 0, sizeof(MemoryManagerCDT));   // Clear struct for safety
 
     for (int i = 0; i < BLOCK_QTY; i++) {
-        mm->memoryArray[i].address = (void *)((uintptr_t)heapStartAddress + BLOCK_SIZE * i);
-        mm->memoryArray[i].isUsed = 0;
+        mManager->memoryArray[i].address = (void *)((uintptr_t)heapStartAddress + BLOCK_SIZE * i);
+        mManager->memoryArray[i].isUsed = 0;
     }
 
     size_t memorySize = BLOCK_QTY * BLOCK_SIZE;
-    mm->totalSize = memorySize;
-    mm->freeMemory = memorySize;
-    mm->usedMemory = 0;
-    mm->usedBlocks = 0;
+    mManager->totalSize = memorySize;
+    mManager->freeMemory = memorySize;
+    mManager->usedMemory = 0;
+    mManager->usedBlocks = 0;
 }
 
 void * allocMemory(size_t memoryToAllocate) {
-    if (mm == NULL || memoryToAllocate > BLOCK_SIZE) {
+    if (mManager == NULL || memoryToAllocate > BLOCK_SIZE) {
         return NULL;
     }
 
     for (int i = 0; i < BLOCK_QTY; i++) {
-        if (!mm->memoryArray[i].isUsed) {
-            mm->memoryArray[i].isUsed = 1;
-            mm->usedBlocks++;
-            mm->usedMemory += BLOCK_SIZE;
-            mm->freeMemory -= BLOCK_SIZE;
-            return mm->memoryArray[i].address;
+        if (!mManager->memoryArray[i].isUsed) {
+            mManager->memoryArray[i].isUsed = 1;
+            mManager->usedBlocks++;
+            mManager->usedMemory += BLOCK_SIZE;
+            mManager->freeMemory -= BLOCK_SIZE;
+            return mManager->memoryArray[i].address;
         }
     }
     return NULL;
 }
 
 void freeMemory(void *freeAddress) {
-    if (mm == NULL || freeAddress == NULL || mm->usedBlocks == 0)
+    if (mManager == NULL || freeAddress == NULL || mManager->usedBlocks == 0)
         return;
 
     for (int i = 0; i < BLOCK_QTY; i++) {
-        MemoryBlock *block = &mm->memoryArray[i];
+        MemoryBlock *block = &mManager->memoryArray[i];
 
         if (block->isUsed && block->address == freeAddress) {
 
@@ -77,9 +79,9 @@ void freeMemory(void *freeAddress) {
 
             block->address = (void *)((char *)heapStartAddress + i * BLOCK_SIZE);
 
-            mm->usedBlocks--;
-            mm->usedMemory -= BLOCK_SIZE;
-            mm->freeMemory += BLOCK_SIZE;
+            mManager->usedBlocks--;
+            mManager->usedMemory -= BLOCK_SIZE;
+            mManager->freeMemory += BLOCK_SIZE;
 
             return;
         }
@@ -89,14 +91,14 @@ void freeMemory(void *freeAddress) {
 static memoryState staticStateBuffer;
 
 memoryState * getMemState() {
-    if (mm == NULL) return NULL;
+    if (mManager == NULL) return NULL;
 
     uint64_t total = 0;
     uint64_t used = 0;
     uint64_t free = 0;
     for (int i = 0; i < BLOCK_QTY; i++){
         total++;
-        if(mm->memoryArray[i].isUsed){
+        if(mManager->memoryArray[i].isUsed){
             used++;
         } else {
             free++;
@@ -111,5 +113,5 @@ memoryState * getMemState() {
 }
 
 uint64_t getCurrent() {
-    return (mm != NULL) ? mm->usedBlocks : 0;
+    return (mManager != NULL) ? mManager->usedBlocks : 0;
 }

@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "../include/scheduler.h"
 #include "../include/process.h"
 #include "../include/MemoryManager.h"
@@ -266,8 +268,13 @@ int getForegroundPID(){
 
 uint64_t killProcess(Pid pid){
   
+  
+  if(pid == IDLE_PID || pid == SHELL_PID || pid >= MAX_PROCESSES){
+    return -1;
+  }
+
   PCB * pcb = (PCB*)scheduler->processes[pid]->info;
-  if(pcb == NULL || pid == IDLE_PID || pid == SHELL_PID || pid >= MAX_PROCESSES){
+  if(pcb == NULL){
     return -1;
   }
 
@@ -293,9 +300,13 @@ uint64_t killProcess(Pid pid){
   }
 
   PCB * parentPCB = (PCB*)scheduler->processes[pcb->parentPID]->info;
-  if(parentPCB->childrenQty > 0){
-    parentPCB->childrenQty--;
-  }  
+  
+  if(parentPCB != NULL){
+    if(parentPCB->childrenQty > 0){
+      parentPCB->childrenQty--;
+    }
+  }
+   
 
   if(pcb->status == RUNNING){
     pcb->retValue = -1;
@@ -413,7 +424,7 @@ int blockProcess(Pid pid){
   Node * processToBeBlocked = scheduler->processes[pid];
   PCB * pcb = (PCB*)scheduler->processes[pid]->info;
   
-  if(/*pcb->status == BLOCKED ||*/ pcb->status == KILLED || pcb == NULL || pid == SHELL_PID || pid == IDLE_PID){
+  if(pcb == NULL || pcb->status == KILLED || pid == SHELL_PID || pid == IDLE_PID){
     return -1;
   }
   if(pcb->status != BLOCKED){
@@ -482,7 +493,7 @@ processesToPrint * printProcesses(){
     return NULL;
   }
   int i = 0;
-  psList->cantProcess = scheduler->processQty;
+  //psList->cantProcess = scheduler->processQty;
   for (int j = 0; j < MAX_PROCESSES; j++){
     if(scheduler->processes[j] != NULL){
       psList->names[i] = ((PCB*)scheduler->processes[j]->info)->processName;
