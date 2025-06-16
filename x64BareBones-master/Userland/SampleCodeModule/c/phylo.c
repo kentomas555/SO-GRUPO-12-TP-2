@@ -4,6 +4,9 @@
 #define STARTING_PHYLO 5
 #define MAX_PHYLO 10
 #define THINKING_TIME 50000000
+#define SEM_OFFSET 5
+#define MUTEX_SEM 16
+#define COUNT_MUTEX 17
 
 #define EATING 1
 #define WAITING 0
@@ -17,9 +20,10 @@ static void eat(int phyloID);
 static void think(int phyloID);
 static void printState();
 
-Pid phylosofers[MAX_PHYLO];
-int phyloStatus[MAX_PHYLO];
-int phylosEating;
+static Pid phylosofers[MAX_PHYLO];
+static int phyloStatus[MAX_PHYLO];
+static int phyloSems[MAX_PHYLO];
+static int phylosEating;
 
 void startPhylo(int argc, char **args){
     char charAux = 0;
@@ -42,6 +46,8 @@ void startPhylo(int argc, char **args){
         return;
     }
     ClearScreen(0x00000000);
+    semInit(MUTEX_SEM, 1);
+    semInit(COUNT_MUTEX, 1);
     startDining();
 
     while((charAux = getKeyDown()) != 83){ // While not 'S'
@@ -53,11 +59,14 @@ void startPhylo(int argc, char **args){
             removePhylo();
             break;      
         default:
+            printState();
             break;
         }
     }
 
     endDining();
+    semDestroy(COUNT_MUTEX);
+    semDestroy(MUTEX_SEM);
     smallerFontSize();
     ClearScreen(0x000000FF);
     return;
@@ -79,6 +88,7 @@ static void addPhylo(){
     int16_t fd[] = {0, 1};
     phylosofers[phylosEating] = createNewProcess("Phylosofer", phylo, args, LOW_PRIO, fd);
     phyloStatus[phylosEating] = WAITING;
+    phyloSems[phylosEating] = semInit(phylosEating + SEM_OFFSET, 1);
     phylosEating++;
     printState();
 }
@@ -100,7 +110,11 @@ static void startDining(){
 
 static void endDining(){
     for (int i = 0; i < phylosEating; i++){
+        phyloStatus[i] = WAITING;
+        semDestroy(phylosEating +SEM_OFFSET);
+        phyloSems[phylosEating] = 0;
         killProcess(phylosofers[i]);
+        phylosofers[i] = -1;
     }
     phylosEating = 0;
     NewLine();
