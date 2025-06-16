@@ -47,6 +47,8 @@ int blockProcess(Pid pid);
 int unblockProcess(Pid pid);
 void setToblock(Pid pid);
 
+int isForeground(Pid pid);
+
 void * schedule(void * currentRSP);
 Pid getNextProcess();
 void * switchContext(Pid pid);

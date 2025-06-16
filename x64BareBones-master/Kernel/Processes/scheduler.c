@@ -245,7 +245,10 @@ uint64_t exitProcess(int retValue){
   return 1;
 }
 
-
+int isForeground(Pid pid){
+  PCB * pcb = (PCB*)scheduler->processes[pid]->info;
+  return pcb->isForeground;
+}
 
 uint64_t killProcess(Pid pid){
   

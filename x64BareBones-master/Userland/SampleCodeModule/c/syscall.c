@@ -4,7 +4,7 @@
 int currentX = 0;
 int currentY = 0;
 char fontSize = 2;
-
+#define EOF (-1)
 
 
 /*====== READ ======*/

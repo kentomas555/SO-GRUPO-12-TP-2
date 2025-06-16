@@ -15,7 +15,7 @@ typedef struct {
 
 static int shift_pressed = 0;
 static int ctrl_pressed = 0;
-
+#define EOF (-1)
 
 // KeyMapping key_table[] = {
 //     {"ESC", 0x01, 27},
@@ -158,12 +158,13 @@ KeyMapping key_table[] = {
     {"Num Lock", 0x45, -1, -1, -1}, {"Bloq Mayús", 0x3A, -1, -1, -1}
 };
 
-void sendEOF(){
-
-}
-
 void killForegroundProcess(){
-
+    int currentPID = getCurrentPID();
+    if(isForeground(currentPID) && currentPID != SHELL_PID && currentPID != IDLE_PID){
+        setToblock(currentPID);
+        yield();
+        yield();
+    }
 }
 
 char getCharASCII(uint8_t Key){
@@ -179,8 +180,7 @@ char getCharASCII(uint8_t Key){
             }
             else if(ctrl_pressed){
                 if(key_table[i].ascii = 'D'){
-                    sendEOF();
-                    return;
+                    return EOF;
                 } else if(key_table[i].ascii = 'C'){
                     killForegroundProcess();
                     return;
