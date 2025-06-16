@@ -3,6 +3,7 @@
 #include "../include/MemoryManager.h"
 #include "../include/stack.h"
 #include "../include/lib.h"
+#include "../include/videoDriver.h"
 
 //void * processProgram
 
@@ -37,6 +38,7 @@ PCB * createProcess(char * processName, mainFunc processProgram, char** args, Pr
     newPCB->isForeground = FOREGROUND;
   }
   else{
+    nativeBigPrintf("es BACKGROUND", 300, 300);
     newPCB->isForeground = BACKGROUND;
   }
   newPCB->fds[0] = fds[0]; // newPCB->fds[0] = fds[0];

@@ -123,7 +123,12 @@ void * schedule(void * currentRSP){
   }
   
   Pid nextProcessPID; 
+  char auxb[10];
   nextProcessPID = getNextProcess();
+  PCB * nextPCB = (PCB*)scheduler->processes[nextProcessPID]->info;
+  if(nextPCB->isForeground){
+    scheduler->foregroundPID == nextPCB->PID;
+  }
   return switchContext(nextProcessPID);
 }
 
@@ -258,7 +263,12 @@ uint64_t exitProcess(int retValue){
 
 int isForeground(Pid pid){
   PCB * pcb = (PCB*)scheduler->processes[pid]->info;
-  return pcb->isForeground;
+  return pcb->PID == scheduler->foregroundPID;
+  //return pcb->isForeground;
+}
+
+int getForegroundPID(){
+  return scheduler->foregroundPID;
 }
 
 uint64_t killProcess(Pid pid){

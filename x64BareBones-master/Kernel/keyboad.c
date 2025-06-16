@@ -158,14 +158,6 @@ KeyMapping key_table[] = {
     {"Num Lock", 0x45, -1, -1, -1}, {"Bloq Mayús", 0x3A, -1, -1, -1}
 };
 
-void killForegroundProcess(){
-    int currentPID = getCurrentPID();
-    if(isForeground(currentPID) && currentPID != SHELL_PID && currentPID != IDLE_PID){
-        setToblock(currentPID);
-        yield();
-        yield();
-    }
-}
 
 char getCharASCII(uint8_t Key){
     // for (int i = 0; i < sizeof(key_table) / sizeof(key_table[0]); i++) {
@@ -181,12 +173,10 @@ char getCharASCII(uint8_t Key){
             else if(ctrl_pressed){
                 if(key_table[i].ascii == 'D'){
                     return EOF;
-                } else if(key_table[i].ascii == 'C'){
-                    killForegroundProcess();
-                    return;
-                } else {
-                    return key_table[i].ctrl_key;
                 }
+                
+                return key_table[i].ctrl_key;
+                
 
             }
             return key_table[i].ascii;
