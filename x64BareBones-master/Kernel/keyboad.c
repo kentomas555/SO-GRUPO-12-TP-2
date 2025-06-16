@@ -1,5 +1,8 @@
 #include <keybord.h>
 #include <videoDriver.h>
+#include <MemoryManager.h>
+#include <scheduler.h>
+#include <process.h>
 
 
 typedef struct {
@@ -155,8 +158,13 @@ KeyMapping key_table[] = {
     {"Num Lock", 0x45, -1, -1, -1}, {"Bloq Mayús", 0x3A, -1, -1, -1}
 };
 
+void sendEOF(){
 
+}
 
+void killForegroundProcess(){
+
+}
 
 char getCharASCII(uint8_t Key){
     // for (int i = 0; i < sizeof(key_table) / sizeof(key_table[0]); i++) {
@@ -170,7 +178,16 @@ char getCharASCII(uint8_t Key){
                 return key_table[i].shifted_key; 
             }
             else if(ctrl_pressed){
-                return key_table[i].ctrl_key;
+                if(key_table[i].ascii = 'D'){
+                    sendEOF();
+                    return;
+                } else if(key_table[i].ascii = 'C'){
+                    killForegroundProcess();
+                    return;
+                } else {
+                    return key_table[i].ctrl_key;
+                }
+
             }
             return key_table[i].ascii;
         }
