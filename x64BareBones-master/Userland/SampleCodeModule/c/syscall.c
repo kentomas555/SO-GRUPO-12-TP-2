@@ -88,6 +88,9 @@ void printf(char *string){
         syscall(SYSCALL_WRITE, currentX, currentY, fontSize, string);
     } else {
         writePipeUser(fd, string);
+        // for (int i = 0; string[i] != '\0'; i++) {
+        //     writePipeUser(fd, (char[]){string[i], '\0'});
+        // }
     }
 }
 

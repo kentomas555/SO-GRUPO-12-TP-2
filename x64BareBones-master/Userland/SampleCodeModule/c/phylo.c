@@ -41,7 +41,7 @@ void startPhylo(int argc, char **args){
         ClearScreen(0x000000FF);
         return;
     }
-
+    ClearScreen(0x00000000);
     startDining();
 
     while((charAux = getKeyDown()) != 83){ // While not 'S'
@@ -147,10 +147,16 @@ static void printState(){
     NewLine();
     printf("Current Phylosopher States:");
     NewLine();
+    char auxBuf[20];
     for (int i = 0; i < phylosEating; i++){
+        itoaBase(phylosEating, auxBuf, 10);
         if(phyloStatus[i] == EATING){
+            printf(auxBuf);
+            NewLine();
             printf("E ");
         } else {
+            printf(auxBuf);
+            NewLine();
             printf(". ");
         }
     }
