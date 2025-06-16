@@ -61,14 +61,12 @@ int64_t createPipe(int pipeID, int16_t fd[2]){
     pipe->semWrite = semInit(WRITE_SEMAPHORE_ID + (pipeID - 3) * 3, PIPE_BUFFER_SIZE);
     pipe->mutex = semInit(MUTEX_SEMAPHORE_ID + (pipeID - 3) * 3, 1);
 
-    //nativeBigPrintf("Pipe creadooo", 300, 460);
+  
     pipeArray[pipeID-3] = pipe;
     return pipe->pipeID;
 }
 
 void destroyPipe(int pipeID){
-    nativeBigPrintf("ENTRE AL DESTROY", 300, y);
-    y += 20;
     if(!existPipe(pipeID)){
         return;
     }
@@ -83,89 +81,48 @@ void destroyPipe(int pipeID){
     pipeArray[pipeID-3] = NULL;
 }
 
-uint64_t writePipe(int pipeID, const char * source){ // WRITE ANDA BIEN, HAY QUE VER EL READPIPE
-    // nativeBigPrintf("entre al writePipe", 300, y);
-    // y += 20;
+uint64_t writePipe(int pipeID, const char * source){ 
+ 
     if (!existPipe(pipeID) || source == NULL){
         return 0;
     } 
 
     lengthAux = 0;
 
-    // TESTING
-    // if (!existPipe(pipeID)){
-    //     nativeBigPrintf("no existe pipeID", 350, 450);
-    //     return 0;
-    // } 
-    // if (source == NULL){
-    //     nativeMediumPrintf("source es NULL", 370, 450);
-    //     return 0;
-    // } 
-    // nativeMediumPrintf(source, 370, 450);  SOURCE ESTA BIEN
-
-    // END TESTING
-
-    PipeCDT *pipe = pipeArray[pipeID - 3]; // PIPE ESTA BIEN
+ 
+    PipeCDT *pipe = pipeArray[pipeID - 3]; 
 
     if (pipe->readerPID == -1) {
-        return 0; // Reader closed, avoid blocking forever
+        return 0; 
     }
-    // itoaBase(pipe->pipeID, bufferAux, y);
-    // y += 20;
-    // nativeBigPrintf(bufferAux, 300, y);
-    // y += 20;
 
     uint64_t written = 0;
-    //int X = 200;
+
 
     for (int i = 0; source[i] != '\0'; i++) {
         
         if (pipe->readerPID == -1) {
-            break;  // Reader disappeared while writing
+            break; 
         }
 
-        // nativeBigPrintf("FOR waiting semWrite", 300, y);
-        // y += 20;
         semWait(pipe->semWrite);
-        // nativeBigPrintf("FOR got semWrite", 300, y);
-        // y += 20;
+ 
         if (pipe->readerPID == -1) {
             semPost(pipe->semWrite);  // clean up before exiting
             break;
         }
 
         semWait(pipe->mutex);
-        //nativeBigPrintf("estoy en el for", 300, y);
-        //memcpy(pipe->buffer, source, strlen(source));
-        // printMediumChar(pipe->buffer, 300 , y);
-        //y += 20;
-        //nativeBigPrintf(source[i], 300, y);
-        //y += 20;
+    
         pipe->buffer[pipe->writePos] = source[i];
         pipe->writePos = (pipe->writePos + 1) % PIPE_BUFFER_SIZE;
         written++;
-        // itoaBase(written, bufferAux, 10);
-        // nativeBigPrintf(bufferAux, 300, y);
-        // y += 20;
-
-        // itoaBase(pipe->writePos, bufferAux, 10);
-        // nativeBigPrintf(bufferAux, X, 240);
-        //X++;
+      
         semPost(pipe->mutex);     // sale de la región crítica
         semPost(pipe->semRead);   // habilita lectura
     }
     
 
-    // After the for loop
-    // nativeBigPrintf("waiting semWrite", 300, y);
-    // y += 20;
-
-    // semWait(pipe->semWrite);
-    // semWait(pipe->mutex);
-    // pipe->buffer[pipe->writePos] = '\0';
-    // pipe->writePos = (pipe->writePos + 1) % PIPE_BUFFER_SIZE;
-    // semPost(pipe->mutex);
-    // semPost(pipe->semRead);
 
 
     if (pipe->readerPID != -1) {
@@ -177,28 +134,12 @@ uint64_t writePipe(int pipeID, const char * source){ // WRITE ANDA BIEN, HAY QUE
         semPost(pipe->semRead);
     }
 
-    // itoaBase(written, bufferAux, 10);
-    // nativeBigPrintf(bufferAux, 300, y);
-    // y += 20;
-
-    // itoaBase(pipe->pipeID, bufferAux, y);
-    // y += 20;
-    //nativeBigPrintf(pipe->buffer, 300, y);
-    //y += 20;
-
-    //lengthAux = written;
-
+  
     return written;
 }
 
 uint64_t readPipe(int pipeID, char * destination){
-    //nativeBigPrintf("entre al readPipe", 300, y);
-    //y += 20;
 
-    // itoaBase(lengthAux, bufferAux, 10);
-    // nativeBigPrintf("lengthAux=", 300, y);
-    // nativeBigPrintf(bufferAux, 500, y);
-    // y += 20;
 
     if(!existPipe(pipeID) || destination == NULL){
         return 0;
@@ -208,108 +149,47 @@ uint64_t readPipe(int pipeID, char * destination){
     char c;
 
     if (pipe->writerPID == -1 && pipe->readPos == pipe->writePos) {
-        //semPost(pipe->mutex);
-        //semPost(pipe->semWrite);  // habilita escritura
-        return 0;  // EOF, nothing to read, writer closed
+        return 0; 
     }
 
-    //nativeBigPrintf("antes del do", 300, y);
-    //y += 20;
-    //nativeBigPrintf("entreee", 300, 420);
-    // do {
-        semWait(pipe->semRead);   // espera a que haya algo para leer
-        semWait(pipe->mutex);     // entra a la región crítica
+   
+    semWait(pipe->semRead); 
+    semWait(pipe->mutex);   
 
-        // After the for loop
-        //nativeBigPrintf("en el do", 300, y);
-        //y += 20;
-    // semWait(pipe->semRead);
-    // nativeBigPrintf("got semWrite", 300, y);
-    // y += 20;
+       
 
-    // semWait(pipe->mutex); 
-
-        c = pipe->buffer[pipe->readPos];
-        pipe->readPos = (pipe->readPos + 1) % PIPE_BUFFER_SIZE;
+    c = pipe->buffer[pipe->readPos];
+    pipe->readPos = (pipe->readPos + 1) % PIPE_BUFFER_SIZE;
         
-        *destination = c;
+    *destination = c;
 
-//         nativeBigPrintf("before semPost(mutex)", 300, y);
-// y += 20;
-// semPost(pipe->mutex);
-// nativeBigPrintf("after semPost(mutex)", 300, y);
-// y += 20;
 
-// nativeBigPrintf("before semPost(semWrite)", 300, y);
-// y += 20;
-// semPost(pipe->semWrite);
-// nativeBigPrintf("after semPost(semWrite)", 300, y);
-// y += 20;
+    semPost(pipe->mutex);    
+    semPost(pipe->semWrite); 
 
-        semPost(pipe->mutex);     // sale de la región crítica
-        semPost(pipe->semWrite);  // habilita escritura
-
-        //nativeBigPrintf("dps del semPost en el do", 0, y);
-        //y += 20;
-        
-    // } while (c != '\0');
-
-    // for(int i = 0; i < pipe->writePos; i++){
-    //     semWait(pipe->semRead);   // espera a que haya algo para leer
-    //     semWait(pipe->mutex);     // entra a la región crítica
-
-    //     c = pipe->buffer[pipe->readPos];
-    //     pipe->readPos = (pipe->readPos + 1) % PIPE_BUFFER_SIZE;
-    //     destination[read++] = c;
-    
-    //     semPost(pipe->mutex);     // sale de la región crítica
-    //     semPost(pipe->semWrite);  // habilita escritura
-    // }
-
-    //lengthAux = 0;
-
-    // nativeBigPrintf("antes del print dest", 0, y);
-    // y += 20;
-    
-    // //nativeBigPrintf(destination, 0, 200);
-    // static int x = 0;
-    // nativeBigPrintf(destination, y, x);
-    // if(y == 500){
-    //     x += 50;
-    // }
-    // y += 20;
+   
     return 1;
 }
 
 
 
 void closePipeEnd(int pipeID, int isReader) {
-    nativeBigPrintf("dentro del closePIPE", 300, y);
-    y+=20;
 
     if (!existPipe(pipeID)) {
-        nativeBigPrintf("dentro del !existPipe", 300, y);
-    y+=20;
         return;
     }    
 
     PipeCDT *pipe = pipeArray[pipeID - 3];
     if (isReader) {
-        nativeBigPrintf("CLOSED READER", 300, y);
-        y+=20;
         pipe->readerPID = -1;
-    
-        semPost(pipe->semWrite);  // in case writer is stuck
-    } else {
-        nativeBigPrintf("CLOSED WRITER", 300, y);
-        y+=20;
-        pipe->writerPID = -1;
 
-        semPost(pipe->semRead);
+    } else {
+        pipe->writerPID = -1;
+      
     }
 
     if (pipe->readerPID == -1 && pipe->writerPID == -1) {
-        destroyPipe(pipeID);  // Only destroy when both ends are closed
+        destroyPipe(pipeID);
     }
 }
 

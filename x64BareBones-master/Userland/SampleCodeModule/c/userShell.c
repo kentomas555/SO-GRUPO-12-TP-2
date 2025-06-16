@@ -11,8 +11,6 @@ char shellBuffer[48];
 int bgColorIndex = 0;
 
 
-//void handleCommand(shellBuffer, backgroundFD);
-
 void help(int argc, char **args);
 void clearScreenCommand(int argc, char **args);
 void changeColor(int argc, char **args);
@@ -35,7 +33,7 @@ Command commands[] = {
     {"MEM", (void (*)(int,  char **))handlePrintMemState, "Imprime el estado de memoria", NULL, PROCESS},
     {"GETPID", (void (*)(int,  char **))handleGetPid, "Imprime el PID del proceso actual", NULL, PROCESS},
     {"PS", (void (*)(int,  char **))printProcesses, "Imprime los procesos actuales", NULL, PROCESS},
-    {"CREATEDUMMY", (void (*)(int,  char **))createDummyProcess, "Crea un proceso dummy", NULL, NOT_PROCESS},
+    {"CREATEDUMMY", (void (*)(int,  char **))createDummyProcess, "Crea un proceso dummy", NULL, PROCESS},
     {"LOOP", (void (*)(int,  char **))handleLoop, "Ejecuta un loop", "LOOP <segundos>", PROCESS},
     {"KILL", (void (*)(int,  char **))handleKill, "Mata un proceso", "KILL <pid>", NOT_PROCESS},
     {"NICE", (void (*)(int,  char **))handleNice, "Cambia prioridad", "NICE <pid> <prio>", NOT_PROCESS},
@@ -44,10 +42,10 @@ Command commands[] = {
     {"WC", (void (*)(int,  char **))handleWC, "Cuenta las lineas del input", NULL, PROCESS},
     {"FILTER", (void (*)(int,  char **))handleFilter, "Filtra vocales del input", NULL, PROCESS},
     {"PHYLO", (void (*)(int,  char **))startPhylo, "Proceso filosofos", NULL, NOT_PROCESS},
-    {"TESTMM", (void (*)(int,  char **))handleMemoryManagerTest, "Test memory manager", NULL, NOT_PROCESS},
+    {"TESTMM", (void (*)(int,  char **))handleMemoryManagerTest, "Test memory manager", NULL, PROCESS},
     {"TESTPROCESS", (void (*)(int,  char **))handleProcessTest, "Test de procesos", NULL, PROCESS},
     {"TESTPRIO", (void (*)(int,  char **))handlePriorityTest, "Test de prioridades", NULL, PROCESS},
-    {"TESTSYNC", (void (*)(int,  char **))handleSyncroTest, "Test sincronizacion", NULL, NOT_PROCESS},
+    {"TESTSYNC", (void (*)(int,  char **))handleSyncroTest, "Test sincronizacion", NULL, PROCESS},
     {"TESTNOSYNC", (void (*)(int,  char **))handleNoSyncroTest, "Test sin sincronizacion", NULL, NOT_PROCESS},
     {"TESTPIPE", (void (*)(int,  char **))handlePipeTest, "Test de prioridades", NULL, PROCESS},
     {NULL, NULL, NULL, NULL}
@@ -70,12 +68,6 @@ void help(int argc, char **args) {
     NewLine();
     printf("Use '&' para ejecutar en background. Ej: TESTSYNC &");
     NewLine();
-    /*TESTING*/
-    char auxbuf[20];
-    itoaBase(getWriteFD(getpid()),auxbuf,10 );
-    printf(auxbuf);
-    NewLine();
-    /*END TESTING*/
 }
 
 
@@ -160,12 +152,10 @@ void bufferInterpreter(){
             return;
         }
 
-        // char leftI[5];
-        // itoaBase(leftIdx, leftI, 10);
 
-         int16_t fds[2] = {0, 1};
-        printf("Pipe Created");
-        NewLine();
+
+        int16_t fds[2] = {0, 1};
+
         int pipeID = createPipeUser(PROCESS_PIPE_ID, fds);
 
         if (pipeID <= 2) {
@@ -178,87 +168,41 @@ void bufferInterpreter(){
 
         char *leftArgArr[] = {leftArgs, NULL};
         int16_t leftFds[] = {0, PROCESS_PIPE_ID};
-        //createNewProcess(commands[leftIdx].name, (mainFunc)commands[leftIdx].func, leftArgArr, AVERAGE_PRIORITY, leftFds);
+
         Pid leftPID = executeUser(commands[leftIdx], leftArgArr, leftFds);
 
-        // Launch right command (stdin <- pipe read)
-        //char *rightArgArr[] = {rightArgs, NULL};
+    
         char *rightArgArr[] = {rightArgs, NULL};
         int16_t rightFds[] = {PROCESS_PIPE_ID, 1};
-        //createNewProcess(commands[rightIdx].name, (mainFunc)commands[rightIdx].func, rightArgArr, AVERAGE_PRIORITY, rightFds);
+
         Pid rightPID = executeUser(commands[rightIdx], rightArgArr, rightFds);
 
 
-        // ESTO DENTRO DE FILTER, CAT, ... ------------------------------------------
-
-        
-        // int16_t fds[2] = {0, 1};
-        // printf("Pipe Created");
-        // NewLine();
-        // int pipeID = createPipeUser(PROCESS_PIPE_ID, fds);
-
-        // if (pipeID <= 2) {
-        //     printf("Error creando pipe");
-        //     NewLine(); 
-        //     NewLine();
-        //     return;
-        // }
-
-        
-        // char *leftArgArr[] = {leftArgs, NULL};
-        // int16_t leftFds[] = {0, pipeID};
-        // //createNewProcess(commands[leftIdx].name, (mainFunc)commands[leftIdx].func, leftArgArr, AVERAGE_PRIORITY, leftFds);
-        // executeUser(commands[leftIdx], leftArgArr, leftFds);
-
-        // ESTO DENTRO DE FILTER, CAT, ... ------------------------------------------
-
-        // // Launch right command (stdin <- pipe read)
-        // char *rightArgArr[] = {rightArgs, NULL};
-        // int16_t rightFds[] = {pipeID, 1};
-        // //createNewProcess(commands[rightIdx].name, (mainFunc)commands[rightIdx].func, rightArgArr, AVERAGE_PRIORITY, rightFds);
-        // executeUser(commands[rightIdx], rightArgArr, rightFds);
 
         if((leftPID > 1) && (rightPID > 1)){
-            //printf("LEFTPID");
-            //NewLine();
+ 
            
             waitPID(leftPID);
-            //printProcesses(0, leftArgs);
-            // waitPID(rightPID);
-            //yield();
-            
 
             closePipeUser(PROCESS_PIPE_ID, 0);
             yield();
-            
-        //     closePipeUser(PROCESS_PIPE_ID, 1);
-        //     //printf("TERMINO PS");
-        //     //NewLine();
+    
         }
 
         if(rightPID > 1){
-            //printf("RIGHTPID");
-            //NewLine();
             
             waitPID(rightPID);
             closePipeUser(PROCESS_PIPE_ID, 1); // aca se elimina el pipe
            
-            //printProcesses(rightArgArr, fds);
-            //destroyPipeUser(pipeID);
+          
         }
       
-        // Close pipe fds in parent
+ 
         
-        printf("Pipe destroyed");
+      
         NewLine();
         return;
     }
-
-    // char *ownString = strchr(shellBuffer, '\"');
-    // if(ownString != NULL){
-    //     printf("hola");
-    //     return;
-    // }
 
     // No pipe: regular command execution
     char *commandName = shellBuffer;
@@ -289,9 +233,11 @@ void bufferInterpreter(){
 
     int16_t fds[] = {-1, 1};
     
-    if(strchr(shellBuffer, '&')){
+    if(strchr(commandArgs, '&')){
+        
         runInBackground = 1;
         fds[0] = -1;
+        NewLine();
     }
     else{
         runInBackground = 0;
@@ -317,7 +263,6 @@ void bufferInterpreter(){
     NewLine();
     NewLine();
 
-    // handleCommand(shellBuffer, backgroundFD);
     return;
 }
 

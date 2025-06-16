@@ -239,17 +239,11 @@ uint64_t exitProcess(int retValue){
 
   PCB *parent = (PCB*)scheduler->processes[pcb->parentPID]->info;
 
-  char aux[10];
-  static int g = 0;
-  //itoaBase(pcb->n, aux, 10);
-  nativeBigPrintf(pcb->processName, 300, g);
-  g += 20;
 
   if(parent != NULL){
     if (parent->waitingPID == pcb->PID) {
       if(pcb->isForeground){
-        //parent->isForeground = FOREGROUND;
-        //parent->fds[0] = STDIN;
+       
         parent->waitingPID = -1;
       }
       parent->retValue = pcb->retValue;
@@ -381,7 +375,7 @@ uint64_t onCreateProcess(char * processName, mainFunc processProgram, char** arg
     PCB * parentPCB = (PCB*)(scheduler->processes[myNewProcess->parentPID]->info);
     if(myNewProcess->fds[0] == STDIN){
       if (parentPCB->PID == scheduler->foregroundPID) {
-        //nativeBigPrintf("FDS[0] = 0", 300, 300);
+
         parentPCB->waitingPID = myNewProcess->PID;
         setToblock(parentPCB->PID);
       }
@@ -477,8 +471,6 @@ int nice(Pid pid,Priority priority){
   return 1;
 }
 
-
-
 void yield(){
   int pid = getCurrentPID();
   ((PCB *)scheduler->processes[pid]->info)->roundsLeft = 0;
@@ -506,12 +498,10 @@ processesToPrint * printProcesses(){
     }
   }
 
-  // psList->processQty = (uint32_t)scheduler->processQty;
   psList->cantProcess = i;
   return psList;
 }
 
-//Agregado
 int getReadFD(Pid pid){
   return ((PCB*)scheduler->processes[pid]->info)->fds[0];
 }

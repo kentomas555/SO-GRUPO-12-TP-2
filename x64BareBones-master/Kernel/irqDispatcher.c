@@ -32,12 +32,11 @@ void irs80Dispatcher(uint64_t irc80Mode){
 static void killForegroundProcess(){
     int frPID = getForegroundPID();
     if(frPID != SHELL_PID && frPID != IDLE_PID){
-		printf("entre al kill", 300 , 220, 2);
 		killProcess(frPID);
         yield();
         yield();
     }
-    printf("No es foreground", 300 , 200, 2);
+   
 }
 
 void int_21(){
@@ -45,10 +44,10 @@ void int_21(){
 	uint8_t keycode = getKey();
     
     if (keycode == 0x2A || keycode == 0x36) {
-        shiftPressed();  // Left or right Shift pressed
+        shiftPressed();  
         return;
     } else if (keycode == 0xAA || keycode == 0xB6) {
-        shiftNotPressed();  // Left or right Shift released
+        shiftNotPressed(); 
         return;
     }
 
@@ -65,7 +64,6 @@ void int_21(){
 		keyBuffer = getCharASCII(getKey());
 		if(keyBuffer == 0x03){
 			killForegroundProcess();
-			nativePrintf("CTRL + C", 300, 320);
 		}
 		keyAvailable = 1; 
 	}

@@ -607,12 +607,6 @@ void handlePrintMemState(int argc, char **args){
     printf("-----------------------------");
     freeMemoryUser(memState);
     NewLine();
-    /*TESTING*/
-    char auxbuf[20];
-    itoaBase(getWriteFD(getpid()),auxbuf,10 );
-    printf(auxbuf);
-    NewLine();
-    /*END TESTING*/
 }
 
 void printProcesses(int argc, char **args){
@@ -631,7 +625,7 @@ void printProcesses(int argc, char **args){
         
         char auxBuffer[10];
 
-        //printf("");
+    
         NewLine();
         setX(1);
       
@@ -662,18 +656,14 @@ void printProcesses(int argc, char **args){
         
         itoaBase((uint64_t)pr->rbpList[i], auxBuffer, 16);
         printf(auxBuffer);
-        //printf("");
-        //yield();
+        
     }
 
     
     freeMemoryUser(pr);   
-    
-    
     NewLine();
     NewLine();
     return;
- 
 }
 
 int isVowel(char c) {
@@ -746,9 +736,9 @@ void handleKill(int argc, char **args){
 
     
     if (*buffer == '\0') {
-        //printf("Faltan parametros");
+        printf("Faltan parametros");
         NewLine();
-        //printf("Ejemplo de llamada: KILL (PID)");
+        printf("Ejemplo de llamada: KILL (PID)");
         NewLine();
         NewLine();
         return;
@@ -802,41 +792,14 @@ void handleKill(int argc, char **args){
 //MANEJAR CON PIPES
 
 void handleCat(int argc, char **args){
-    //char c;
-    // printProcesses(argc, args);
-    // printf("IN CAT");
-
-    // char buffer[1024] = {0};
-    // int fd = getReadFD(getpid());
 
     char buffer[128] = {0};
     int fd = getReadFD(getpid());
     static int auxY = 0;
     char c;   
     int index = 0;
-    
-    //if(fd != 0){
-        // while (1) {
-        // memset(buffer, 0, sizeof(buffer));
-        // int result = readPipeUser(fd, buffer);  // Read a chunk
-        // //buffer[0] = getChar();
-        // //printf(buffer);
-        // if (result <= 0 || buffer[0] == 0){
-        //     break;
-        // } 
-        // printf(buffer);
-        // nextX(1);
-        // auxY += 10;
-        // if(auxY == 550){
-        //     auxY = 0;
-        //     NewLine();
-        // }
-
-        // }
 
         while ((c = getChar()) != EOF) {
-
-            //if()
             char buf[2] = {c, 0};
             printf(buf);
             nextX(1);
@@ -846,49 +809,12 @@ void handleCat(int argc, char **args){
                 NewLine();
             }
         }   
-        //NewLine();
         auxY = 0;
         return;
-    //}
-    // else{
-    //     char end;
-    //     char auxBuff[2] = {c, 0};
-    //     while((end = getChar()) != EOF){
-    //         auxBuff[0] = end;
-    //         printf(auxBuff);
-    //         nextX(1);
-    //         auxY += 10;
-    //         if(auxY == 550){
-    //             auxY = 0;
-    //             NewLine();
-    //         }
-    //     }
-    //     //printf("hola");
-    //     NewLine();
-    // }
-    
-        
-    // while ((c = getChar()) != 0 && c != '\n' && c != 13) {
-    //     if (c == 8) { 
-    //         prevX(1);
-    //         charDelete(getCurrentX(), getCurrentY(), getFontSize());
-    //     } else {
-    //         char buf[2] = {c, 0};
-    //         printProcesses(argc, args);
-    // printf("IN CAT");
-    //         printf(buf);
-            
-    //         nextX(1);
-    //     }
-    // }
+  
     NewLine();
     auxY = 0;
-    /*TESTING*/
-    // char auxbuf[20];
-    // itoaBase(getReadFD(getpid()),auxbuf,10 );
-    // printf(auxbuf);
-    // NewLine();
-    /*END TESTING*/
+ 
     
     return;
 }
@@ -909,12 +835,7 @@ void handleWC(int argc, char **args){
     printf(buffer);
     NewLine();
     return;
-    // /*TESTING*/
-    // char auxbuf[20];
-    // itoaBase(getReadFD(getpid()),auxbuf,10 );
-    // printf(auxbuf);
-    // NewLine();
-    // /*END TESTING*/
+   
 }
 
 
@@ -1038,49 +959,3 @@ int32_t executeUser(Command command, char *args[], int16_t fds[]){
     }
 }
 
-// void handleCat(int argc, char **args){
-
-//     char buffer[128] = {0};
-//     int fd = getReadFD(getpid());
-//     static int auxY = 0;
-//     char c;   
-    
-//     if(fd != 0){
-
-//         while ((c = getChar()) != EOF) {
-//             char buf[2] = {c, 0};
-//             printf(buf);
-//             nextX(1);
-//             auxY += 10;
-//             if(auxY == 550){
-//                 auxY = 0;
-//                 NewLine();
-//             }
-//         }   
-//         NewLine();
-//         auxY = 0;
-//         return;
-//     }
-//     else{
-//         char end;
-//         char auxBuff[2] = {c, 0};
-//         while((end = getChar()) != EOF){
-//             auxBuff[0] = end;
-//             printf(auxBuff);
-//             nextX(1);
-//             auxY += 10;
-//             if(auxY == 550){
-//                 auxY = 0;
-//                 NewLine();
-//             }
-//         }
-//         //printf("hola");
-//         NewLine();
-//     }
-    
-//     NewLine();
-//     auxY = 0;
-    
-    
-//     return;
-// }

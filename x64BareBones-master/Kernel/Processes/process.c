@@ -5,8 +5,6 @@
 #include "../include/lib.h"
 #include "../include/videoDriver.h"
 
-//void * processProgram
-
 PCB * createProcess(char * processName, mainFunc processProgram, char** args, Priority priority, int16_t fds[]){
   
   if(getProcessQty() >= MAX_PROCESSES || processName == NULL || processProgram == NULL || priority > HIGHEST_PRIORITY || priority < LOWEST_PRIORITY || fds == NULL){
@@ -33,20 +31,19 @@ PCB * createProcess(char * processName, mainFunc processProgram, char** args, Pr
   memcpy(newPCB->processName, processName, nameLength);
   newPCB->processName[nameLength] = '\0';
   
-  //TODO: fds VER PARA SEMAPHORES
+  
   if(fds[0] == STDIN){
     newPCB->isForeground = FOREGROUND;
   }
   else{
-    nativeBigPrintf("es BACKGROUND", 300, 300);
     newPCB->isForeground = BACKGROUND;
   }
-  newPCB->fds[0] = fds[0]; // newPCB->fds[0] = fds[0];
-  newPCB->fds[1] = fds[1]; // newPCB->fds[1] = fds[1];
+  newPCB->fds[0] = fds[0]; 
+  newPCB->fds[1] = fds[1];
 
   //Arg configs
   newPCB->argc = countArguments((void **)args);
-  ///newPCB->argv = args;
+  
 
   int argc = newPCB->argc;
   if (argc > 0) {
