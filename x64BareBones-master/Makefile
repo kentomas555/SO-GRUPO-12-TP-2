@@ -1,11 +1,16 @@
 
 all:  bootloader kernel userland bin image
 
+buddy:  bootloader kernel-buddy userland bin image
+
 bootloader:
 	cd Bootloader; make all
 
 kernel:
 	cd Kernel; make all
+
+kernel-buddy:
+	cd Kernel; make MM_MANAGER=BUDDY all
 
 userland:
 	cd Userland; make all
