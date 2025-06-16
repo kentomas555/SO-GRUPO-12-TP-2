@@ -158,21 +158,32 @@ int waitPID(Pid pid){
 
   for (int i = 0; i < scheduler->finishedProcessCount; i++) {
     if (scheduler->finisheddProcesses[i].finishedPid == pid) {
-      scheduler->finishedProcessCount--; 
-        for (int j = i; j < scheduler->finishedProcessCount - 1; j++) {
-          scheduler->finisheddProcesses[j] = scheduler->finisheddProcesses[j + 1];
-        }    
-        return scheduler->finisheddProcesses[i].retVal;
+      int ret = scheduler->finisheddProcesses[i].retVal;
+      
+      for (int j = i; j < scheduler->finishedProcessCount - 1; j++) {
+        scheduler->finisheddProcesses[j] = scheduler->finisheddProcesses[j + 1];
+      } 
+
+      scheduler->finishedProcessCount--;    
+      return ret;
       }
   }
 
   caller->waitingPID = pid;
-
+  // if(caller->status == BLOCKED){
+  //   forceTimerTick();
+  //   yield();
+  // }
+  // else {
+  //   setToblock(caller->PID);
+  //   forceTimerTick();
+  //   yield();
+  // }
   setToblock(caller->PID);
   forceTimerTick();
   yield();
-  caller->waitingPID = -1;
 
+  caller->waitingPID = -1;
   return caller->retValue;
  }
 

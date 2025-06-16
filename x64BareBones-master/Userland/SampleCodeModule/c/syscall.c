@@ -39,9 +39,6 @@ char getChar(){
             return -1; // Pipe invalid or error
         }
         ret = buf[0];
-        // if (ret == '\0') {
-        //     return -1; // Interpret null terminator as EOF
-        // }
     }
     return ret;
 }
@@ -81,19 +78,6 @@ void decreaseFontSize(){
   fontSize--;
 }
 
-void printf(char *string){
-    //char letter[2] = 
-    int fd = getWriteFD(getpid());    
-    if (fd == 1) {
-        syscall(SYSCALL_WRITE, currentX, currentY, fontSize, string);
-    } else {
-        writePipeUser(fd, string);
-        // for (int i = 0; string[i] != '\0'; i++) {
-        //     writePipeUser(fd, (char[]){string[i], '\0'});
-        // }
-    }
-}
-
 void putChar(char c){
     int fd = getWriteFD(getpid());    
     if (fd == 1) {
@@ -103,6 +87,19 @@ void putChar(char c){
         writePipeUser(fd, &c);
     }
 }
+
+void printf(char *string){
+    //char letter[2] = 
+    int fd = getWriteFD(getpid());    
+    if (fd == 1) {
+        syscall(SYSCALL_WRITE, currentX, currentY, fontSize, string);
+    } else {
+        
+        writePipeUser(fd, string);    
+    }
+}
+
+
 
 void printfPos(char *string, int x, int y, char fontSizePos ){
     syscall(SYSCALL_WRITE, x, y, fontSizePos, string);

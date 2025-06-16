@@ -6,8 +6,8 @@
 #define MUTEX_SEMAPHORE_ID 3
 
 static char bufferAux[30];
-//static int y = 200;
-static int y = 300;
+static int y = 100;
+//static int y = 300;
 
 static int lengthAux = 0;
 
@@ -120,11 +120,19 @@ uint64_t writePipe(int pipeID, const char * source){ // WRITE ANDA BIEN, HAY QUE
 
     for (int i = 0; source[i] != '\0'; i++) {
         
+        if (pipe->readerPID == -1) {
+            break;  // Reader disappeared while writing
+        }
+
         // nativeBigPrintf("FOR waiting semWrite", 300, y);
         // y += 20;
         semWait(pipe->semWrite);
         // nativeBigPrintf("FOR got semWrite", 300, y);
         // y += 20;
+        if (pipe->readerPID == -1) {
+            semPost(pipe->semWrite);  // clean up before exiting
+            break;
+        }
 
         semWait(pipe->mutex);
         //nativeBigPrintf("estoy en el for", 300, y);
@@ -151,15 +159,23 @@ uint64_t writePipe(int pipeID, const char * source){ // WRITE ANDA BIEN, HAY QUE
     // After the for loop
     // nativeBigPrintf("waiting semWrite", 300, y);
     // y += 20;
-    semWait(pipe->semWrite);
-    // nativeBigPrintf("got semWrite", 300, y);
-    // y += 20;
 
-    semWait(pipe->mutex);
-    pipe->buffer[pipe->writePos] = '\0';
-    pipe->writePos = (pipe->writePos + 1) % PIPE_BUFFER_SIZE;
-    semPost(pipe->mutex);
-    semPost(pipe->semRead);
+    // semWait(pipe->semWrite);
+    // semWait(pipe->mutex);
+    // pipe->buffer[pipe->writePos] = '\0';
+    // pipe->writePos = (pipe->writePos + 1) % PIPE_BUFFER_SIZE;
+    // semPost(pipe->mutex);
+    // semPost(pipe->semRead);
+
+
+    if (pipe->readerPID != -1) {
+        semWait(pipe->semWrite);
+        semWait(pipe->mutex);
+        pipe->buffer[pipe->writePos] = '\0';
+        pipe->writePos = (pipe->writePos + 1) % PIPE_BUFFER_SIZE;
+        semPost(pipe->mutex);
+        semPost(pipe->semRead);
+    }
 
     // itoaBase(written, bufferAux, 10);
     // nativeBigPrintf(bufferAux, 300, y);
@@ -256,7 +272,11 @@ uint64_t readPipe(int pipeID, char * destination){
     // y += 20;
     
     // //nativeBigPrintf(destination, 0, 200);
-    // nativeBigPrintf(destination, y, 0);
+    // static int x = 0;
+    // nativeBigPrintf(destination, y, x);
+    // if(y == 500){
+    //     x += 50;
+    // }
     // y += 20;
     return 1;
 }
@@ -278,10 +298,14 @@ void closePipeEnd(int pipeID, int isReader) {
         nativeBigPrintf("CLOSED READER", 300, y);
         y+=20;
         pipe->readerPID = -1;
+    
+        semPost(pipe->semWrite);  // in case writer is stuck
     } else {
         nativeBigPrintf("CLOSED WRITER", 300, y);
         y+=20;
         pipe->writerPID = -1;
+
+        semPost(pipe->semRead);
     }
 
     if (pipe->readerPID == -1 && pipe->writerPID == -1) {

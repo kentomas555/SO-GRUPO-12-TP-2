@@ -221,6 +221,7 @@ void bufferInterpreter(){
         if((leftPID > 1) && (rightPID > 1)){
             //printf("LEFTPID");
             //NewLine();
+           
             waitPID(leftPID);
             //printProcesses(0, leftArgs);
             // waitPID(rightPID);
@@ -238,8 +239,10 @@ void bufferInterpreter(){
         if(rightPID > 1){
             //printf("RIGHTPID");
             //NewLine();
+            
             waitPID(rightPID);
             closePipeUser(PROCESS_PIPE_ID, 1); // aca se elimina el pipe
+           
             //printProcesses(rightArgArr, fds);
             //destroyPipeUser(pipeID);
         }

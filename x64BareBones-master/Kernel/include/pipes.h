@@ -7,7 +7,7 @@
 #include "process.h"
 
 #define MAX_PIPES 20
-#define PIPE_BUFFER_SIZE 128
+#define PIPE_BUFFER_SIZE 1024
 
 int64_t createPipe(int pipeID, int16_t fd[2]);
 void destroyPipe(int pipeID);

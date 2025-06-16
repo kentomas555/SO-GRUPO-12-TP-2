@@ -179,9 +179,9 @@ char getCharASCII(uint8_t Key){
                 return key_table[i].shifted_key; 
             }
             else if(ctrl_pressed){
-                if(key_table[i].ascii = 'D'){
+                if(key_table[i].ascii == 'D'){
                     return EOF;
-                } else if(key_table[i].ascii = 'C'){
+                } else if(key_table[i].ascii == 'C'){
                     killForegroundProcess();
                     return;
                 } else {

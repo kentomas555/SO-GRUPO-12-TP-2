@@ -622,42 +622,6 @@ void printProcesses(int argc, char **args){
     char* priority[5] = {"LOWEST", "LOW", "AVERAGE", "HIGH", "HIGHEST"};
     int finished = 0;
 
-    // while(!finished){
-    //     NewLine();
-    // printf(" PROCESS        PID PPID STATUS  PRIO     CHILDS RSP      RBP   ");
-    // NewLine();
-    // for(int i = 0; i < pr->cantProcess; i++){
-        
-    //     char auxBuffer[10];
-
-    //     //printf("");
-    //     NewLine();
-    //     setX(1);
-    //     printf(pr->names[i]);
-    //     setX(16);
-    //     itoaBase((uint64_t)pr->PIDs[i], auxBuffer, 10);
-    //     printf(auxBuffer);
-    //     setX(20);
-    //     itoaBase((uint64_t)pr->PPIDs[i], auxBuffer, 10);
-    //     printf(auxBuffer);
-    //     setX(25);
-    //     printf(state[pr->Status[i]]);
-    //     setX(33);
-    //     printf(priority[pr->Priority[i]]);
-    //     setX(42);
-    //     itoaBase((uint64_t)pr->childrens[i], auxBuffer, 10);
-    //     printf(auxBuffer);
-    //     setX(49);
-    //     itoaBase((uint64_t)pr->rspList[i], auxBuffer, 16);
-    //     printf(auxBuffer);
-    //     setX(58);
-    //     itoaBase((uint64_t)pr->rbpList[i], auxBuffer, 16);
-    //     printf(auxBuffer);
-    //     //printf("");
-    //     yield();
-    // }
-    // finished++;
-    // }
     
 
     NewLine();
@@ -670,45 +634,38 @@ void printProcesses(int argc, char **args){
         //printf("");
         NewLine();
         setX(1);
+      
         printf(pr->names[i]);
         setX(16);
+      
         itoaBase((uint64_t)pr->PIDs[i], auxBuffer, 10);
         printf(auxBuffer);
         setX(20);
+        
         itoaBase((uint64_t)pr->PPIDs[i], auxBuffer, 10);
         printf(auxBuffer);
         setX(25);
+        
         printf(state[pr->Status[i]]);
         setX(33);
+       
         printf(priority[pr->Priority[i]]);
         setX(42);
+        
         itoaBase((uint64_t)pr->childrens[i], auxBuffer, 10);
         printf(auxBuffer);
         setX(49);
+       
         itoaBase((uint64_t)pr->rspList[i], auxBuffer, 16);
         printf(auxBuffer);
         setX(58);
+        
         itoaBase((uint64_t)pr->rbpList[i], auxBuffer, 16);
         printf(auxBuffer);
         //printf("");
         //yield();
     }
 
-
-    // NewLine();
-    // char aux[10];
-    // itoaBase(getWriteFD(getpid()), aux, 10);
-    // printf(aux);
-    // NewLine();
-    // if(getWriteFD(getpid()) == PROCESS_PIPE_ID){
-    //     NewLine();
-    //     printf("HOOOOOOOOOO");
-    //     printCurrentTime(argc, args);
-    //     closePipeUser(PROCESS_PIPE_ID, 0);
-    // }
-
-
-    //closePipeUser(PROCESS_PIPE_ID, 0);
     
     freeMemoryUser(pr);   
     
@@ -716,12 +673,37 @@ void printProcesses(int argc, char **args){
     NewLine();
     NewLine();
     return;
-    // /*TESTING*/    
-    // char auxbuf[20];
-    // itoaBase(getWriteFD(getpid()),auxbuf,10 );
-    // printf(auxbuf);
-    // NewLine();
-    // /*END TESTING*/
+ 
+}
+
+int isVowel(char c) {
+    c |= 32; 
+    return c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u';
+}
+
+void handleFilter(int argc, char **args){
+   
+    char c;   
+    static int auxY = 0;
+
+    while ((c = getChar()) != EOF && c != EOF) {
+        if (!isVowel(c)) {
+            char buf[2] = {c, 0};
+            printf(buf);
+            nextX(1);
+            auxY += 10;
+            if(auxY == 550){
+                auxY = 0;
+                NewLine();
+            }
+            
+        }
+       
+    }   
+
+    NewLine();
+    auxY = 0;
+    return;
 }
 
 static void loopFuction(int argc, char *argv[]){
@@ -890,39 +872,7 @@ void handleWC(int argc, char **args){
     // /*END TESTING*/
 }
 
-int isVowel(char c) {
-    c |= 32; 
-    return c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u';
-}
 
-void handleFilter(int argc, char **args){
-   
-    char c;
-
-    // printProcesses(argc, args);
-    //     NewLine();
-
-    while ((c = getChar()) != 0 && c != EOF) {
-        // printProcesses(argc, args);
-        // NewLine();
-        if (!isVowel(c)) {
-            char buf[2] = {c, 0};
-            printf(buf);
-            //NewLine();
-            //putChar(c);
-            nextX(1);
-        }
-    }   
-    NewLine();
-    
-    //closePipeUser(PROCESS_PIPE_ID, 1);
-    //waitPID(pid);
-    
-    //destroyPipeUser(PROCESS_PIPE_ID);
-    //printf("sali del filter");
-    //NewLine();
-    return;
-}
 
 /*====== PHYLO ======*/
 
