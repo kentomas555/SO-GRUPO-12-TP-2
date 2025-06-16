@@ -2,7 +2,6 @@
 #include "../include/videoDriver.h"
 #include "../include/nativeLibrary.h"
 
-#ifdef BUDDY
 
 #define MAX_ORDER 20 //tamaño total de memoria
 #define MIN_ORDER 6   // tamaño minimo de bloque
@@ -241,4 +240,3 @@ int64_t *getSharedMemory() {
     return &shared;
 }
 
-#endif

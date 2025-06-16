@@ -1,8 +1,6 @@
 #include "../include/MemoryManager.h"
 #include <stdint.h>
 
-#ifndef BUDDY
-
 #define BLOCK_SIZE 0x1000        // 4 KB per block
 #define BLOCK_QTY  0x1000        // 4096 blocks = 16MB total
 
@@ -115,5 +113,3 @@ memoryState * getMemState() {
 uint64_t getCurrent() {
     return (mm != NULL) ? mm->usedBlocks : 0;
 }
-
-#endif
