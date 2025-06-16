@@ -123,11 +123,10 @@ void * schedule(void * currentRSP){
   }
   
   Pid nextProcessPID; 
-  char auxb[10];
   nextProcessPID = getNextProcess();
   PCB * nextPCB = (PCB*)scheduler->processes[nextProcessPID]->info;
   if(nextPCB->isForeground){
-    scheduler->foregroundPID == nextPCB->PID;
+    scheduler->foregroundPID = nextPCB->PID;
   }
   return switchContext(nextProcessPID);
 }

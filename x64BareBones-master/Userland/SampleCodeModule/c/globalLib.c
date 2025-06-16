@@ -20,17 +20,6 @@ static int HorizontalOffset(char fontSize){
     } 
 }
 
-static void * memset(void * destination, int32_t c, uint64_t length)
-{
-	uint8_t chr = (uint8_t)c;
-	char * dst = (char*)destination;
-
-	while(length--)
-		dst[length] = chr;
-
-	return destination;
-}
-
 void nextX(int i){
     setCurrentX(getCurrentX() + HorizontalOffset(getFontSize()) * i);
 }
@@ -205,15 +194,6 @@ static int atoi(char * str){
         str++;
     }
     return result;
-}
-
-static void *memcpy(void *dest, const void *src, int n) {
-    char *d = (char *)dest;
-    const char *s = (const char *)src;
-    for (int i = 0; i < n; i++) {
-        d[i] = s[i];
-    }
-    return dest;
 }
 
 int strlen(const char *str) {
@@ -614,7 +594,6 @@ void printProcesses(int argc, char **args){
     processesList * pr = getProcesses();
     char* state[4] = {"READY", "RUNNING", "BLOCKED", "KILLED"};
     char* priority[5] = {"LOWEST", "LOW", "AVERAGE", "HIGH", "HIGHEST"};
-    int finished = 0;
 
     
 
@@ -793,11 +772,9 @@ void handleKill(int argc, char **args){
 
 void handleCat(int argc, char **args){
 
-    char buffer[128] = {0};
-    int fd = getReadFD(getpid());
+   
     static int auxY = 0;
     char c;   
-    int index = 0;
 
         while ((c = getChar()) != EOF) {
             char buf[2] = {c, 0};
@@ -880,62 +857,6 @@ void handleSyncroTest(int argc, char **args){
     return;
 }
 
-void handleNoSyncroTest(int argc, char **args){
-    int16_t fds[2] = {0,1};
-    char *argv[] = {"10", "0", 0};
-    createNewProcess("No Sycnro Test",test_sync, argv, HIGH_PRIO,fds);
-    return;
-}
-
-uint64_t pipeReaderTest(uint64_t argc, char *argv[]){
-    if (argc < 1)
-        return -1;
-
-    int n = satoi(argv[0]);
-    char ch;
-
-    for (int i = 0; i < n * 2; i++) {
-        if (readPipeUser(getReadFD(getpid()), &ch) > 0) {
-            char str[2] = {ch, 0};
-            printf(str);
-        }
-    }
-    return 0;
-}
-
-uint64_t pipeWriterTest(uint64_t argc, char *argv[]){
-    if (argc < 1)
-    return -1;
-
-    int n = satoi(argv[0]);
-    char buffer[64];
-    itoaBase(getpid(), buffer, 10);
-
-    for (int i = 0; i < n; i++) {
-        writePipeUser(getWriteFD(getpid()), buffer);
-        writePipeUser(getWriteFD(getpid()), "\n"); // para separar
-        yield(); // Para ceder tiempo al reader
-    }
-
-    return 0;
-}
-
-void handlePipeTest(int argc, char **args){
-    int16_t fds[2] = {0, 1};    
-    char *argv[] = {"10", "0", 0};
-    int64_t pipe = createPipeUser(25, fds);
-    int16_t readerFd[2] = {25,1};
-    int16_t writerFd[2] = {0,25};
-    Pid pid1 = createNewProcess("Pipe reader test",pipeReaderTest, argv, HIGH_PRIO, readerFd);
-    Pid pid2 = createNewProcess("Pipe writer test",pipeWriterTest, argv, HIGH_PRIO, writerFd);
-    waitPID(pid2);
-    closePipeUser(25, 0);
-    waitPID(pid1);
-    closePipeUser(25, 1);
-    //destroyPipeUser(pipe);
-    return;
-}
-
 /*====== EXCEPTIONS TRIGGER ======*/
 
 void zeroDivisionTrigger(int argc, char **args){
@@ -951,11 +872,8 @@ int32_t executeUser(Command command, char *args[], int16_t fds[]){
     if(command.isProcess){
         //printProcesses(argc, args);
         return createNewProcess(command.name, command.func, args, AVERAGE_PRIORITY, fds);
-        
     }
-    else{
-        command.func(argc, args);
-        //return -1;
-    }
+    command.func(argc, args);
+    return -1;
 }
 

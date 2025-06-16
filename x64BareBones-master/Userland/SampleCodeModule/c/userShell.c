@@ -46,8 +46,6 @@ Command commands[] = {
     {"TESTPROCESS", (void (*)(int,  char **))handleProcessTest, "Test de procesos", NULL, PROCESS},
     {"TESTPRIO", (void (*)(int,  char **))handlePriorityTest, "Test de prioridades", NULL, PROCESS},
     {"TESTSYNC", (void (*)(int,  char **))handleSyncroTest, "Test sincronizacion", NULL, PROCESS},
-    {"TESTNOSYNC", (void (*)(int,  char **))handleNoSyncroTest, "Test sin sincronizacion", NULL, NOT_PROCESS},
-    {"TESTPIPE", (void (*)(int,  char **))handlePipeTest, "Test de prioridades", NULL, PROCESS},
     {NULL, NULL, NULL, NULL}
 };
 
@@ -250,7 +248,7 @@ void bufferInterpreter(){
         return;
     }
 
-    char *args[] = {argv[0], argv[1]};
+ 
     
     for (int i = 0; commands[i].name != NULL; i++) {
         if (strCompare(commandName, commands[i].name)) {

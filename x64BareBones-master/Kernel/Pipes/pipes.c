@@ -5,11 +5,6 @@
 #define WRITE_SEMAPHORE_ID 2
 #define MUTEX_SEMAPHORE_ID 3
 
-static char bufferAux[30];
-static int y = 100;
-//static int y = 300;
-
-static int lengthAux = 0;
 
 typedef struct PipeCDT {
     char buffer[PIPE_BUFFER_SIZE];
@@ -86,8 +81,6 @@ uint64_t writePipe(int pipeID, const char * source){
     if (!existPipe(pipeID) || source == NULL){
         return 0;
     } 
-
-    lengthAux = 0;
 
  
     PipeCDT *pipe = pipeArray[pipeID - 3]; 
