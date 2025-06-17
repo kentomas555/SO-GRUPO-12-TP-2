@@ -21,7 +21,7 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
   uint8_t action;
   uint64_t max_processes;
 
-  int16_t fds[2] = {0,1};
+  int16_t fds[2] = {-1,1};
   char *argvAUX[] = {NULL};
 
   if (argc != 1){

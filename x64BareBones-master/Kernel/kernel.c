@@ -61,7 +61,7 @@ int main()
 {	
 
 	_cli();
-	setTickFreq(1000);
+	//setTickFreq(1000);
 	load_idt();
 	
 	//sound(800, 10);
