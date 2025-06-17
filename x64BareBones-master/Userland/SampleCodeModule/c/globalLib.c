@@ -424,7 +424,7 @@ static int validPriority(int priority){
 void handleBlock(int argc, char **args){
     char * buffer = args[0];
 
-    //while (*buffer != ' ' && *buffer != '\0') buffer++;
+   
     if (*buffer == '\0') {
         printf("Faltan parametros");
         NewLine();
@@ -433,10 +433,9 @@ void handleBlock(int argc, char **args){
         NewLine();
         return;
     }
-    //buffer++;
-
+  
     processesList * psList = getProcesses();
-    int checkPID = atoi(buffer);/*getPIDFromBuffer(buffer);*/
+    int checkPID = atoi(buffer);
 
     if (checkPID < 0) {
         printf("Formato invalido de PID");
@@ -483,7 +482,7 @@ void handleNice(int argc, char **args){
     char* priorityList[5] = {"LOWEST", "LOW", "AVERAGE", "HIGH", "HIGHEST"};
     char * buffer = args[0];
 
-    //while (*buffer != ' ' && *buffer != '\0') buffer++;
+   
     if (*buffer == '\0') {
         printf("Faltan parametros");
         NewLine();
@@ -492,7 +491,7 @@ void handleNice(int argc, char **args){
         NewLine();
         return;
     }
-    //buffer++;  
+ 
 
     processesList * psList = getProcesses();
     int checkPID = getPIDFromBuffer(buffer);
@@ -515,8 +514,7 @@ void handleNice(int argc, char **args){
     }
 
     buffer = args[1];
-    //while (*buffer != ' ' && *buffer != '\0') buffer++;
-    //if (*buffer + 1 == '\0') {
+  
     if (*buffer == '\0') {
         printf("Falta parametro de prioridad");
         NewLine();
@@ -528,7 +526,7 @@ void handleNice(int argc, char **args){
         NewLine();
         return;
     }
-    //buffer++;  
+
 
  
 
@@ -547,7 +545,7 @@ void handleNice(int argc, char **args){
     Pid pid = (Pid)checkPID;
     nice(pid, priority);
 
-    // Mostrar resultado
+
     printf("Process ");
     setX(8);
     printf(psList->names[psListIndex]);
@@ -724,7 +722,7 @@ void handleKill(int argc, char **args){
         NewLine();
         return;
     }
-    //buffer++;  
+    
 
     processesList * psList = getProcesses();
     if(psList == NULL){
@@ -851,7 +849,7 @@ void handleSyncroTest(int argc, char **args){
     int16_t fds[2] = {0,1};
     char *argv[] = {"10", "1", 0};
     createNewProcess("Syncro Test",test_sync, argv, HIGHEST_PRIO,fds);
-    // waitPID(pid);
+    
     return;
 }
 
@@ -868,7 +866,6 @@ void invalidOpcodeTrigger(int argc, char **args){
 int32_t executeUser(Command command, char *args[], int16_t fds[]){
     int argc = countArguments((void*)args);
     if(command.isProcess){
-        //printProcesses(argc, args);
         return createNewProcess(command.name, command.func, args, AVERAGE_PRIORITY, fds);
     }
     command.func(argc, args);

@@ -96,17 +96,9 @@ uint64_t writePipe(int pipeID, const char * source){
 
     for (int i = 0; source[i] != '\0'; i++) {
         
-        // if (pipe->readerPID == -1) {
-        //     break; 
-        // }
+      
 
         semWait(pipe->semWrite);
- 
-        // if (pipe->readerPID == -1) {
-        //     semPost(pipe->semWrite);  // clean up before exiting
-        //     break;
-        // }
-
         semWait(pipe->mutex);
     
         pipe->buffer[pipe->writePos] = source[i];
@@ -120,14 +112,14 @@ uint64_t writePipe(int pipeID, const char * source){
 
 
 
-    //if (pipe->readerPID != -1) {
+   
         semWait(pipe->semWrite);
         semWait(pipe->mutex);
         pipe->buffer[pipe->writePos] = '\0';
         pipe->writePos = (pipe->writePos + 1) % PIPE_BUFFER_SIZE;
         semPost(pipe->mutex);
         semPost(pipe->semRead);
-    //}
+ 
 
   
     return written;

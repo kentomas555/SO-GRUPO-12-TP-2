@@ -34,7 +34,6 @@ static uint8_t addChildren(Pid pid);
 static uint64_t getAvailablePIDValue();
 
 
-//void startScheduler(PCB * shell, PCB * idle)
 void startScheduler() {
   scheduler = allocMemory(sizeof(SchedulerCDT));
   for (int i = 0; i < MAX_PROCESSES; i++){
@@ -44,9 +43,7 @@ void startScheduler() {
   scheduler->currentPPID = 0;
   scheduler->processQty = 0;
   scheduler->foregroundPID = 0;
-  //
   scheduler->finishedProcessCount = 0;
-  //
   scheduler->waitBlockedProcesses = 0;
   scheduler->readyList = initializeLinkedList();
 }
@@ -176,15 +173,6 @@ int waitPID(Pid pid){
   }
 
   caller->waitingPID = pid;
-  // if(caller->status == BLOCKED){
-  //   forceTimerTick();
-  //   yield();
-  // }
-  // else {
-  //   setToblock(caller->PID);
-  //   forceTimerTick();
-  //   yield();
-  // }
   setToblock(caller->PID);
   forceTimerTick();
   yield();
@@ -341,7 +329,7 @@ int getProcessQty(){
   return scheduler->processQty;
 }
 
-//SYSCALL para crear proceso
+
 
 static uint8_t addChildren(Pid pid){
   PCB *parent = (PCB *)scheduler->processes[pid]->info;
@@ -445,8 +433,8 @@ int unblockProcess(Pid pid){
   pcb->status = READY;
   queue(scheduler->readyList, processToBeUnblocked);
      
-  //yield();
-      return 1;
+  
+  return 1;
 }
 
 int getProcessPriority(Pid pid){
@@ -493,7 +481,7 @@ processesToPrint * printProcesses(){
     return NULL;
   }
   int i = 0;
-  //psList->cantProcess = scheduler->processQty;
+  
   for (int j = 0; j < MAX_PROCESSES; j++){
     if(scheduler->processes[j] != NULL){
       psList->names[i] = ((PCB*)scheduler->processes[j]->info)->processName;

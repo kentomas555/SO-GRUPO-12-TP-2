@@ -10,7 +10,5 @@
 int main() {
 
     startShell();
-    //createDummyProcess();
-    //createDummyProcess();
 	return 0xDEADBEEF;
 }

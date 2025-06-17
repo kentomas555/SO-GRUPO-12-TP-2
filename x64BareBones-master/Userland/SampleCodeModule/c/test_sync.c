@@ -10,7 +10,7 @@ int64_t * global; // shared memory
 
 void slowInc(int64_t *p, int64_t inc) {
   uint64_t aux = *p; 
-  //Declare YIELD
+
   yield();
   aux += inc;
   *p = aux;
@@ -50,7 +50,7 @@ uint64_t myProcessInc(uint64_t argc, char *argv[]) {
       return -1;
     }
 
-  //char auxbuf[20];
+ 
   uint64_t i;
   for (i = 0; i < n; i++) {
     if (use_sem){
@@ -89,11 +89,7 @@ uint64_t test_sync(uint64_t argc, char *argv[]) { //{n, use_sem, 0}
   for (i = 0; i < TOTAL_PAIR_PROCESSES; i++) {
 
     waitPID(pids[i]); 
-    //printProcesses(argc, argv);
-    //NewLine();
     waitPID(pids[i + TOTAL_PAIR_PROCESSES]);
-    //printProcesses(argc, argv);
-    //NewLine();
   }
   yield();
   yield();
@@ -110,7 +106,6 @@ uint64_t test_sync(uint64_t argc, char *argv[]) { //{n, use_sem, 0}
   itoaBase(*global, aux,10);
   printf(aux);
   NewLine();
-  //printProcesses(argc, argv);
   NewLine();
   printf("$");
   nextX(1);

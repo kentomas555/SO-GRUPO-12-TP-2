@@ -22,7 +22,7 @@ int listLength(LinkedListADT list);
 int listHasNext(LinkedListADT list);
 void * listNext(LinkedListADT list);
 void listIterator(LinkedListADT list);
-void freeList(LinkedListADT list);
+
 
 
 

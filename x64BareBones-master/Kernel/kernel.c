@@ -64,12 +64,12 @@ int main()
 	//setTickFreq(1000);
 	load_idt();
 	
-	//sound(800, 10);
+	
 
-	createMemoryManager(); // empieza en 0x700000
-	startStack(stackStartAddress); // empieza en 0x600000
-	startScheduler(); // empieza en 0x700000 (usa el memory manager, alloc)
-	// initializeSemaphores(); // en que parte de memoria inician?
+	createMemoryManager();
+	startStack(stackStartAddress); 
+	startScheduler(); 
+	
 
 	int16_t fds[2] = {STDIN,STDOUT};
 	char * args[] = {NULL};

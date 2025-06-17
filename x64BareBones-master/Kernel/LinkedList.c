@@ -52,7 +52,7 @@ void push(LinkedListADT list, Node * node){
     list->size++;    
 }
 
-void * dequeue(LinkedListADT list) { // ver 
+void * dequeue(LinkedListADT list) {
     if(list->size == 0) {
         return NULL;
     }
@@ -70,18 +70,12 @@ void * dequeue(LinkedListADT list) { // ver
     return info;
 }
 
-// static char aux[20];
-// static int y = 200;
 
 void removeFromQueue(LinkedListADT list, Node * node){
     if (list == NULL || node == NULL || list->size == 0){
-        // nativeBigPrintf("removeFromQueue: NULL or empty", 580, y);
-        // y += 20;
         return;
     }
 
-    // nativeBigPrintf("Removing node from queue", 550, y);
-    // y += 20;
 
     if(node->next != NULL){
         node->next->previous = node->previous;
@@ -137,9 +131,4 @@ void listIterator(LinkedListADT list){
         return;
     }
     list->current = list->first;
-}
-
-void freeList(LinkedListADT list){
-    //TODO
-    return;
 }

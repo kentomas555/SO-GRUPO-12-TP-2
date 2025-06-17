@@ -58,7 +58,7 @@ static void handleClosePipeSyscall(va_list args);
 static uint64_t handleGetReadFD(va_list args);
 static uint64_t handleGetWriteFD(va_list args);
 
-//static uint64_t handleGetCurrentBlock();
+
 
 // ========== DISPATCHER PRINCIPAL ==========
 uint64_t syscallDispatcher(uint64_t id, ...) {
@@ -93,9 +93,6 @@ uint64_t syscallDispatcher(uint64_t id, ...) {
             break;
         case SYSCALL_TICKS_ELAPSED:
             ret = ticks_elapsed();
-            break;
-        case SYSCALL_FREE_SPACE:
-            // TODO: Free Space
             break;
         case SYSCALL_DATE:
             handleDateSyscall(args);
@@ -417,7 +414,3 @@ static uint64_t handleGetWriteFD(va_list args){
     Pid pid = va_arg(args,Pid);
     return getWriteFD(pid);
 }
-
-// static uint64_t handleGetCurrentBlock(){
-//     return getCurrent();
-// }

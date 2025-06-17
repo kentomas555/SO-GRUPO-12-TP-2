@@ -89,7 +89,7 @@ void resetKeyBuffer(){
 
 uint64_t int_20(uint64_t rsp) {
 	timer_handler();
-	// return 0;
+
 	return (uint64_t)schedule((void *)rsp);
 }
 

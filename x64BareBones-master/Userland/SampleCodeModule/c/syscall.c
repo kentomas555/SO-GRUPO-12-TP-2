@@ -75,7 +75,7 @@ void putChar(char c){
 }
 
 void printf(char *string){
-    //char letter[2] = 
+
     int fd = getWriteFD(getpid());    
     if (fd == 1) {
         syscall(SYSCALL_WRITE, currentX, currentY, fontSize, string);
@@ -148,17 +148,13 @@ void freeMemoryUser(void * address){
     syscall(SYSCALL_FREE_MEMORY, address);
 }
 
-/*AGREGADO*/
+
 
 memoryState * getMemoryState(){
     return (memoryState *)syscall(SYSCALL_MEMORY_INFO);
 }
 
-// uint64_t getCurrentBlock(){
-//     return (uint64_t)syscall(SYSCALL_GETCURRENTBLOCK);
-// }
 
-/*AGREGADO END*/
 
 /*====== NEW PROCESS ======*/
 

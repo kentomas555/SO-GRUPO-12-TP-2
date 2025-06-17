@@ -115,27 +115,27 @@ void bufferInterpreter(){
     char *rightName;
     char *pipePos = strchr(shellBuffer, '|');
 
-    //printf(pipePos);
+    
     if (pipePos != NULL) {
        
-        // Split into two commands
+    
         *pipePos = 0;
         char *leftCmd = shellBuffer;
         char *rightCmd = pipePos + 1;
 
-        // Trim spaces
+   
         while (*leftCmd == ' ') leftCmd++;
         while (*rightCmd == ' ') rightCmd++;
 
-        // Parse left command
+       
         leftName = strtok(leftCmd, " ");
         char *leftArgs = strtok(NULL, "");
 
-        // Parse right command
+      
         rightName = strtok(rightCmd, " ");
         char *rightArgs = strtok(NULL, "");
 
-        // Find commands in table
+       
         int leftIdx = -1, rightIdx = -1;
         for (int i = 0; commands[i].name != NULL; i++) {
             if (strCompare(leftName, commands[i].name)) leftIdx = i;
@@ -179,20 +179,14 @@ void bufferInterpreter(){
 
         if((leftPID > 1) && (rightPID > 1)){
  
-           
             waitPID(leftPID);
-
             closePipeUser(PROCESS_PIPE_ID, 0);
             yield();
-    
         }
 
         if(rightPID > 1){
-            
             waitPID(rightPID);
             closePipeUser(PROCESS_PIPE_ID, 1); // aca se elimina el pipe
-           
-          
         }
       
  
@@ -202,7 +196,7 @@ void bufferInterpreter(){
         return;
     }
 
-    // No pipe: regular command execution
+
     char *commandName = shellBuffer;
     char *commandArgs = NULL;
     char *argv[MAX_ARGS];
@@ -237,20 +231,6 @@ void bufferInterpreter(){
     }
     argv[argc] = NULL;
 
-
-    
-    
-    // if(commandArgs != NULL)
-    // if(strchr(commandArgs, '&')){  
-    //     runInBackground = 1;
-    //     fds[0] = -1;
-    //     NewLine();
-    // }
-    // else{
-    //     runInBackground = 0;
-    //     fds[0] = 0;
-    // }
- 
     
     for (int i = 0; commands[i].name != NULL; i++) {
         if (strCompare(commandName, commands[i].name)) {

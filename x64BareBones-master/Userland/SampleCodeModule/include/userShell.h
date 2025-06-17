@@ -7,7 +7,7 @@
 #ifndef COMMAND_H
 typedef struct Command {
     char* name;
-    void (*func) (int argc, char **args); /*mainFunc*/
+    void (*func) (int argc, char **args);
     char* desc;
     char* usage;
     int8_t isProcess;

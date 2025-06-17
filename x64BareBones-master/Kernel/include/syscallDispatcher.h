@@ -10,7 +10,6 @@
 #define SYSCALL_SOUND_ON 9
 #define SYSCALL_SOUND_OFF 10
 #define SYSCALL_TICKS_ELAPSED 11
-#define SYSCALL_FREE_SPACE 12
 #define SYSCALL_DATE 13
 
 /*========= SO SYSCALLS ==========*/

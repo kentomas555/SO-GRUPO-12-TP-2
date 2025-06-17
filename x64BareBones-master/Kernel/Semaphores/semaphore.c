@@ -22,7 +22,7 @@ uint64_t semInit(int32_t id,uint32_t value){
     semaphores[semaphore->id-1] = semaphore;
     return semaphore->id;
   }
-  // semaphore->refCount++;
+  
   return id;
 }
 
@@ -40,9 +40,6 @@ uint64_t semDestroy(int id){
   sem_t * sem = getSemaphore(id);
     if (sem == NULL)
         return -1;
-    freeList(sem->blockedQueue);
-    //freeMemory(sem);
-    //semaphores[id-1] = NULL;
     return 0;
 }
 
