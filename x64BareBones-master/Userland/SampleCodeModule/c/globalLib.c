@@ -674,11 +674,15 @@ void handleFilter(int argc, char **args){
 
 static void loopFuction(int argc, char *argv[]){
     int lastPrinted = -1;
+    int pid = getpid();
+    char aux[20];
+    itoaBase(pid, aux, 10);
     int secs = satoi(argv[0]);
     while (1) {
         int current = seconds_elapsed();
         if (current != lastPrinted && current % secs == 0) {
-            printf("Hello User!! I'm still here :)");
+        
+            printf(aux);
             NewLine();
             lastPrinted = current;
         }
@@ -848,6 +852,14 @@ void handlePriorityTest(int argc, char **args){
 void handleSyncroTest(int argc, char **args){
     int16_t fds[2] = {0,1};
     char *argv[] = {"10", "1", 0};
+    createNewProcess("Syncro Test",test_sync, argv, HIGHEST_PRIO,fds);
+    
+    return;
+}
+
+void handleNoSyncroTest(int argc, char **args){
+    int16_t fds[2] = {0,1};
+    char *argv[] = {"10", "0", 0};
     createNewProcess("Syncro Test",test_sync, argv, HIGHEST_PRIO,fds);
     
     return;

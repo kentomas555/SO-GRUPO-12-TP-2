@@ -95,6 +95,7 @@ void handleMemoryManagerTest(int argc, char **args);
 void handleProcessTest(int argc, char **args);
 void handlePriorityTest(int argc, char **args);
 void handleSyncroTest(int argc, char **args);
+void handleNoSyncroTest(int argc, char **args);
 
 /*====== EXCEPTION TRIGGERS ======*/
 

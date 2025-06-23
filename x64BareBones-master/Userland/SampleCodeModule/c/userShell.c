@@ -46,6 +46,7 @@ Command commands[] = {
     {"TESTPROCESS", (void (*)(int,  char **))handleProcessTest, "Test de procesos", NULL, PROCESS},
     {"TESTPRIO", (void (*)(int,  char **))handlePriorityTest, "Test de prioridades", NULL, PROCESS},
     {"TESTSYNC", (void (*)(int,  char **))handleSyncroTest, "Test sincronizacion", NULL, PROCESS},
+    {"TESTNOSYNC", (void (*)(int,  char **))handleNoSyncroTest, "Test sincronizacion", NULL, PROCESS},
     {NULL, NULL, NULL, NULL}
 };
 
