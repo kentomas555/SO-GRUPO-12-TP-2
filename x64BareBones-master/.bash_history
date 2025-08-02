@@ -1,28 +1,3 @@
-make clean all
-cd root/
-make clean all
-cd root/
-make clean all
-cd root/
-make clean all
-make clean all
-cd root/
-make clean all
-cd root/
-make clean all
-cd root/
-make clean all
-cd root/
-make clean all
-make clean all
-cd root/
-make clean all
-cd root/
-make clean all
-cd root/
-make clean all
-cd root/
-make clean all
 cd root/
 make clean all
 cd root/
@@ -496,5 +471,30 @@ make clean
 make all
 make clean
 make clean
+make clean
+make all
+cd
+make clean
+cd Toolchain/
+make clean
+make all
+cd ..
+make all
+make clean
+cd Toolchain/
+make clean
+make clean
+make all
+cd ..
+make clean
+make all
+make clean
+make buddy
+make clean
+make all
+make clean
+make all
+make clean
+make all
 make clean
 make all

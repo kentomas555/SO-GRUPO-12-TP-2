@@ -65,7 +65,7 @@ void help(int argc, char **args) {
         }
     }
     NewLine();
-    printf("Use '&' para ejecutar en background. Ej: TESTSYNC &");
+    printf("Use '&' para ejecutar en background. Ej: TESTPROCESS &");
     NewLine();
 }
 
